@@ -1,0 +1,1 @@
+"""intersectional method package."""

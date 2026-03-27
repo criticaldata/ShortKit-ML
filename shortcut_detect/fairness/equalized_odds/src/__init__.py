@@ -1,0 +1,1 @@
+"""Equalized odds detector implementation."""

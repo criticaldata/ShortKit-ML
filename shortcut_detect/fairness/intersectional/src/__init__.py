@@ -1,0 +1,1 @@
+"""Intersectional detector implementation."""

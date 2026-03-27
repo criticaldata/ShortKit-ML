@@ -1,0 +1,18 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{Risk condition comparison: accuracy, false positive rate, and false negative rate across four difficulty levels (5 seeds each, $n{=}1000$, $d{=}128$). Five pluggable aggregation conditions are evaluated. An ideal condition achieves 0 FP on clean data and 0 FN on data with shortcuts. The meta-classifier and weighted risk conditions generally provide the best balance of sensitivity and specificity.}
+\label{tab:risk_conditions}
+\begin{tabular}{l|ccc|ccc|ccc|ccc}
+\hline
+\textbf{Condition} & \multicolumn{3}{c|}{Clean ($\delta{=}0.0$)} & \multicolumn{3}{c|}{Weak ($\delta{=}0.2$)} & \multicolumn{3}{c|}{Moderate ($\delta{=}0.5$)} & \multicolumn{3}{c}{Strong ($\delta{=}1.0$)} \\
+  & Acc & FP & FN & Acc & FP & FN & Acc & FP & FN & Acc & FP & FN \\
+\hline
+Indicator Count & 0.60 & 0.40 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Majority Vote & 0.60 & 0.40 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Weighted Risk & 0.60 & 0.40 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Multi-Attribute & 0.60 & 0.40 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Meta-Classifier & 0.60 & 0.40 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+\hline
+\end{tabular}
+\end{table*}

@@ -1,0 +1,40 @@
+{
+  "benchmark": "cross_dataset_per_diagnosis",
+  "timestamp": "2026-03-18T05:34:12.752707+00:00",
+  "datasets": {
+    "chexpert": {
+      "backbone": "resnet50",
+      "dim": 2048
+    },
+    "mimic_cxr": {
+      "backbone": "rad_dino",
+      "dim": 768
+    }
+  },
+  "methods": [
+    "hbac",
+    "probe",
+    "statistical",
+    "geometric",
+    "frequency",
+    "bias_direction_pca",
+    "sis",
+    "demographic_parity",
+    "equalized_odds",
+    "intersectional",
+    "groupdro",
+    "gce",
+    "ssa"
+  ],
+  "min_positive": 50,
+  "top_n": 5,
+  "elapsed_seconds": 155.31,
+  "n_result_rows": 195,
+  "diagnoses_analyzed": [
+    "Lung Opacity",
+    "Atelectasis",
+    "No Finding",
+    "Pleural Effusion",
+    "Support Devices"
+  ]
+}

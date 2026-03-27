@@ -1,0 +1,5 @@
+seed,effect_size,n_samples,imbalance_ratio,embedding_dim,n_flagged_methods,any_false_positive,false_positive_1of9,false_positive_8of9,false_positive_9of9
+640195,0.2,200,0.5,128,5,1,0,0,0
+722053,0.2,200,0.5,128,5,1,0,0,0
+640195,1.0,200,0.5,128,5,1,0,0,0
+722053,1.0,200,0.5,128,5,1,0,0,0

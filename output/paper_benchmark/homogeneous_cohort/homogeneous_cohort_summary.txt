@@ -1,0 +1,61 @@
+======================================================================
+  HOMOGENEOUS COHORT ANALYSIS — SHORTCUT OF SHORTCUT TEST
+======================================================================
+
+Question: Is demographic encoding DIRECT or PATHOLOGY-MEDIATED?
+Method: Filter to same-diagnosis patients, test for demographic encoding.
+If encoding persists within a homogeneous cohort, it's DIRECT.
+If it disappears, it was PATHOLOGY-MEDIATED.
+
+Diagnosis            | Attr  | Dataset    | Backbone     |     n |    Agree | Verdict
+------------------------------------------------------------------------------------------
+Atelectasis          | sex   | chexpert   | MedSigLIP    |   266 | 6/13    | DIRECT encoding
+Atelectasis          | sex   | chexpert   | RAD-DINO     |   266 | 7/13    | DIRECT encoding
+Atelectasis          | sex   | chexpert   | ViT-B/16     |   266 | 7/13    | DIRECT encoding
+Atelectasis          | sex   | mimic      | MedSigLIP    |   263 | 8/13    | DIRECT encoding
+Atelectasis          | sex   | mimic      | RAD-DINO     |   263 | 7/13    | DIRECT encoding
+Atelectasis          | sex   | mimic      | ViT-B/16     |   263 | 7/13    | DIRECT encoding
+Edema                | race  | chexpert   | MedSigLIP    |   366 | 5/13    | DIRECT encoding
+Edema                | race  | chexpert   | RAD-DINO     |   366 | 6/13    | DIRECT encoding
+Edema                | race  | chexpert   | ViT-B/16     |   366 | 6/13    | DIRECT encoding
+Edema                | sex   | chexpert   | MedSigLIP    |   366 | 5/13    | DIRECT encoding
+Edema                | sex   | chexpert   | RAD-DINO     |   366 | 7/13    | DIRECT encoding
+Edema                | sex   | chexpert   | ViT-B/16     |   366 | 7/13    | DIRECT encoding
+Edema                | sex   | mimic      | MedSigLIP    |   140 | 8/13    | DIRECT encoding
+Edema                | sex   | mimic      | RAD-DINO     |   140 | 7/13    | DIRECT encoding
+Edema                | sex   | mimic      | ViT-B/16     |   140 | 7/13    | DIRECT encoding
+Lung Opacity         | race  | chexpert   | MedSigLIP    |   827 | 6/13    | DIRECT encoding
+Lung Opacity         | race  | chexpert   | RAD-DINO     |   827 | 6/13    | DIRECT encoding
+Lung Opacity         | race  | chexpert   | ViT-B/16     |   827 | 6/13    | DIRECT encoding
+Lung Opacity         | sex   | chexpert   | MedSigLIP    |   827 | 6/13    | DIRECT encoding
+Lung Opacity         | sex   | chexpert   | RAD-DINO     |   827 | 7/13    | DIRECT encoding
+Lung Opacity         | sex   | chexpert   | ViT-B/16     |   827 | 7/13    | DIRECT encoding
+Lung Opacity         | sex   | mimic      | MedSigLIP    |   305 | 8/13    | DIRECT encoding
+Lung Opacity         | sex   | mimic      | RAD-DINO     |   305 | 7/13    | DIRECT encoding
+Lung Opacity         | sex   | mimic      | ViT-B/16     |   305 | 7/13    | DIRECT encoding
+Pleural Effusion     | race  | chexpert   | MedSigLIP    |   730 | 6/13    | DIRECT encoding
+Pleural Effusion     | race  | chexpert   | RAD-DINO     |   730 | 6/13    | DIRECT encoding
+Pleural Effusion     | race  | chexpert   | ViT-B/16     |   730 | 6/13    | DIRECT encoding
+Pleural Effusion     | sex   | chexpert   | MedSigLIP    |   730 | 6/13    | DIRECT encoding
+Pleural Effusion     | sex   | chexpert   | RAD-DINO     |   730 | 7/13    | DIRECT encoding
+Pleural Effusion     | sex   | chexpert   | ViT-B/16     |   730 | 7/13    | DIRECT encoding
+Pleural Effusion     | sex   | mimic      | MedSigLIP    |   255 | 7/13    | DIRECT encoding
+Pleural Effusion     | sex   | mimic      | RAD-DINO     |   255 | 7/13    | DIRECT encoding
+Pleural Effusion     | sex   | mimic      | ViT-B/16     |   255 | 6/13    | DIRECT encoding
+Support Devices      | race  | chexpert   | MedSigLIP    |   933 | 7/13    | DIRECT encoding
+Support Devices      | race  | chexpert   | RAD-DINO     |   933 | 7/13    | DIRECT encoding
+Support Devices      | race  | chexpert   | ViT-B/16     |   933 | 8/13    | DIRECT encoding
+Support Devices      | sex   | chexpert   | MedSigLIP    |   933 | 6/13    | DIRECT encoding
+Support Devices      | sex   | chexpert   | RAD-DINO     |   933 | 7/13    | DIRECT encoding
+Support Devices      | sex   | chexpert   | ViT-B/16     |   933 | 7/13    | DIRECT encoding
+Support Devices      | sex   | mimic      | MedSigLIP    |   239 | 6/13    | DIRECT encoding
+Support Devices      | sex   | mimic      | RAD-DINO     |   239 | 7/13    | DIRECT encoding
+Support Devices      | sex   | mimic      | ViT-B/16     |   239 | 7/13    | DIRECT encoding
+
+======================================================================
+  INTERPRETATION
+======================================================================
+  Sex encoding within diagnoses: mean 6.8/13 methods flag
+  => SEX encoding is DIRECT (persists within homogeneous cohorts)
+  Race encoding within diagnoses: mean 6.2/13 methods flag
+  => RACE encoding is DIRECT (persists within homogeneous cohorts)

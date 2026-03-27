@@ -1,0 +1,68 @@
+{
+  "benchmark": "chexpert_shortcut_detection",
+  "timestamp": "2026-03-16T16:06:02.315090+00:00",
+  "backbone": "medclip",
+  "n_samples": 2000,
+  "embedding_dim": 512,
+  "methods": [
+    "hbac",
+    "probe",
+    "statistical",
+    "geometric"
+  ],
+  "attributes": [
+    "race",
+    "sex",
+    "age_bin"
+  ],
+  "seed": 42,
+  "elapsed_seconds": 10.9,
+  "results": {
+    "per_attribute": {
+      "race": {
+        "n_samples": 1454,
+        "n_groups": 3,
+        "n_flagged": 2,
+        "n_total": 4,
+        "confidence": "intermediate"
+      },
+      "sex": {
+        "n_samples": 2000,
+        "n_groups": 3,
+        "n_flagged": 1,
+        "n_total": 4,
+        "confidence": "likely_false_alarm"
+      },
+      "age_bin": {
+        "n_samples": 2000,
+        "n_groups": 4,
+        "n_flagged": 2,
+        "n_total": 4,
+        "confidence": "intermediate"
+      }
+    },
+    "convergence_matrix": [
+      {
+        "attribute": "age_bin",
+        "geometric": 1,
+        "hbac": 1,
+        "probe": 0,
+        "statistical": 0
+      },
+      {
+        "attribute": "race",
+        "geometric": 1,
+        "hbac": 1,
+        "probe": 0,
+        "statistical": 0
+      },
+      {
+        "attribute": "sex",
+        "geometric": 0,
+        "hbac": 1,
+        "probe": 0,
+        "statistical": 0
+      }
+    ]
+  }
+}

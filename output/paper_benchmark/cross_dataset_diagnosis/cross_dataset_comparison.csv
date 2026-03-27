@@ -1,0 +1,6 @@
+diagnosis,chexpert_sex_agreement,chexpert_sex_flagged,chexpert_sex_n,chexpert_sex_convergence,mimic_sex_agreement,mimic_sex_flagged,mimic_sex_n,mimic_sex_convergence,mimic_race_agreement,mimic_race_flagged,mimic_race_n,mimic_race_convergence
+Lung Opacity,5/13,5,827,intermediate,6/13,6,305,intermediate,5/13,5,252,intermediate
+Atelectasis,4/13,4,266,intermediate,7/13,7,263,intermediate,5/13,5,229,intermediate
+No Finding,1/13,1,259,likely_false_alarm,5/13,5,545,intermediate,4/13,4,464,intermediate
+Pleural Effusion,5/13,5,730,intermediate,7/13,7,255,intermediate,6/13,6,224,intermediate
+Support Devices,5/13,5,933,intermediate,6/13,6,239,intermediate,5/13,5,194,intermediate

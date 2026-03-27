@@ -1,0 +1,4 @@
+backbone,attribute,n_samples,n_groups,n_flagged_methods,n_total_methods,confidence_level
+medclip,race,1454,3,2,4,intermediate
+medclip,sex,2000,3,1,4,likely_false_alarm
+medclip,age_bin,2000,4,2,4,intermediate

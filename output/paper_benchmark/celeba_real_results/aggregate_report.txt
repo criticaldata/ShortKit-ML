@@ -1,0 +1,45 @@
+
+Blond_Hair vs Male: Blond hair strongly correlated with gender
+  hbac: NOT DETECTED
+  probe: DETECTED
+  statistical: DETECTED
+  geometric: DETECTED
+  frequency: DETECTED
+  bias_direction_pca: DETECTED
+  sis: DETECTED
+  demographic_parity: DETECTED
+  equalized_odds: DETECTED
+  intersectional: DETECTED
+  groupdro: NOT DETECTED
+  gce: DETECTED
+  ssa: NOT DETECTED
+
+Heavy_Makeup vs Male: Heavy makeup strongly correlated with gender
+  hbac: NOT DETECTED
+  probe: DETECTED
+  statistical: DETECTED
+  geometric: DETECTED
+  frequency: DETECTED
+  bias_direction_pca: DETECTED
+  sis: DETECTED
+  demographic_parity: DETECTED
+  equalized_odds: DETECTED
+  intersectional: DETECTED
+  groupdro: NOT DETECTED
+  gce: DETECTED
+  ssa: NOT DETECTED
+
+Attractive vs Male: Attractiveness label correlated with gender
+  hbac: NOT DETECTED
+  probe: DETECTED
+  statistical: DETECTED
+  geometric: DETECTED
+  frequency: DETECTED
+  bias_direction_pca: DETECTED
+  sis: DETECTED
+  demographic_parity: DETECTED
+  equalized_odds: DETECTED
+  intersectional: DETECTED
+  groupdro: NOT DETECTED
+  gce: DETECTED
+  ssa: NOT DETECTED

@@ -1,0 +1,13 @@
+backbone,attribute,method,n_samples,n_groups,flagged,risk_level,success,error,elapsed_s
+medclip,race,hbac,1454,3,1,moderate,True,,1.554
+medclip,race,probe,1454,3,0,low,True,,0.041
+medclip,race,statistical,1454,3,0,low,True,,1.06
+medclip,race,geometric,1454,3,1,moderate,True,,0.369
+medclip,sex,hbac,2000,3,1,moderate,True,,1.917
+medclip,sex,probe,2000,3,0,low,True,,0.273
+medclip,sex,statistical,2000,3,0,low,True,,1.63
+medclip,sex,geometric,2000,3,0,low,True,,0.316
+medclip,age_bin,hbac,2000,4,1,moderate,True,,1.411
+medclip,age_bin,probe,2000,4,0,low,True,,0.175
+medclip,age_bin,statistical,2000,4,0,low,True,,1.658
+medclip,age_bin,geometric,2000,4,1,moderate,True,,0.487

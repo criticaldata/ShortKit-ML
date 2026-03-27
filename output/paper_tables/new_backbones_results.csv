@@ -1,0 +1,7 @@
+dataset,backbone,attr,hbac,probe,stat,geom,agree
+chexpert,dinov2_base,sex,True,True,True,True,4
+chexpert,dinov2_base,race,True,False,True,True,3
+chexpert,vit_b_32,sex,True,True,True,True,4
+chexpert,vit_b_32,race,True,False,True,True,3
+mimic,vit32_cls,sex,True,False,False,True,2
+mimic,vit32_cls,race,True,False,False,True,2

@@ -1,0 +1,36 @@
+{
+  "benchmark": "chexpert_multibackbone",
+  "timestamp": "2026-03-18T04:43:55.437087+00:00",
+  "backbones": [
+    "resnet50",
+    "densenet121",
+    "vit_b_16",
+    "vit_b_32",
+    "dinov2_base",
+    "rad_dino",
+    "medsiglip"
+  ],
+  "methods": [
+    "hbac",
+    "probe",
+    "statistical",
+    "geometric",
+    "frequency",
+    "bias_direction_pca",
+    "sis",
+    "demographic_parity",
+    "equalized_odds",
+    "intersectional",
+    "groupdro",
+    "gce",
+    "ssa"
+  ],
+  "attributes": [
+    "sex",
+    "age_bin",
+    "race"
+  ],
+  "elapsed_seconds": 1486.3,
+  "n_attribute_rows": 273,
+  "n_diagnosis_rows": 1092
+}

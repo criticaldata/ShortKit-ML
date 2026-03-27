@@ -1,0 +1,18 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{{\color{blue}Cross-dataset per-diagnosis shortcut detection. CheXpert (ResNet-50, 2048-dim) vs MIMIC-CXR (RAD-DINO, 768-dim). For each diagnosis, we filter to positive cases and run 13 detection methods. Agreement = methods flagging shortcut / total methods. $\checkmark$ = flagged, $\cdot$ = not flagged.}}
+\label{tab:cross_dataset_diagnosis}
+\begin{tabular}{l|rcccccccccccccc|rcccccccccccccc|rcccccccccccccc}
+\hline
+ & \multicolumn{15}{c|}{\textbf{CheXpert (sex)}} & \multicolumn{15}{c|}{\textbf{MIMIC-CXR (sex)}} & \multicolumn{15}{c}{\textbf{MIMIC-CXR (race)}} \\
+\textbf{Diagnosis} & $n$ & H & P & S & G & Fr & BD & SI & DP & EO & In & gr & gc & ss & Agr. & $n$ & H & P & S & G & Fr & BD & SI & DP & EO & In & gr & gc & ss & Agr. & $n$ & H & P & S & G & Fr & BD & SI & DP & EO & In & gr & gc & ss & Agr. \\
+\hline
+Lung Opacity & 827 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 & 305 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 & 252 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+Atelectasis & 266 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 4/13 & 263 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 & 229 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+No Finding & 259 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 1/13 & 545 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 & 464 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 4/13 \\
+Pleural Effusion & 730 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 & 255 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 & 224 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+Support Devices & 933 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 & 239 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 & 194 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+\hline
+\end{tabular}
+\end{table*}

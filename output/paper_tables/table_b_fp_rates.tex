@@ -1,0 +1,18 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{False positive rates on clean data ($\delta{=}0$) across embedding dimensionalities ($n{=}1000$, 20 seeds). Individual methods may produce occasional false alarms, but multi-method convergence (requiring $\geq$2 methods to agree) maintains near-zero FP rates across all dimensionalities, demonstrating the value of cross-paradigm agreement.}
+\label{tab:fp_rates}
+\begin{tabular}{lccc}
+\hline
+\textbf{Method} & $d{128}$ & $d{256}$ & $d{512}$ \\
+\hline
+HBAC & 0.000 & 0.000 & 0.000 \\
+Probe & 0.000 & 0.000 & 0.000 \\
+Statistical & 0.100 & 0.050 & 0.000 \\
+Geometric & 0.150 & 1.000 & 1.000 \\
+\hline
+Convergence ($\geq$2) & 0.050 & 0.050 & 0.000 \\
+\hline
+\end{tabular}
+\end{table}

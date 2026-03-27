@@ -1,0 +1,547 @@
+method,flagged,success,risk_level,elapsed_s,backbone,dataset,diagnosis,attribute,n_samples,n_flagged_total,convergence
+hbac,1,True,high,5.251,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+probe,1,True,high,0.761,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+statistical,1,True,moderate,0.437,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+geometric,1,True,moderate,2.106,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+frequency,1,True,high,0.034,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+bias_direction_pca,1,True,high,0.003,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+sis,1,True,high,6.067,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+demographic_parity,0,True,low,0.335,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+equalized_odds,0,True,low,0.021,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+groupdro,0,False,unknown,0.028,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+gce,0,True,moderate,0.025,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+ssa,0,False,unknown,0.008,RAD-DINO,chexpert,Lung Opacity,sex,827,7,intermediate
+hbac,1,True,high,6.833,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+probe,0,True,low,5.065,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+statistical,1,True,moderate,2.905,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+geometric,1,True,moderate,10.549,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+frequency,1,True,high,0.142,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+bias_direction_pca,1,True,high,0.003,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+sis,1,True,high,6.312,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+demographic_parity,0,True,low,0.349,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+equalized_odds,0,True,low,0.073,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+groupdro,0,False,unknown,0.025,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+gce,0,True,moderate,0.044,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+ssa,0,False,unknown,0.002,RAD-DINO,chexpert,Lung Opacity,race,827,6,intermediate
+hbac,1,True,high,6.372,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+probe,1,True,high,0.441,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+statistical,1,True,moderate,0.403,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+geometric,1,True,moderate,94.082,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+frequency,1,True,high,1.516,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+bias_direction_pca,1,True,high,0.003,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+sis,1,True,high,5.095,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+demographic_parity,0,True,low,0.041,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+equalized_odds,0,True,low,0.038,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+intersectional,0,False,unknown,0.002,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+groupdro,0,False,unknown,0.008,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+gce,0,True,moderate,0.065,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+ssa,0,False,unknown,0.001,RAD-DINO,chexpert,Pleural Effusion,sex,730,7,intermediate
+hbac,1,True,high,3.979,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+probe,0,True,low,1.309,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+statistical,1,True,moderate,2.982,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+geometric,1,True,moderate,0.973,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+frequency,1,True,high,0.03,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+bias_direction_pca,1,True,high,0.003,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+sis,1,True,high,8.07,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+demographic_parity,0,True,low,2.759,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+equalized_odds,0,True,low,2.621,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+intersectional,0,False,unknown,0.002,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+groupdro,0,False,unknown,0.013,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+gce,0,True,moderate,4.709,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+ssa,0,False,unknown,0.002,RAD-DINO,chexpert,Pleural Effusion,race,730,6,intermediate
+hbac,1,True,high,7.516,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+probe,1,True,high,0.701,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+statistical,1,True,moderate,0.435,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+geometric,1,True,moderate,88.644,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+frequency,1,True,high,2.036,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+bias_direction_pca,1,True,high,0.014,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+sis,1,True,high,6.916,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+demographic_parity,0,True,low,0.072,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+equalized_odds,0,True,low,0.154,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+groupdro,0,False,unknown,0.02,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+gce,0,True,moderate,0.043,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+ssa,0,False,unknown,0.002,RAD-DINO,chexpert,Support Devices,sex,933,7,intermediate
+hbac,1,True,high,4.983,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+probe,0,True,low,0.059,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+statistical,1,True,moderate,2.765,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+geometric,1,True,moderate,0.833,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+frequency,1,True,high,0.048,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+bias_direction_pca,1,True,high,0.003,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+sis,1,True,high,6.867,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+demographic_parity,1,True,moderate,0.074,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+equalized_odds,0,True,low,0.165,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+groupdro,0,False,unknown,0.003,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+gce,0,True,moderate,0.159,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+ssa,0,False,unknown,0.001,RAD-DINO,chexpert,Support Devices,race,933,7,intermediate
+hbac,1,True,high,1.343,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+probe,1,True,high,0.024,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+statistical,1,True,moderate,0.261,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+geometric,1,True,moderate,1.946,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+frequency,1,True,high,0.022,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+bias_direction_pca,1,True,high,0.002,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+sis,1,True,high,1.57,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+demographic_parity,0,True,low,0.423,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+equalized_odds,0,True,low,0.02,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+intersectional,0,False,unknown,0.0,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+groupdro,0,False,unknown,0.011,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+gce,0,True,moderate,0.013,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+ssa,0,False,unknown,0.001,RAD-DINO,chexpert,Atelectasis,sex,266,7,intermediate
+hbac,1,True,high,4.131,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+probe,1,True,high,0.014,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+statistical,1,True,moderate,0.401,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+geometric,1,True,moderate,0.389,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+frequency,1,True,high,0.016,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+bias_direction_pca,1,True,high,0.002,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+sis,1,True,high,2.939,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+demographic_parity,0,True,low,0.021,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+equalized_odds,0,True,low,0.008,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+intersectional,0,False,unknown,0.0,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+groupdro,0,False,unknown,0.015,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+gce,0,True,moderate,0.023,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+ssa,0,False,unknown,0.001,RAD-DINO,chexpert,Edema,sex,366,7,intermediate
+hbac,1,True,high,4.057,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+probe,0,True,low,0.123,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+statistical,1,True,moderate,2.693,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+geometric,1,True,moderate,24.551,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+frequency,1,True,high,1.172,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+bias_direction_pca,1,True,high,0.003,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+sis,1,True,high,2.927,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+demographic_parity,0,True,low,0.041,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+equalized_odds,0,True,low,0.087,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+groupdro,0,False,unknown,0.006,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+gce,0,True,moderate,0.046,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+ssa,0,False,unknown,0.0,RAD-DINO,chexpert,Edema,race,366,6,intermediate
+hbac,1,True,high,2.517,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+probe,1,True,high,0.018,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+statistical,1,True,moderate,0.295,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+geometric,1,True,moderate,0.141,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+frequency,1,True,high,0.012,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+bias_direction_pca,1,True,high,0.001,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+sis,1,True,high,2.141,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+demographic_parity,0,True,low,0.017,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+equalized_odds,0,True,low,0.01,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+groupdro,0,False,unknown,0.015,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+gce,0,True,moderate,0.052,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+ssa,0,False,unknown,0.0,RAD-DINO,mimic,Lung Opacity,sex,305,7,intermediate
+hbac,1,True,high,1.629,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+probe,1,True,high,0.02,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+statistical,1,True,moderate,0.349,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+geometric,1,True,moderate,0.105,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+frequency,1,True,high,0.011,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+bias_direction_pca,1,True,high,0.001,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+sis,1,True,high,1.752,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+demographic_parity,0,True,low,0.009,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+equalized_odds,0,True,low,0.023,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+groupdro,0,False,unknown,0.008,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+gce,0,True,moderate,0.029,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+ssa,0,False,unknown,0.0,RAD-DINO,mimic,Pleural Effusion,sex,255,7,intermediate
+hbac,1,True,high,3.645,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+probe,1,True,high,0.016,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+statistical,1,True,moderate,0.367,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+geometric,1,True,moderate,2.934,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+frequency,1,True,high,0.01,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+bias_direction_pca,1,True,high,0.004,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+sis,1,True,high,2.479,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+demographic_parity,0,True,low,1.25,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+equalized_odds,0,True,low,1.642,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+groupdro,0,False,unknown,0.007,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+gce,0,True,moderate,1.477,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+ssa,0,False,unknown,0.001,RAD-DINO,mimic,Support Devices,sex,239,7,intermediate
+hbac,1,True,high,5.241,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+probe,1,True,high,0.817,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+statistical,1,True,moderate,0.407,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+geometric,1,True,moderate,27.434,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+frequency,1,True,high,1.2,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+bias_direction_pca,1,True,high,0.001,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+sis,1,True,high,3.441,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+demographic_parity,0,True,low,0.494,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+equalized_odds,0,True,low,0.085,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+intersectional,0,False,unknown,0.001,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+groupdro,0,False,unknown,0.021,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+gce,0,True,moderate,0.031,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+ssa,0,False,unknown,0.0,RAD-DINO,mimic,Atelectasis,sex,263,7,intermediate
+hbac,1,True,high,0.874,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+probe,1,True,high,0.024,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+statistical,1,True,moderate,0.272,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+geometric,1,True,moderate,0.13,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+frequency,1,True,high,0.191,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+bias_direction_pca,1,True,high,0.001,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+sis,1,True,high,1.147,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+demographic_parity,0,True,low,0.01,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+equalized_odds,0,True,low,0.026,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+intersectional,0,False,unknown,0.0,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+groupdro,0,False,unknown,0.156,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+gce,0,True,low,0.015,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+ssa,0,False,unknown,0.001,RAD-DINO,mimic,Edema,sex,140,7,intermediate
+hbac,1,True,high,5.153,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+probe,0,True,low,0.361,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+statistical,1,True,moderate,0.628,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+geometric,1,True,moderate,1.148,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+frequency,1,True,high,0.625,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+bias_direction_pca,1,True,high,0.004,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+sis,1,True,high,21.569,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+demographic_parity,0,True,low,18.807,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+equalized_odds,0,True,low,4.747,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+intersectional,0,False,unknown,0.001,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+groupdro,0,False,unknown,0.003,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+gce,0,True,moderate,0.018,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+ssa,0,False,unknown,0.001,MedSigLIP,chexpert,Lung Opacity,sex,827,6,intermediate
+hbac,1,True,high,4.128,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+probe,0,True,low,0.209,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+statistical,1,True,moderate,3.462,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+geometric,1,True,high,0.898,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+frequency,1,True,high,0.247,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+bias_direction_pca,1,True,high,0.004,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+sis,1,True,high,23.27,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+demographic_parity,0,True,low,16.372,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+equalized_odds,0,True,low,17.558,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+intersectional,0,False,unknown,0.002,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+groupdro,0,False,unknown,0.022,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+gce,0,True,moderate,1.038,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+ssa,0,False,unknown,0.002,MedSigLIP,chexpert,Lung Opacity,race,827,6,intermediate
+hbac,1,True,high,11.995,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+probe,0,True,low,0.326,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+statistical,1,True,moderate,0.389,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+geometric,1,True,moderate,2.571,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+frequency,1,True,high,0.393,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+bias_direction_pca,1,True,high,0.009,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+sis,1,True,high,6.872,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+demographic_parity,0,True,low,0.319,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+equalized_odds,0,True,low,0.281,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+intersectional,0,False,unknown,0.002,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+groupdro,0,False,unknown,0.023,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+gce,0,True,moderate,0.013,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+ssa,0,False,unknown,0.001,MedSigLIP,chexpert,Pleural Effusion,sex,730,6,intermediate
+hbac,1,True,high,12.284,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+probe,0,True,low,23.74,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+statistical,1,True,moderate,3.921,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+geometric,1,True,moderate,3.395,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+frequency,1,True,high,0.415,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+bias_direction_pca,1,True,high,0.003,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+sis,1,True,high,6.694,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+demographic_parity,0,True,low,0.417,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+equalized_odds,0,True,low,10.31,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+intersectional,0,False,unknown,0.001,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+groupdro,0,False,unknown,0.022,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+gce,0,True,moderate,0.871,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+ssa,0,False,unknown,0.002,MedSigLIP,chexpert,Pleural Effusion,race,730,6,intermediate
+hbac,1,True,moderate,14.105,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+probe,0,True,low,4.877,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+statistical,1,True,moderate,0.591,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+geometric,1,True,moderate,123.184,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+frequency,1,True,high,1.409,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+bias_direction_pca,1,True,high,0.008,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+sis,1,True,high,8.813,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+demographic_parity,0,True,low,0.334,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+equalized_odds,0,True,low,0.215,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+intersectional,0,False,unknown,0.001,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+groupdro,0,False,unknown,0.004,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+gce,0,True,high,0.916,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+ssa,0,False,unknown,0.002,MedSigLIP,chexpert,Support Devices,sex,933,6,intermediate
+hbac,1,True,moderate,15.567,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+probe,0,True,low,21.349,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+statistical,1,True,moderate,3.924,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+geometric,1,True,moderate,3.383,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+frequency,1,True,high,0.247,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+bias_direction_pca,1,True,high,0.004,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+sis,1,True,high,28.446,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+demographic_parity,1,True,moderate,21.144,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+equalized_odds,0,True,low,22.439,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+intersectional,0,False,unknown,0.002,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+groupdro,0,False,unknown,0.013,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+gce,0,True,high,1.078,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+ssa,0,False,unknown,0.002,MedSigLIP,chexpert,Support Devices,race,933,7,intermediate
+hbac,1,True,moderate,10.543,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+probe,0,True,low,4.075,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+statistical,1,True,moderate,0.527,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+geometric,1,True,moderate,41.929,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+frequency,1,True,high,8.264,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+bias_direction_pca,1,True,high,0.002,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+sis,1,True,high,17.154,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+demographic_parity,0,True,low,0.06,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+equalized_odds,0,True,low,0.069,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+intersectional,0,False,unknown,0.0,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+groupdro,0,False,unknown,0.001,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+gce,0,True,moderate,0.06,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+ssa,0,False,unknown,0.001,MedSigLIP,chexpert,Atelectasis,sex,266,6,intermediate
+hbac,1,True,high,4.031,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+probe,0,True,low,0.128,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+statistical,0,True,low,0.341,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+geometric,1,True,moderate,0.124,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+frequency,1,True,high,0.021,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+bias_direction_pca,1,True,high,0.003,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+sis,1,True,high,4.062,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+demographic_parity,0,True,low,0.023,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+equalized_odds,0,True,low,0.029,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+intersectional,0,False,unknown,0.001,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+groupdro,0,False,unknown,0.008,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+gce,0,True,high,0.004,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+ssa,0,False,unknown,0.001,MedSigLIP,chexpert,Edema,sex,366,5,intermediate
+hbac,1,True,high,4.14,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+probe,0,True,low,0.535,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+statistical,0,True,low,4.037,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+geometric,1,True,high,21.664,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+frequency,1,True,high,0.307,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+bias_direction_pca,1,True,high,0.004,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+sis,1,True,high,4.659,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+demographic_parity,0,True,low,0.034,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+equalized_odds,0,True,low,0.038,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+intersectional,0,False,unknown,0.001,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+groupdro,0,False,unknown,0.012,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+gce,0,True,high,0.035,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+ssa,0,False,unknown,0.001,MedSigLIP,chexpert,Edema,race,366,5,intermediate
+hbac,1,True,moderate,2.239,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+probe,1,True,high,0.017,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+statistical,1,True,moderate,0.575,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+geometric,1,True,moderate,1.988,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+frequency,1,True,high,0.027,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+bias_direction_pca,1,True,high,0.002,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+sis,1,True,high,4.884,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+demographic_parity,0,True,low,0.128,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+equalized_odds,1,True,high,0.217,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+intersectional,0,False,unknown,0.001,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+groupdro,0,False,unknown,0.003,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+gce,0,True,moderate,2.589,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+ssa,0,False,unknown,0.002,MedSigLIP,mimic,Lung Opacity,sex,305,8,intermediate
+hbac,0,True,low,16.956,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+probe,1,True,high,1.79,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+statistical,1,True,moderate,0.475,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+geometric,1,True,moderate,49.024,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+frequency,1,True,high,3.898,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+bias_direction_pca,1,True,high,0.004,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+sis,1,True,high,5.671,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+demographic_parity,0,True,low,0.032,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+equalized_odds,1,True,moderate,0.042,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+intersectional,0,False,unknown,0.007,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+groupdro,0,False,unknown,0.013,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+gce,0,True,moderate,0.21,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+ssa,0,False,unknown,0.001,MedSigLIP,mimic,Pleural Effusion,sex,255,7,intermediate
+hbac,0,True,low,1.101,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+probe,1,True,high,0.076,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+statistical,1,True,moderate,0.346,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+geometric,1,True,moderate,1.506,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+frequency,1,True,high,0.019,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+bias_direction_pca,1,True,high,0.002,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+sis,1,True,high,1.976,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+demographic_parity,0,True,low,0.017,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+equalized_odds,0,True,low,0.025,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+intersectional,0,False,unknown,0.001,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+groupdro,0,False,unknown,0.014,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+gce,0,True,moderate,0.017,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+ssa,0,False,unknown,0.0,MedSigLIP,mimic,Support Devices,sex,239,6,intermediate
+hbac,1,True,high,2.027,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+probe,1,True,high,0.014,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+statistical,1,True,moderate,0.33,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+geometric,1,True,moderate,0.326,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+frequency,1,True,high,0.02,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+bias_direction_pca,1,True,high,0.005,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+sis,1,True,high,2.902,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+demographic_parity,0,True,low,0.018,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+equalized_odds,1,True,high,0.019,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+intersectional,0,False,unknown,0.0,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+groupdro,0,False,unknown,0.006,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+gce,0,True,moderate,0.02,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+ssa,0,False,unknown,0.001,MedSigLIP,mimic,Atelectasis,sex,263,8,intermediate
+hbac,1,True,moderate,1.795,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+probe,1,True,high,0.012,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+statistical,1,True,moderate,0.496,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+geometric,1,True,moderate,0.493,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+frequency,1,True,high,0.021,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+bias_direction_pca,1,True,high,0.001,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+sis,1,True,high,1.641,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+demographic_parity,0,True,low,0.019,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+equalized_odds,1,True,high,0.014,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+intersectional,0,False,unknown,0.0,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+groupdro,0,False,unknown,0.015,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+gce,0,True,low,0.016,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+ssa,0,False,unknown,0.0,MedSigLIP,mimic,Edema,sex,140,8,intermediate
+hbac,1,True,high,13.362,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+probe,1,True,moderate,4.412,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+statistical,1,True,moderate,0.433,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+geometric,1,True,moderate,97.473,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+frequency,1,True,high,0.952,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+bias_direction_pca,1,True,high,0.003,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+sis,1,True,high,5.276,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+demographic_parity,0,True,low,0.187,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+equalized_odds,0,True,low,0.159,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+groupdro,0,False,unknown,0.08,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+gce,0,True,moderate,0.009,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Lung Opacity,sex,827,7,intermediate
+hbac,1,True,high,9.945,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+probe,0,True,low,11.749,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+statistical,1,True,moderate,2.966,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+geometric,1,True,moderate,54.719,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+frequency,1,True,high,0.79,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+bias_direction_pca,1,True,high,0.003,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+sis,1,True,high,6.527,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+demographic_parity,0,True,low,1.175,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+equalized_odds,0,True,low,1.057,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+groupdro,0,False,unknown,0.025,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+gce,0,True,moderate,0.008,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Lung Opacity,race,827,6,intermediate
+hbac,1,True,high,12.303,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+probe,1,True,moderate,4.654,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+statistical,1,True,moderate,0.387,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+geometric,1,True,moderate,114.344,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+frequency,1,True,high,11.24,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+bias_direction_pca,1,True,high,0.008,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+sis,1,True,high,18.259,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+demographic_parity,0,True,low,0.105,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+equalized_odds,0,True,low,0.152,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+groupdro,0,False,unknown,0.016,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+gce,0,True,moderate,0.007,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Pleural Effusion,sex,730,7,intermediate
+hbac,1,True,high,5.89,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+probe,0,True,low,0.108,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+statistical,1,True,moderate,2.483,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+geometric,1,True,moderate,0.475,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+frequency,1,True,high,0.096,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+bias_direction_pca,1,True,high,0.003,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+sis,1,True,high,10.284,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+demographic_parity,0,True,low,6.441,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+equalized_odds,0,True,low,9.335,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+groupdro,0,False,unknown,0.008,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+gce,0,True,moderate,0.271,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Pleural Effusion,race,730,6,intermediate
+hbac,1,True,moderate,12.741,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+probe,1,True,moderate,2.629,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+statistical,1,True,moderate,0.475,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+geometric,1,True,high,75.017,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+frequency,1,True,high,3.387,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+bias_direction_pca,1,True,high,0.005,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+sis,1,True,high,5.457,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+demographic_parity,0,True,low,0.161,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+equalized_odds,0,True,low,0.634,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+groupdro,0,False,unknown,0.013,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+gce,0,True,moderate,0.004,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Support Devices,sex,933,7,intermediate
+hbac,1,True,moderate,17.856,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+probe,0,True,low,27.832,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+statistical,1,True,moderate,3.105,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+geometric,1,True,high,26.287,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+frequency,1,True,high,2.201,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+bias_direction_pca,1,True,high,0.003,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+sis,1,True,high,5.181,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+demographic_parity,1,True,moderate,3.563,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+equalized_odds,1,True,moderate,7.605,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+groupdro,0,False,unknown,0.018,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+gce,0,True,moderate,0.129,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Support Devices,race,933,8,intermediate
+hbac,1,True,moderate,3.726,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+probe,1,True,moderate,1.1,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+statistical,1,True,moderate,0.391,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+geometric,1,True,moderate,18.44,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+frequency,1,True,high,4.0,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+bias_direction_pca,1,True,high,0.002,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+sis,1,True,high,6.459,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+demographic_parity,0,True,low,3.115,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+equalized_odds,0,True,low,4.402,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+groupdro,0,False,unknown,0.017,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+gce,0,True,moderate,0.109,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Atelectasis,sex,266,7,intermediate
+hbac,1,True,high,3.635,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+probe,1,True,moderate,1.369,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+statistical,1,True,moderate,0.372,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+geometric,1,True,moderate,23.211,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+frequency,1,True,high,0.289,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+bias_direction_pca,1,True,high,0.002,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+sis,1,True,high,4.263,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+demographic_parity,0,True,low,0.453,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+equalized_odds,0,True,low,0.205,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+groupdro,0,False,unknown,0.009,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+gce,0,True,moderate,0.016,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Edema,sex,366,7,intermediate
+hbac,1,True,high,2.976,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+probe,0,True,low,0.107,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+statistical,1,True,moderate,2.726,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+geometric,1,True,moderate,8.929,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+frequency,1,True,high,0.175,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+bias_direction_pca,1,True,high,0.003,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+sis,1,True,high,3.849,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+demographic_parity,0,True,low,2.407,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+equalized_odds,0,True,low,2.604,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+intersectional,0,False,unknown,0.002,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+groupdro,0,False,unknown,0.012,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+gce,0,True,moderate,0.082,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,chexpert,Edema,race,366,6,intermediate
+hbac,1,True,moderate,3.791,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+probe,1,True,moderate,1.502,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+statistical,1,True,moderate,0.343,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+geometric,1,True,moderate,4.99,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+frequency,1,True,high,0.402,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+bias_direction_pca,1,True,high,0.002,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+sis,1,True,high,3.318,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+demographic_parity,0,True,low,0.037,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+equalized_odds,0,True,low,1.301,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+groupdro,0,False,unknown,0.022,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+gce,0,True,moderate,0.11,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+ssa,0,False,unknown,0.004,ViT-B/16,mimic,Lung Opacity,sex,305,7,intermediate
+hbac,0,True,low,3.041,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+probe,1,True,moderate,0.016,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+statistical,1,True,moderate,0.405,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+geometric,1,True,moderate,13.892,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+frequency,1,True,high,1.372,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+bias_direction_pca,1,True,high,0.003,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+sis,1,True,high,2.605,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+demographic_parity,0,True,low,0.036,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+equalized_odds,0,True,low,0.041,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+groupdro,0,False,unknown,0.015,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+gce,0,True,moderate,0.007,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+ssa,0,False,unknown,0.0,ViT-B/16,mimic,Pleural Effusion,sex,255,6,intermediate
+hbac,1,True,moderate,1.316,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+probe,1,True,moderate,0.017,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+statistical,1,True,moderate,0.226,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+geometric,1,True,moderate,0.066,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+frequency,1,True,high,0.042,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+bias_direction_pca,1,True,high,0.003,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+sis,1,True,high,1.364,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+demographic_parity,0,True,low,0.437,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+equalized_odds,0,True,low,0.052,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+groupdro,0,False,unknown,0.001,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+gce,0,True,moderate,0.007,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+ssa,0,False,unknown,0.001,ViT-B/16,mimic,Support Devices,sex,239,7,intermediate
+hbac,1,True,high,2.807,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+probe,1,True,moderate,1.053,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+statistical,1,True,moderate,0.363,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+geometric,1,True,moderate,12.254,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+frequency,1,True,high,0.096,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+bias_direction_pca,1,True,high,0.001,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+sis,1,True,high,2.082,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+demographic_parity,0,True,low,0.079,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+equalized_odds,0,True,low,0.329,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+intersectional,0,False,unknown,0.001,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+groupdro,0,False,unknown,0.001,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+gce,0,True,high,0.002,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+ssa,0,False,unknown,0.003,ViT-B/16,mimic,Atelectasis,sex,263,7,intermediate
+hbac,1,True,high,1.629,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+probe,1,True,high,0.346,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+statistical,1,True,moderate,0.359,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+geometric,1,True,moderate,0.945,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+frequency,1,True,high,0.57,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+bias_direction_pca,1,True,high,0.001,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+sis,1,True,high,1.111,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+demographic_parity,0,True,low,0.029,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+equalized_odds,0,True,low,0.049,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+intersectional,0,False,unknown,0.0,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+groupdro,0,False,unknown,0.011,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+gce,0,True,moderate,0.001,ViT-B/16,mimic,Edema,sex,140,7,intermediate
+ssa,0,False,unknown,0.0,ViT-B/16,mimic,Edema,sex,140,7,intermediate

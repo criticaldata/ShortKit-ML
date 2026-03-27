@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual Environment
+.venv/
+.venv-docs/
+venv/
+ENV/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+.jupyter/
+.local/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output files (keep structure, ignore generated reports)
+output/*/
+!output/.gitkeep
+!output/paper_tables/
+!output/paper_benchmark/
+
+# Data files — ALL data is hosted on HuggingFace (MITCriticalData/ShortKit-ML-data)
+# Nothing in data/ should ever be committed except README, .gitignore, .gitattributes
+data/**/*.npy
+data/**/*.pkl
+data/**/*.csv
+data/**/*.xlsx
+data/**/*.h5
+data/**/*.hdf5
+data/celeba/
+data/celeba_real/
+data/chexpert/
+data/chexpert_multibackbone/
+data/mimic_cxr/
+data/train.csv
+data/valid.csv
+data/chexpert_manifest.csv
+
+# output/ — keep paper tables/figures/benchmark results, ignore generated reports and embeddings
+output/paper_benchmark/chexpert_embeddings/
+output/paper_benchmark/chexpert_results/
+output/comparison_*/
+output/**/*.npy
+output/**/*.pkl
+
+# Paper drafts and roadmap (kept locally, not in repo)
+docs-temp/
+
+# MkDocs build output
+site/
+
+# Temporary files
+*.log
+*.tmp
+temp/
+tmp/

@@ -1,0 +1,39 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{{\color{blue}CheXpert multi-backbone shortcut detection results. Seven backbone architectures on CheXpert validation set. $\checkmark$ = detected, $\cdot$ = not detected.}}
+\label{tab:chexpert_results}
+\begin{tabular}{llccccccccccccc|c}
+\hline
+\textbf{Backbone} & \textbf{Attribute} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Freq.} & \textbf{BiasDir} & \textbf{SIS} & \textbf{DP} & \textbf{EO} & \textbf{Inter.} & \textbf{groupdro} & \textbf{gce} & \textbf{ssa} & \textbf{Agree.} \\
+\hline
+\multirow{3}{*}{ResNet-50} & Sex & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & Age Bin & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & race & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+\hline
+\multirow{3}{*}{DenseNet-121} & Sex & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & Age Bin & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & race & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+\hline
+\multirow{3}{*}{ViT-B/16} & Sex & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & Age Bin & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & race & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+\hline
+\multirow{3}{*}{ViT-B/32} & Sex & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & Age Bin & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & race & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+\hline
+\multirow{3}{*}{DINOv2} & Sex & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & Age Bin & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & race & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+\hline
+\multirow{3}{*}{RAD-DINO} & Sex & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & Age Bin & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+ & race & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+\hline
+\multirow{3}{*}{MedSigLIP} & Sex & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+ & Age Bin & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+ & race & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+\hline
+\end{tabular}
+\end{table*}

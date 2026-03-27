@@ -1,0 +1,28 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\caption{Statistical robustness of clinical shortcut detection. Probe F1 with 95\% bootstrap CI (5-fold CV, 2{,}000 resamples). Cohen's $d$: mean per-dimension effect size. FDR-BH: significant dimensions after Benjamini--Hochberg correction ($\alpha{=}0.05$). Seed stability: mean $\pm$ std of probe F1 across 5 random seeds. Sex detection is robust ($F1 > 0.85$) across all MIMIC-CXR backbones; CheXpert sex detection varies by backbone. Race detection shows lower probe F1 but consistent geometric/statistical signals.}
+\label{tab:robustness}
+\begin{tabular}{ll l r r c c c c}
+\hline
+\textbf{Dataset} & \textbf{Backbone} & \textbf{Attr.} & $\mathbf{N}$ & \textbf{Dim} & \textbf{Probe F1 (95\% CI)} & \textbf{Cohen's $d$} & \textbf{FDR-BH Sig.} & \textbf{Seed Stability} \\
+\hline
+CheXpert & ResNet-50 & Sex & 2,000 & 2048 & 0.810 [0.797, 0.823] & 0.087 & 1/2048 & 0.811 $\pm$ 0.002 \\
+CheXpert & ResNet-50 & Race & 2,000 & 2048 & 0.403 [0.381, 0.425] & $\cdot$ & 10/2048 & 0.404 $\pm$ 0.002 \\
+\hline
+CheXpert & DenseNet-121 & Sex & 2,000 & 1024 & 0.847 [0.829, 0.864] & 0.136 & 1/1024 & 0.845 $\pm$ 0.005 \\
+CheXpert & DenseNet-121 & Race & 2,000 & 1024 & 0.480 [0.458, 0.503] & $\cdot$ & 10/1024 & 0.475 $\pm$ 0.006 \\
+\hline
+CheXpert & ViT-B/16 & Sex & 2,000 & 768 & 0.819 [0.809, 0.831] & 0.107 & 1/768 & 0.823 $\pm$ 0.004 \\
+CheXpert & ViT-B/16 & Race & 2,000 & 768 & 0.455 [0.443, 0.467] & $\cdot$ & 10/768 & 0.445 $\pm$ 0.011 \\
+\hline
+MIMIC-CXR & RAD-DINO & Sex & 1,491 & 768 & 0.990 [0.986, 0.994] & 0.146 & 1/768 & 0.991 $\pm$ 0.001 \\
+MIMIC-CXR & RAD-DINO & Race & 1,491 & 768 & 0.411 [0.386, 0.435] & $\cdot$ & 10/768 & 0.412 $\pm$ 0.014 \\
+MIMIC-CXR & ViT-16 & Sex & 1,491 & 768 & 0.867 [0.861, 0.873] & 0.137 & 1/768 & 0.866 $\pm$ 0.004 \\
+MIMIC-CXR & ViT-16 & Race & 1,491 & 768 & 0.390 [0.369, 0.408] & $\cdot$ & 10/768 & 0.354 $\pm$ 0.025 \\
+MIMIC-CXR & MedSigLIP & Sex & 1,491 & 1152 & 0.966 [0.958, 0.972] & 0.302 & 1/1152 & 0.966 $\pm$ 0.001 \\
+MIMIC-CXR & MedSigLIP & Race & 1,491 & 1152 & 0.368 [0.333, 0.399] & $\cdot$ & 10/1152 & 0.373 $\pm$ 0.008 \\
+\hline
+\end{tabular}
+\end{table*}

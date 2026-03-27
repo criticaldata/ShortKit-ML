@@ -1,0 +1,51 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{{\color{blue}Per-diagnosis shortcut detection on CheXpert (attribute = sex). Top 5 diagnoses by prevalence. Each cell: $\checkmark$ = method flagged shortcut, $\cdot$ = not flagged. Subsets are filtered to patients with the given diagnosis.}}
+\label{tab:per_diagnosis}
+\begin{tabular}{llrccccccccccccc|c}
+\hline
+\textbf{Diagnosis} & \textbf{Backbone} & \textbf{$n$} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Freq.} & \textbf{BiasDir} & \textbf{SIS} & \textbf{DP} & \textbf{EO} & \textbf{Inter.} & \textbf{groupdro} & \textbf{gce} & \textbf{ssa} & \textbf{Agree.} \\
+\hline
+\multirow{7}{*}{Support Devices} & ResNet-50 & 933 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & DenseNet-121 & 933 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & ViT-B/16 & 933 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & ViT-B/32 & 933 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & DINOv2 & 933 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & RAD-DINO & 933 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & MedSigLIP & 933 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+\hline
+\multirow{7}{*}{Lung Opacity} & ResNet-50 & 827 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & DenseNet-121 & 827 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 8/13 \\
+ & ViT-B/16 & 827 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & ViT-B/32 & 827 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & DINOv2 & 827 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & RAD-DINO & 827 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & MedSigLIP & 827 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+\hline
+\multirow{7}{*}{Pleural Effusion} & ResNet-50 & 730 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & DenseNet-121 & 730 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & ViT-B/16 & 730 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & ViT-B/32 & 730 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & DINOv2 & 730 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & RAD-DINO & 730 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & MedSigLIP & 730 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+\hline
+\multirow{7}{*}{Edema} & ResNet-50 & 366 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+ & DenseNet-121 & 366 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+ & ViT-B/16 & 366 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+ & ViT-B/32 & 366 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+ & DINOv2 & 366 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+ & RAD-DINO & 366 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 5/13 \\
+ & MedSigLIP & 366 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & 4/13 \\
+\hline
+\multirow{7}{*}{Atelectasis} & ResNet-50 & 266 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+ & DenseNet-121 & 266 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & ViT-B/16 & 266 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & ViT-B/32 & 266 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & DINOv2 & 266 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & RAD-DINO & 266 & \checkmark & \checkmark & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 7/13 \\
+ & MedSigLIP & 266 & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & \checkmark & \checkmark & \checkmark & \checkmark & $\cdot$ & \checkmark & $\cdot$ & $\cdot$ & $\cdot$ & 6/13 \\
+\hline
+\end{tabular}
+\end{table*}
