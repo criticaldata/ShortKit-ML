@@ -1,0 +1,5 @@
+cluster_id,size,purity,dominant_label
+0,220,1.0,1
+1,185,1.0,1
+2,184,1.0,0
+3,211,1.0,0

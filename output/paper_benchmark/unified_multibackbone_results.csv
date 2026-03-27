@@ -1,0 +1,10 @@
+Dataset,Backbone,Attribute,N,Dim,HBAC,Probe,Stat.,Geom.,Agree
+CheXpert,ResNet-50,Sex,2000,2048,$\checkmark$,$\checkmark$,$\checkmark$,$\checkmark$,4/4
+CheXpert,DenseNet-121,Sex,2000,1024,$\checkmark$,$\checkmark$,$\checkmark$,$\checkmark$,4/4
+CheXpert,ViT-B/16,Sex,2000,768,$\checkmark$,$\checkmark$,$\checkmark$,$\checkmark$,4/4
+MIMIC-CXR,RAD-DINO,Sex,1491,768,$\checkmark$,$\checkmark$,$\checkmark$,$\checkmark$,4/4
+MIMIC-CXR,ViT-16,Sex,1491,768,$\checkmark$,$\checkmark$,$\checkmark$,$\checkmark$,4/4
+MIMIC-CXR,MedSigLIP,Sex,1491,1152,$\checkmark$,$\checkmark$,$\checkmark$,$\checkmark$,4/4
+MIMIC-CXR,RAD-DINO,Race,1491,768,$\checkmark$,$\cdot$,$\checkmark$,$\checkmark$,3/4
+MIMIC-CXR,ViT-16,Race,1491,768,$\checkmark$,$\cdot$,$\checkmark$,$\checkmark$,3/4
+MIMIC-CXR,MedSigLIP,Race,1491,1152,$\checkmark$,$\cdot$,$\checkmark$,$\checkmark$,3/4

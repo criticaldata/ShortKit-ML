@@ -1,0 +1,14 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{CelebA validation: detection of known shortcut pairs. Each row represents a task attribute with a known spurious correlation to a sensitive attribute (gender). All four detection methods correctly identify both known shortcuts (Blond\_Hair and Heavy\_Makeup vs.\ Male), achieving 4/4 convergence and confirming the framework's sensitivity to strong real-world shortcuts.}
+\label{tab:celeba}
+\begin{tabular}{llccccc}
+\hline
+\textbf{Task} & \textbf{Sensitive} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Conv.} \\
+\hline
+Blond\_Hair & Male & \cmark & \cmark & \cmark & \cmark & 4/4 \\
+Heavy\_Makeup & Male & \cmark & \cmark & \cmark & \cmark & 4/4 \\
+\hline
+\end{tabular}
+\end{table}

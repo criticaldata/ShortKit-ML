@@ -1,0 +1,15 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{CheXpert shortcut detection results (medclip backbone, $n{=}2000$, 512-dim). Each cell indicates whether the method flagged a shortcut for the given sensitive attribute. The convergence column shows the number of agreeing methods out of four. Race and age show intermediate confidence (2/4), while sex shows low agreement (1/4), suggesting a possible false alarm.}
+\label{tab:chexpert_results}
+\begin{tabular}{lcccc|c}
+\hline
+\textbf{Attribute} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Agreement} \\
+\hline
+Age Bin & \checkmark & -- & -- & \checkmark & 2/4 \\
+Race & \checkmark & -- & -- & \checkmark & 2/4 \\
+Sex & \checkmark & -- & -- & -- & 1/4 \\
+\hline
+\end{tabular}
+\end{table}

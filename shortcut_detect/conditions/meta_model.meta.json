@@ -1,0 +1,43 @@
+{
+  "feature_names": [
+    "frequency_n_indicators",
+    "frequency_risk_value",
+    "frequency_success",
+    "gce_n_indicators",
+    "gce_risk_value",
+    "gce_success",
+    "geometric_max_effect",
+    "geometric_mean_effect",
+    "geometric_n_indicators",
+    "geometric_risk_value",
+    "geometric_success",
+    "hbac_confidence",
+    "hbac_n_indicators",
+    "hbac_risk_value",
+    "hbac_shortcut_exists",
+    "hbac_success",
+    "probe_metric_value",
+    "probe_n_indicators",
+    "probe_risk_value",
+    "probe_success",
+    "probe_threshold",
+    "statistical_n_indicators",
+    "statistical_risk_value",
+    "statistical_sig_ratio",
+    "statistical_success"
+  ],
+  "classes": [
+    0,
+    1
+  ],
+  "high_threshold": 0.9782,
+  "moderate_threshold": 0.2015,
+  "methods_used": [
+    "probe",
+    "statistical",
+    "hbac",
+    "geometric",
+    "frequency",
+    "gce"
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "benchmark_name": "synthetic_13methods_full",
+  "generated_at_utc": "2026-03-18T09:13:03.484050+00:00",
+  "git_sha": "635aa78b51e8b18783c912f45974e73f4e5f4ec0",
+  "python": "3.10.16 | packaged by conda-forge | (main, Apr  8 2025, 20:58:22) [Clang 18.1.8 ]",
+  "platform": "macOS-26.3-arm64-arm-64bit",
+  "config": {
+    "benchmark_name": "synthetic_13methods_full",
+    "profile": "full",
+    "random_seed": 42,
+    "methods": [
+      "hbac",
+      "probe",
+      "statistical",
+      "geometric",
+      "frequency",
+      "bias_direction_pca",
+      "sis",
+      "demographic_parity",
+      "equalized_odds",
+      "groupdro",
+      "gce",
+      "ssa"
+    ],
+    "synthetic": {
+      "effect_sizes": [
+        0.2,
+        0.5,
+        0.8,
+        1.2,
+        2.0
+      ],
+      "sample_sizes": [
+        200,
+        1000,
+        5000
+      ],
+      "imbalance_ratios": [
+        0.5,
+        0.9
+      ],
+      "embedding_dims": [
+        128,
+        256,
+        512
+      ],
+      "shortcut_dims": 5,
+      "seeds": 10,
+      "alpha": 0.05,
+      "corrections": [
+        "bonferroni",
+        "fdr_bh"
+      ]
+    },
+    "chexpert": {
+      "enabled": false,
+      "manifest_path": null,
+      "embeddings_dir": "output/paper_benchmark/chexpert_embeddings",
+      "backbones": [
+        "resnet50",
+        "densenet121",
+        "vit_b_16"
+      ],
+      "attributes": [
+        "race",
+        "sex",
+        "age_bin"
+      ],
+      "race_focus": [
+        "ASIAN",
+        "BLACK",
+        "WHITE"
+      ],
+      "age_bins": [
+        40,
+        60,
+        80
+      ]
+    },
+    "fairness_baselines": {
+      "enable_fairlearn": true,
+      "enable_aif360": true
+    },
+    "output_dir": "output/paper_benchmark/synthetic_13methods_full"
+  }
+}

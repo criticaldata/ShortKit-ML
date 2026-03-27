@@ -1,0 +1,168 @@
+site_name: ShortKit-ML
+site_description: Detect shortcuts and biases in machine learning embedding spaces
+site_author: Sebastian Cajas, Aldo Marzullo, Sahil Kapadia, Qingpeng Kong, Filipe Santos, Alessandro Quarta, Leo Celi
+site_url: https://criticaldata.github.io/ShortKit-ML/
+
+repo_name: criticaldata/ShortKit-ML
+repo_url: https://github.com/criticaldata/ShortKit-ML
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_category_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            merge_init_into_class: true
+            separate_signature: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+extra_css:
+  - assets/color-contrast.css
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - Interactive Dashboard: getting-started/dashboard.md
+  - Detection Methods:
+      - Overview: methods/overview.md
+      - HBAC Clustering: methods/hbac.md
+      - Probe-based: methods/probe.md
+      - Statistical Testing: methods/statistical.md
+      - Geometric Analysis: methods/geometric.md
+      - Equalized Odds: methods/equalized-odds.md
+      - Demographic Parity: methods/demographic-parity.md
+      - Intersectional Analysis: methods/intersectional-analysis.md
+      - SIS (Sufficient Input Subsets): methods/sis.md
+      - GroupDRO: methods/groupdro.md
+      - GradCAM: methods/gradcam.md
+      - SpRAy: methods/spray.md
+      - CAV: methods/cav.md
+      - Causal Effect: methods/causal-effect.md
+      - VAE: methods/vae.md
+      - Frequency: methods/frequency.md
+      - GCE: methods/gce.md
+      - Generative CVAE: methods/generative-cvae.md
+      - Bias Direction PCA: methods/bias-direction-pca.md
+      - Early Epoch Clustering: methods/early-epoch-clustering.md
+      - SSA: methods/ssa.md
+      - Shortcut Masking (M01): methods/shortcut-masking.md
+      - Background Randomization (M02): methods/background-randomization.md
+      - Adversarial Debiasing (M04): methods/adversarial-debiasing.md
+      - Explanation Regularization (M05): methods/explanation-regularization.md
+      - Last Layer Retraining (M06): methods/last-layer-retraining.md
+      - Contrastive Debiasing (M07): methods/contrastive-debiasing.md
+  - API Reference:
+      - Detector Base: api/detector-base.md
+      - ShortcutDetector: api/shortcut-detector.md
+      - HBAC Detector: api/hbac.md
+      - Probes: api/probes.md
+      - Statistical Tests: api/statistical.md
+      - Geometric Analyzer: api/geometric.md
+      - Equalized Odds: api/equalized-odds.md
+      - Demographic Parity: api/demographic-parity.md
+      - Intersectional: api/intersectional.md
+      - SIS: api/sis.md
+      - GroupDRO: api/groupdro.md
+      - GradCAM: api/gradcam.md
+      - SpRAy: api/spray.md
+      - CAV: api/cav.md
+      - Causal Effect: api/causal-effect.md
+      - VAE: api/vae.md
+      - Frequency: api/frequency.md
+      - GCE: api/gce.md
+      - Generative CVAE: api/generative-cvae.md
+      - Bias Direction PCA: api/bias-direction-pca.md
+      - Early Epoch Clustering: api/early-epoch-clustering.md
+      - SSA: api/ssa.md
+      - Shortcut Masking (M01): api/shortcut-masking.md
+      - Background Randomization (M02): api/background-randomization.md
+      - Adversarial Debiasing (M04): api/adversarial-debiasing.md
+      - Explanation Regularization (M05): api/explanation-regularization.md
+      - Last Layer Retraining (M06): api/last-layer-retraining.md
+      - Contrastive Debiasing (M07): api/contrastive-debiasing.md
+      - Embedding Sources: api/embedding-sources.md
+      - Reporting: api/reporting.md
+  - Examples:
+      - Basic Usage: examples/basic.md
+      - Real Data (CheXpert): examples/real-data.md
+      - Advanced Analysis: examples/advanced.md
+  - Contributing: contributing.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/criticaldata/ShortKit-ML
+  version:
+    provider: mike
+
+copyright: Copyright &copy; 2026 ShortKit-ML Team

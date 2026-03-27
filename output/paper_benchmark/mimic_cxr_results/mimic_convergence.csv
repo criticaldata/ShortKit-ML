@@ -1,0 +1,13 @@
+backbone,attribute,n_samples,n_groups,n_flagged_methods,n_total_methods,confidence_level
+rad_dino,race,1273,3,5,13,intermediate
+rad_dino,sex,1491,2,6,13,intermediate
+rad_dino,age_bin,1491,4,5,13,intermediate
+vit16_cls,race,1273,3,5,13,intermediate
+vit16_cls,sex,1491,2,6,13,intermediate
+vit16_cls,age_bin,1491,4,5,13,intermediate
+vit32_cls,race,1273,3,5,13,intermediate
+vit32_cls,sex,1491,2,5,13,intermediate
+vit32_cls,age_bin,1491,4,5,13,intermediate
+medsiglip,race,1273,3,5,13,intermediate
+medsiglip,sex,1491,2,6,13,intermediate
+medsiglip,age_bin,1491,4,5,13,intermediate

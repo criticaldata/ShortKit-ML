@@ -1,0 +1,14 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{CelebA validation: detection of known demographic shortcuts (synthetic data with ground-truth correlations). Blond hair and heavy makeup are strongly correlated with gender. All four methods detect both shortcuts, confirming the framework's applicability to non-clinical datasets with known ground-truth shortcuts.}
+\label{tab:celeba_results}
+\begin{tabular}{lcccc|c}
+\hline
+\textbf{Shortcut Pair} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Agree.} \\
+\hline
+Blond_Hair $\leftrightarrow$ Male & \checkmark & \checkmark & \checkmark & \checkmark & 4/4 \\
+Heavy_Makeup $\leftrightarrow$ Male & \checkmark & \checkmark & \checkmark & \checkmark & 4/4 \\
+\hline
+\end{tabular}
+\end{table}

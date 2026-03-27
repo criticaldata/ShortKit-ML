@@ -1,0 +1,15 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{CheXpert shortcut detection results (MedCLIP backbone). Cells show whether each method flagged a shortcut for the given sensitive attribute (\cmark\ = detected, \xmark\ = not detected). The convergence column indicates the confidence level based on multi-method agreement. Race and age show intermediate confidence (2/4 methods agree), while sex shows only 1/4 agreement.}
+\label{tab:chexpert}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Attribute} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Convergence} \\
+\hline
+Race & \cmark & \xmark & \xmark & \cmark & 2/4 \\
+Sex & \cmark & \xmark & \xmark & \xmark & 1/4 \\
+Age & \cmark & \xmark & \xmark & \cmark & 2/4 \\
+\hline
+\end{tabular}
+\end{table}

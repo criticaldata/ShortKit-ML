@@ -1,0 +1,9 @@
+seed,n_samples,embedding_dim,correction,alpha,any_significant,n_significant,false_discovery_rate_est
+640195,200,128,bonferroni,0.05,0,0,0.0
+640195,200,128,fdr_bh,0.05,0,0,0.0
+722053,200,128,bonferroni,0.05,0,0,0.0
+722053,200,128,fdr_bh,0.05,0,0,0.0
+640195,200,128,bonferroni,0.05,0,0,0.0
+640195,200,128,fdr_bh,0.05,0,0,0.0
+722053,200,128,bonferroni,0.05,0,0,0.0
+722053,200,128,fdr_bh,0.05,0,0,0.0

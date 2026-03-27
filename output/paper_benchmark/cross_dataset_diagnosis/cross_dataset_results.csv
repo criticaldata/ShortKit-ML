@@ -1,0 +1,196 @@
+method,flagged,success,error,elapsed_s,dataset,backbone,diagnosis,attribute,n_samples,n_groups,convergence
+hbac,1,True,,2.727,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+probe,1,True,,0.054,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+statistical,0,True,,1.091,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+geometric,0,True,,0.789,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+frequency,1,True,,0.169,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+bias_direction_pca,1,True,,0.008,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+sis,1,True,,11.231,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+demographic_parity,0,True,,0.483,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+equalized_odds,0,True,,0.364,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+intersectional,0,False,"Need at least 2 demographic attributes in extra_labels (e.g., {'race': ..., 'gender': ...}). Reserved keys 'spurious', 'early_epoch_reps' are excluded.",0.002,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+groupdro,0,False,,0.116,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+gce,0,True,,0.157,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.01,CheXpert,resnet50,Lung Opacity,sex,827,2,intermediate
+hbac,1,True,,0.95,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+probe,1,True,,0.007,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+statistical,0,True,,4.306,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+geometric,0,True,,13.985,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+frequency,1,True,,0.006,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+bias_direction_pca,1,True,,0.004,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+sis,1,True,,3.178,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+demographic_parity,0,True,,4.76,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+equalized_odds,0,True,,3.477,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+intersectional,1,True,,1.089,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+groupdro,0,False,,0.082,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+gce,0,True,,2.263,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.025,MIMIC-CXR,rad_dino,Lung Opacity,sex,305,2,intermediate
+hbac,1,True,,4.773,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+probe,0,True,,2.371,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+statistical,0,True,,4.83,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+geometric,0,True,,0.244,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+frequency,1,True,,0.006,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+bias_direction_pca,1,True,,0.003,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+sis,1,True,,1.219,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+demographic_parity,1,True,,0.028,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+equalized_odds,0,True,,0.024,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+intersectional,0,True,,0.015,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+groupdro,0,False,,0.093,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+gce,0,True,,0.011,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.0,MIMIC-CXR,rad_dino,Lung Opacity,race,252,3,intermediate
+hbac,1,True,,1.081,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+probe,0,True,,0.032,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+statistical,0,True,,1.002,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+geometric,0,True,,0.185,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+frequency,1,True,,0.055,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+bias_direction_pca,1,True,,0.004,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+sis,1,True,,3.359,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+demographic_parity,0,True,,0.072,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+equalized_odds,0,True,,0.085,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+intersectional,0,False,"Need at least 2 demographic attributes in extra_labels (e.g., {'race': ..., 'gender': ...}). Reserved keys 'spurious', 'early_epoch_reps' are excluded.",0.001,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+groupdro,0,False,,0.031,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+gce,0,True,,0.048,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.001,CheXpert,resnet50,Atelectasis,sex,266,2,intermediate
+hbac,1,True,,0.389,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+probe,1,True,,0.012,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+statistical,0,True,,3.824,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+geometric,0,True,,0.183,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+frequency,1,True,,0.008,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+bias_direction_pca,1,True,,0.003,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+sis,1,True,,1.348,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+demographic_parity,1,True,,0.051,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+equalized_odds,0,True,,0.026,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+intersectional,1,True,,0.038,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+groupdro,0,False,,0.05,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+gce,0,True,,0.012,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.0,MIMIC-CXR,rad_dino,Atelectasis,sex,263,2,intermediate
+hbac,1,True,,0.669,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+probe,0,True,,0.019,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+statistical,0,True,,3.834,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+geometric,0,True,,0.155,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+frequency,1,True,,0.008,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+bias_direction_pca,1,True,,0.003,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+sis,1,True,,1.138,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+demographic_parity,1,True,,0.036,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+equalized_odds,0,True,,0.041,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+intersectional,0,True,,0.016,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+groupdro,0,False,,0.004,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+gce,0,True,,0.017,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.001,MIMIC-CXR,rad_dino,Atelectasis,race,229,3,intermediate
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",1.01,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+probe,0,True,,0.022,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+statistical,0,True,,1.028,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+geometric,0,True,,0.213,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+bias_direction_pca,1,True,,0.006,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.005,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+demographic_parity,0,False,,0.003,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+equalized_odds,0,False,,0.001,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+intersectional,0,False,"Need at least 2 demographic attributes in extra_labels (e.g., {'race': ..., 'gender': ...}). Reserved keys 'spurious', 'early_epoch_reps' are excluded.",0.001,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+groupdro,0,False,,0.017,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+gce,0,False,At least 2 distinct labels are required,0.001,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+ssa,0,False,splits parameter required for SSA analysis,0.001,CheXpert,resnet50,No Finding,sex,259,2,likely_false_alarm
+hbac,1,True,,0.895,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+probe,1,True,,0.014,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+statistical,0,True,,3.992,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+geometric,0,True,,0.44,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+frequency,1,True,,0.012,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+bias_direction_pca,1,True,,0.008,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+sis,1,True,,2.752,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+demographic_parity,0,True,,0.03,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+equalized_odds,0,True,,0.021,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+intersectional,0,True,,0.02,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+groupdro,0,False,,0.012,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+gce,0,True,,0.011,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.001,MIMIC-CXR,rad_dino,No Finding,sex,545,2,intermediate
+hbac,1,True,,0.621,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+probe,0,True,,0.028,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+statistical,0,True,,4.087,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+geometric,0,True,,0.364,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+frequency,1,True,,0.008,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+bias_direction_pca,1,True,,0.007,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+sis,1,True,,2.351,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+demographic_parity,0,True,,0.021,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+equalized_odds,0,True,,0.022,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+intersectional,0,True,,0.02,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+groupdro,0,False,,0.075,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+gce,0,True,,0.008,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.001,MIMIC-CXR,rad_dino,No Finding,race,464,3,intermediate
+hbac,1,True,,2.276,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+probe,1,True,,0.028,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+statistical,0,True,,1.088,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+geometric,0,True,,0.607,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+frequency,1,True,,0.102,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+bias_direction_pca,1,True,,0.009,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+sis,1,True,,8.882,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+demographic_parity,0,True,,0.227,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+equalized_odds,0,True,,0.193,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+intersectional,0,False,"Need at least 2 demographic attributes in extra_labels (e.g., {'race': ..., 'gender': ...}). Reserved keys 'spurious', 'early_epoch_reps' are excluded.",0.002,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+groupdro,0,False,,0.031,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+gce,0,True,,0.111,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.002,CheXpert,resnet50,Pleural Effusion,sex,730,2,intermediate
+hbac,1,True,,0.306,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+probe,1,True,,0.007,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+statistical,0,True,,3.681,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+geometric,0,True,,0.198,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+frequency,1,True,,0.019,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+bias_direction_pca,1,True,,0.011,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+sis,1,True,,1.209,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+demographic_parity,1,True,,0.035,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+equalized_odds,0,True,,0.046,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+intersectional,1,True,,0.019,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+groupdro,0,False,,0.004,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+gce,0,True,,0.012,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.0,MIMIC-CXR,rad_dino,Pleural Effusion,sex,255,2,intermediate
+hbac,1,True,,0.397,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+probe,0,True,,0.02,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+statistical,0,True,,3.804,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+geometric,0,True,,0.125,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+frequency,1,True,,0.007,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+bias_direction_pca,1,True,,0.003,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+sis,1,True,,1.049,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+demographic_parity,1,True,,0.021,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+equalized_odds,0,True,,0.053,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+intersectional,1,True,,0.015,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+groupdro,0,False,,0.067,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+gce,0,True,,0.024,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.0,MIMIC-CXR,rad_dino,Pleural Effusion,race,224,3,intermediate
+hbac,1,True,,3.194,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+probe,1,True,,0.044,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+statistical,0,True,,1.064,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+geometric,0,True,,0.91,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+frequency,1,True,,0.188,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+bias_direction_pca,1,True,,0.008,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+sis,1,True,,10.97,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+demographic_parity,0,True,,0.553,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+equalized_odds,0,True,,0.488,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+intersectional,0,False,"Need at least 2 demographic attributes in extra_labels (e.g., {'race': ..., 'gender': ...}). Reserved keys 'spurious', 'early_epoch_reps' are excluded.",0.002,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+groupdro,0,False,,0.019,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+gce,0,True,,0.106,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.002,CheXpert,resnet50,Support Devices,sex,933,2,intermediate
+hbac,1,True,,1.794,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+probe,1,True,,0.008,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+statistical,0,True,,3.533,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+geometric,0,True,,0.18,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+frequency,1,True,,0.009,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+bias_direction_pca,1,True,,0.003,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+sis,1,True,,1.021,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+demographic_parity,1,True,,0.021,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+equalized_odds,0,True,,0.031,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+intersectional,0,True,,0.013,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+groupdro,0,False,,0.019,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+gce,0,True,,0.016,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.0,MIMIC-CXR,rad_dino,Support Devices,sex,239,2,intermediate
+hbac,1,True,,0.638,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+probe,0,True,,0.025,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+statistical,0,True,,3.705,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+geometric,0,True,,0.144,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+frequency,1,True,,0.007,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+bias_direction_pca,1,True,,0.003,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+sis,1,True,,0.826,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+demographic_parity,1,True,,0.028,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+equalized_odds,0,True,,0.031,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+intersectional,0,True,,0.017,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+groupdro,0,False,,0.026,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+gce,0,True,,0.014,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate
+ssa,0,False,splits parameter required for SSA analysis,0.0,MIMIC-CXR,rad_dino,Support Devices,race,194,3,intermediate

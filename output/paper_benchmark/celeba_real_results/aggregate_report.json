@@ -1,0 +1,64 @@
+{
+  "shortcut_pairs": [
+    {
+      "task": "Blond_Hair",
+      "sensitive": "Male",
+      "description": "Blond hair strongly correlated with gender",
+      "detected_by": {
+        "hbac": false,
+        "probe": true,
+        "statistical": true,
+        "geometric": true,
+        "frequency": true,
+        "bias_direction_pca": true,
+        "sis": true,
+        "demographic_parity": true,
+        "equalized_odds": true,
+        "intersectional": true,
+        "groupdro": false,
+        "gce": true,
+        "ssa": false
+      }
+    },
+    {
+      "task": "Heavy_Makeup",
+      "sensitive": "Male",
+      "description": "Heavy makeup strongly correlated with gender",
+      "detected_by": {
+        "hbac": false,
+        "probe": true,
+        "statistical": true,
+        "geometric": true,
+        "frequency": true,
+        "bias_direction_pca": true,
+        "sis": true,
+        "demographic_parity": true,
+        "equalized_odds": true,
+        "intersectional": true,
+        "groupdro": false,
+        "gce": true,
+        "ssa": false
+      }
+    },
+    {
+      "task": "Attractive",
+      "sensitive": "Male",
+      "description": "Attractiveness label correlated with gender",
+      "detected_by": {
+        "hbac": false,
+        "probe": true,
+        "statistical": true,
+        "geometric": true,
+        "frequency": true,
+        "bias_direction_pca": true,
+        "sis": true,
+        "demographic_parity": true,
+        "equalized_odds": true,
+        "intersectional": true,
+        "groupdro": false,
+        "gce": true,
+        "ssa": false
+      }
+    }
+  ]
+}

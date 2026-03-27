@@ -1,0 +1,108 @@
+======================================================================
+UNIFIED SHORTCUT DETECTION SUMMARY
+======================================================================
+Dataset: 10000 samples, 2048 dimensions
+Methods used: hbac, probe, statistical, geometric, frequency, bias_direction_pca, sis, demographic_parity, equalized_odds, intersectional, groupdro, gce, ssa
+
+----------------------------------------------------------------------
+HBAC (Clustering-based Detection)
+----------------------------------------------------------------------
+Risk: Low
+Reason: Shortcut confidence 'Low' with 1 high-purity clusters and linear accuracy 0.821.
+Shortcut detected: NO
+Clusters found: 4
+
+----------------------------------------------------------------------
+Probe-based Detection
+----------------------------------------------------------------------
+Risk: High
+Reason: f1 (0.943) compared against threshold (0.700).
+Probe f1: 94.32%
+⚠️  Probe performance exceeds threshold — strong shortcut signal
+
+----------------------------------------------------------------------
+Statistical
+----------------------------------------------------------------------
+Summary unavailable.
+
+----------------------------------------------------------------------
+Geometric
+----------------------------------------------------------------------
+Summary unavailable.
+
+----------------------------------------------------------------------
+Embedding Frequency Shortcut (embedding-only)
+----------------------------------------------------------------------
+Risk: High
+Reason: 2/2 classes exceeded TPR/FPR thresholds (0.500/0.150).
+Detected shortcuts: YES
+Classes with shortcuts: ['0', '1']
+Top-percent used: 0.05
+
+----------------------------------------------------------------------
+Bias Direction Pca
+----------------------------------------------------------------------
+Summary unavailable.
+
+----------------------------------------------------------------------
+SIS (Sufficient Input Subsets)
+----------------------------------------------------------------------
+Risk: High
+Reason: Mean SIS size 8.257 (0.004 of dims) from 179 samples (threshold 0.150).
+Mean SIS size: 8.3
+Median SIS size: 7.0
+Fraction of dimensions: 0.4%
+Samples computed: 179
+
+----------------------------------------------------------------------
+Demographic Parity
+----------------------------------------------------------------------
+Summary unavailable.
+
+----------------------------------------------------------------------
+Equalized Odds
+----------------------------------------------------------------------
+Summary unavailable.
+
+----------------------------------------------------------------------
+Fairness (Intersectional)
+----------------------------------------------------------------------
+Risk: High
+Reason: Max intersectional gap (0.777) across attributes (5_o_Clock_Shadow, Arched_Eyebrows).
+TPR gap: 0.040 | FPR gap: 0.205 | DP gap: 0.777
+Attributes: 5_o_Clock_Shadow, Arched_Eyebrows
+Reference: Buolamwini & Gebru 2018
+0_0: TPR=0.913 FPR=0.052 pos_rate=0.312 (support=6279)
+0_1: TPR=0.953 FPR=0.205 pos_rate=0.777 (support=2595)
+1_0: TPR=nan FPR=0.000 pos_rate=0.000 (support=1052)
+1_1: TPR=nan FPR=0.027 pos_rate=0.027 (support=74)
+
+----------------------------------------------------------------------
+Groupdro
+----------------------------------------------------------------------
+Summary unavailable.
+
+----------------------------------------------------------------------
+GCE (Generalized Cross Entropy) Bias Detection
+----------------------------------------------------------------------
+Risk: High
+Reason: Flagged 1000 high-loss samples (0.100) at loss percentile threshold 0.000.
+Minority/bias-conflicting samples: 1000 (10.0%)
+Loss (mean ± std): 0.1126 ± 0.3849
+Loss range: [0.0000, 1.4286]
+Threshold (percentile): 0.0000 (q=0.7)
+
+----------------------------------------------------------------------
+SSA (Spread Spurious Attribute)
+----------------------------------------------------------------------
+⚠️  SSA skipped: splits parameter required
+
+======================================================================
+OVERALL ASSESSMENT
+======================================================================
+🔴 HIGH RISK: Multiple methods detected shortcuts
+  • f1=94.3% (threshold exceeded)
+  • Embedding-space sensitivity indicates shortcut signatures
+  • Small mean SIS indicates model may rely on few dimensions (potential shortcut)
+  • Large disparities across demographic intersections
+  • GCE flagged 1000 high-loss samples as minority/bias-conflicting

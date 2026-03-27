@@ -1,0 +1,215 @@
+[project]
+name = "shortkit-ml"
+version = "0.1.0"
+description = "ShortKIT-ML: A toolkit for detecting shortcuts and biases in embedding spaces"
+authors = [
+    {name = "Sebastian Cajas"},
+    {name = "Aldo Marzullo"},
+    {name = "Sahil Kapadia"},
+    {name = "Qingpeng Kong"},
+    {name = "Filipe Santos"},
+    {name = "Alessandro Quarta"},
+    {name = "Leo Celi"},
+]
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.10,<3.13"
+license = {text = "MIT"}
+keywords = ["machine-learning", "bias-detection", "embeddings", "fairness", "shortcuts"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "numpy>=1.24.0,<2.0.0",
+    "pandas>=2.0.0,<3.0.0",
+    "scikit-learn>=1.3.0,<2.0.0",
+    "scipy>=1.11.0,<2.0.0",
+    "statsmodels>=0.14.0,<1.0.0",  # Multiple testing correction
+    "matplotlib>=3.7.0,<4.0.0",
+    "seaborn>=0.12.0,<1.0.0",
+    "joblib>=1.3.0,<2.0.0",
+    # PyTorch - CUDA 12.1 compatible
+    # Note: Install separately with:
+    # uv pip install torch==2.2.0+cu121 torchvision==0.17.0+cu121 --index-url https://download.pytorch.org/whl/cu121
+    "torch>=2.2.0,<2.3.0",
+    "torchvision>=0.17.0,<0.18.0",
+    "openpyxl>=3.1.0,<4.0.0",
+    # Dashboard and reporting (app + PDF)
+    "gradio>=5.0.0",
+    "plotly>=5.17.0",
+    "jinja2>=3.1.0",
+    "markdown>=3.5.0",
+    # PDF export: weasyprint also needs system libs (not installable via pip).
+    # See README "System Dependencies for PDF Export": macOS: brew install pango gdk-pixbuf libffi
+    "weasyprint>=60.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",  # parallel testing
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.5.0",
+]
+e2e = [
+    "playwright>=1.40.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.24.0",
+    "pymdown-extensions>=10.0",
+]
+jupyter = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "nbconvert>=7.8.0",
+    "ipywidgets>=8.1.0",
+]
+reporting = [
+    "plotly>=5.17.0",
+    "jinja2>=3.1.0",  # HTML templating
+    "markdown>=3.5.0",  # Markdown generation
+    "weasyprint>=60.0",  # PDF generation (optional)
+    "openpyxl>=3.1.0",  # Excel file support
+]
+dashboard = [
+    "gradio>=5.0.0",  # Interactive web interface
+]
+hf = [
+    "transformers>=4.39.0",
+]
+vae = [
+    "torch>=2.2.0,<2.3.0",
+    "torchvision>=0.17.0,<0.18.0",
+]
+mcp = [
+    "mcp>=1.0.0",
+]
+all = [
+    # Aggregated extras for docs, reporting, dashboard, hf, and dev tools
+    "black>=23.0.0",
+    "mcp>=1.0.0",
+    "gradio>=5.0.0",
+    "ipykernel>=6.25.0",
+    "ipywidgets>=8.1.0",
+    "jinja2>=3.1.0",
+    "markdown>=3.5.0",
+    "mypy>=1.5.0",
+    "mkdocstrings[python]>=0.24.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocs>=1.5.0",
+    "nbconvert>=7.8.0",
+    "openpyxl>=3.1.0",
+    "plotly>=5.17.0",
+    "pre-commit>=3.5.0",
+    "pymdown-extensions>=10.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+    "pytest>=7.4.0",
+    "ruff>=0.1.0",
+    "torch>=2.2.0,<2.3.0",
+    "torchvision>=0.17.0,<0.18.0",
+    "transformers>=4.39.0",
+    "weasyprint>=60.0",
+]
+
+[project.scripts]
+shortkit-ml-mcp = "shortcut_detect.mcp_server:main"
+
+[project.urls]
+Homepage = "https://github.com/criticaldata/ShortKit-ML"
+Documentation = "https://criticaldata.github.io/ShortKit-ML/"
+Repository = "https://github.com/criticaldata/ShortKit-ML"
+Issues = "https://github.com/criticaldata/ShortKit-ML/issues"
+
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["shortcut_detect*"]
+exclude = ["tests*", "examples*", "docs*"]
+
+[tool.setuptools.package-data]
+"shortcut_detect.conditions" = ["*.joblib", "*.meta.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = [
+    "-v",
+    "--strict-markers",
+]
+markers = [
+    "e2e: end-to-end tests requiring Playwright and dashboard (deselect with -m 'not e2e')",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | \.eggs
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Set to true for strict typing
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["shortcut_detect"]
+omit = [
+    "*/tests/*",
+    "*/examples/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

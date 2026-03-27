@@ -1,0 +1,23 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{Cross-dataset validation on MIMIC-CXR embeddings from three pretrained backbones (data from \texttt{MITCriticalData/qml-mimic-cxr-embeddings}). All backbone--attribute combinations show consistent 3/4 method agreement, with HBAC, Statistical, and Geometric consistently detecting demographic shortcuts while Probe does not flag them. This consistency across architectures and a separate clinical dataset strengthens the generalizability claim.}
+\label{tab:mimic_results}
+\begin{tabular}{llcccc|c}
+\hline
+\textbf{Backbone} & \textbf{Attribute} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Agree.} \\
+\hline
+RAD-DINO & Age Bin & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+RAD-DINO & Race & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+RAD-DINO & Sex & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+\hline
+ViT-16 & Age Bin & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+ViT-16 & Race & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+ViT-16 & Sex & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+\hline
+MedSigLIP & Age Bin & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+MedSigLIP & Race & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+MedSigLIP & Sex & \checkmark & -- & \checkmark & \checkmark & 3/4 \\
+\hline
+\end{tabular}
+\end{table*}

@@ -1,0 +1,1 @@
+"""Demographic parity detector implementation."""

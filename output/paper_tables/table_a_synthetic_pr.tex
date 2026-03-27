@@ -1,0 +1,22 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{Synthetic benchmark: mean precision, recall, F1, and detection rate across effect sizes ($n{=}1000$, $d{=}128$, 5 seeds). At $\delta{=}0$ all methods should report no shortcut (detection rate near 0). As effect size increases, precision/recall and detection rate increase, with convergence-based aggregation maintaining low false positive rates while achieving high detection at moderate-to-strong effects.}
+\label{tab:synthetic_pr}
+\begin{tabular}{llcccccc}
+\hline
+\textbf{Method} & \textbf{Metric} & $\delta{0.0}$ & $\delta{0.2}$ & $\delta{0.5}$ & $\delta{0.8}$ & $\delta{1.2}$ & $\delta{2.0}$ \\
+\hline
+HBAC & Det. Rate & 0.00 & 0.00 & 0.80 & 1.00 & 1.00 & 1.00 \\
+ & F1 & 0.04$\pm$0.09 & 0.08$\pm$0.11 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+Probe & Det. Rate & 0.00 & 0.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+ & F1 & 0.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+Statistical & Det. Rate & 0.40 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+ & F1 & 0.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+Geometric & Det. Rate & 0.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+ & F1 & 0.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+\hline
+Convergence ($\geq$2) & Det. Rate & 0.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+\hline
+\end{tabular}
+\end{table*}

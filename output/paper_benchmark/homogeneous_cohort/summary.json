@@ -1,0 +1,21 @@
+{
+  "experiment": "homogeneous_cohort_analysis",
+  "timestamp": "2026-03-18T06:56:34.931353+00:00",
+  "shared_backbones": [
+    "RAD-DINO",
+    "MedSigLIP",
+    "ViT-B/16"
+  ],
+  "diagnoses": [
+    "Lung Opacity",
+    "Pleural Effusion",
+    "Support Devices",
+    "Atelectasis",
+    "Edema"
+  ],
+  "n_methods": 13,
+  "min_per_group": 20,
+  "elapsed_seconds": 1897.79,
+  "total_runs": 546,
+  "seed": 42
+}

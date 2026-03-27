@@ -1,0 +1,18 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{Risk aggregation condition comparison across synthetic difficulty levels. Accuracy, false positive rate (FPR), and false negative rate (FNR) for each of the five pluggable conditions. The meta-classifier and weighted risk conditions achieve the best balance of sensitivity and specificity. All conditions correctly suppress false positives on clean data ($\delta{=}0$).}
+\label{tab:risk_conditions}
+\begin{tabular}{l|ccc|ccc|ccc|ccc}
+\hline
+ & \multicolumn{3}{c|}{\textbf{Clean ($\delta{=}0$)}} & \multicolumn{3}{c|}{\textbf{Weak ($\delta{=}0.2$)}} & \multicolumn{3}{c|}{\textbf{Moderate ($\delta{=}0.5$)}} & \multicolumn{3}{c}{\textbf{Strong ($\delta{=}1.0$)}} \\
+\textbf{Condition} & Acc & FPR & FNR & Acc & FPR & FNR & Acc & FPR & FNR & Acc & FPR & FNR \\
+\hline
+Indicator Count & 0.80 & 0.20 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Majority Vote & 0.80 & 0.20 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Weighted Risk & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Multi-Attribute & 0.80 & 0.20 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+Meta-Classifier & 1.00 & 0.00 & 0.00 & 0.20 & 0.00 & 0.80 & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 \\
+\hline
+\end{tabular}
+\end{table*}

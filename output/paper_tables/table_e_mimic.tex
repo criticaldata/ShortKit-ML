@@ -1,0 +1,23 @@
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{MIMIC-CXR cross-validation: shortcut detection across three medical imaging backbones and three sensitive attributes. Cells show whether each method detected a shortcut (\cmark\ = detected, \xmark\ = not detected). All backbone--attribute combinations show moderate confidence (3/4 methods agree), with only the probe method failing to detect shortcuts --- likely due to label encoding issues for non-numeric attributes.}
+\label{tab:mimic}
+\begin{tabular}{llccccc}
+\hline
+\textbf{Backbone} & \textbf{Attribute} & \textbf{HBAC} & \textbf{Probe} & \textbf{Stat.} & \textbf{Geom.} & \textbf{Conv.} \\
+\hline
+\multirow{3}{*}{RAD-DINO} & Race & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+ & Sex & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+ & Age & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+\hline
+\multirow{3}{*}{ViT-B/16} & Race & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+ & Sex & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+ & Age & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+\hline
+\multirow{3}{*}{MedSigLIP} & Race & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+ & Sex & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+ & Age & \cmark & \xmark & \cmark & \cmark & 3/4 \\
+\hline
+\end{tabular}
+\end{table*}

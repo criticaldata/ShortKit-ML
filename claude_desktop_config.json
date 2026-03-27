@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "shortkit-ml": {
+      "command": "python",
+      "args": ["-m", "shortcut_detect.mcp_server"],
+      "cwd": "/path/to/ShortKit-ML"
+    }
+  }
+}

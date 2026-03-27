@@ -1,0 +1,39 @@
+{
+    "_comment": "Reproducible paper benchmark config. All parameters are explicitly set so results are fully deterministic across runs. Use profile 'full' to reproduce the complete paper results.",
+    "benchmark_name": "shortcut_paper_benchmark_reproducible",
+    "profile": "full",
+    "random_seed": 42,
+    "methods": ["hbac", "probe", "statistical", "geometric"],
+    "synthetic": {
+        "_comment_effect_sizes": "Cohen's d values: 0.0 (null/no shortcut) through negligible (0.2) to very large (2.0)",
+        "effect_sizes": [0.0, 0.2, 0.5, 0.8, 1.2, 2.0],
+        "_comment_sample_sizes": "Small, medium, and large sample sizes for power analysis",
+        "sample_sizes": [200, 1000, 5000],
+        "_comment_imbalance_ratios": "Balanced (0.5), moderate (0.7), and heavily imbalanced (0.9) group splits",
+        "imbalance_ratios": [0.5, 0.7, 0.9],
+        "_comment_embedding_dims": "Common embedding dimensionalities in vision and NLP models",
+        "embedding_dims": [128, 256, 512],
+        "_comment_shortcut_dims": "Number of embedding dimensions affected by the shortcut signal",
+        "shortcut_dims": 5,
+        "_comment_seeds": "Number of independent random seeds per configuration for statistical reliability",
+        "seeds": 10,
+        "_comment_alpha": "Significance level for hypothesis tests",
+        "alpha": 0.05,
+        "_comment_corrections": "Multiple testing correction methods (Bonferroni for FWER, BH for FDR)",
+        "corrections": ["bonferroni", "fdr_bh"]
+    },
+    "chexpert": {
+        "enabled": false,
+        "manifest_path": null,
+        "embeddings_dir": "output/paper_benchmark/chexpert_embeddings",
+        "backbones": ["resnet50", "densenet121", "vit_b_16"],
+        "attributes": ["race", "sex", "age_bin"],
+        "race_focus": ["ASIAN", "BLACK", "WHITE"],
+        "age_bins": [40, 60, 80]
+    },
+    "fairness_baselines": {
+        "enable_fairlearn": true,
+        "enable_aif360": true
+    },
+    "output_dir": "output/paper_benchmark"
+}

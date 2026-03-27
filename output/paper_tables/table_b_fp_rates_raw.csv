@@ -1,0 +1,16 @@
+dim,method,fp_rate
+128,hbac,0.0
+128,probe,0.0
+128,statistical,0.1
+128,geometric,0.15
+128,convergence,0.05
+256,hbac,0.0
+256,probe,0.0
+256,statistical,0.05
+256,geometric,1.0
+256,convergence,0.05
+512,hbac,0.0
+512,probe,0.0
+512,statistical,0.0
+512,geometric,1.0
+512,convergence,0.0

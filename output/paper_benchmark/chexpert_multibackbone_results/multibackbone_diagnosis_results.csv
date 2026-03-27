@@ -1,0 +1,1093 @@
+method,flagged,success,error,elapsed_s,backbone,diagnosis,attribute,n_samples,n_groups
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",1.12,resnet50,No Finding,sex,259,2
+probe,0,True,,0.029,resnet50,No Finding,sex,259,2
+statistical,0,True,,10.024,resnet50,No Finding,sex,259,2
+geometric,0,True,,0.714,resnet50,No Finding,sex,259,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.002,resnet50,No Finding,sex,259,2
+bias_direction_pca,1,True,,0.005,resnet50,No Finding,sex,259,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.002,resnet50,No Finding,sex,259,2
+demographic_parity,0,False,,0.001,resnet50,No Finding,sex,259,2
+equalized_odds,0,False,,0.001,resnet50,No Finding,sex,259,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.001,resnet50,No Finding,sex,259,2
+groupdro,0,False,,0.013,resnet50,No Finding,sex,259,2
+gce,0,False,At least 2 distinct labels are required,0.001,resnet50,No Finding,sex,259,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,resnet50,No Finding,sex,259,2
+hbac,1,True,,0.763,resnet50,Enlarged Cardiomediastinum,sex,90,2
+probe,0,True,,0.012,resnet50,Enlarged Cardiomediastinum,sex,90,2
+statistical,0,True,,9.856,resnet50,Enlarged Cardiomediastinum,sex,90,2
+geometric,0,True,,0.096,resnet50,Enlarged Cardiomediastinum,sex,90,2
+frequency,1,True,,0.021,resnet50,Enlarged Cardiomediastinum,sex,90,2
+bias_direction_pca,1,True,,0.005,resnet50,Enlarged Cardiomediastinum,sex,90,2
+sis,1,True,,1.156,resnet50,Enlarged Cardiomediastinum,sex,90,2
+demographic_parity,1,True,,0.074,resnet50,Enlarged Cardiomediastinum,sex,90,2
+equalized_odds,0,True,,0.114,resnet50,Enlarged Cardiomediastinum,sex,90,2
+intersectional,1,True,,0.052,resnet50,Enlarged Cardiomediastinum,sex,90,2
+groupdro,0,False,,0.008,resnet50,Enlarged Cardiomediastinum,sex,90,2
+gce,0,True,,0.002,resnet50,Enlarged Cardiomediastinum,sex,90,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,resnet50,Enlarged Cardiomediastinum,sex,90,2
+hbac,1,True,,0.791,resnet50,Cardiomegaly,sex,234,2
+probe,0,True,,0.021,resnet50,Cardiomegaly,sex,234,2
+statistical,0,True,,10.257,resnet50,Cardiomegaly,sex,234,2
+geometric,0,True,,0.365,resnet50,Cardiomegaly,sex,234,2
+frequency,1,True,,0.031,resnet50,Cardiomegaly,sex,234,2
+bias_direction_pca,1,True,,0.01,resnet50,Cardiomegaly,sex,234,2
+sis,1,True,,3.225,resnet50,Cardiomegaly,sex,234,2
+demographic_parity,1,True,,0.119,resnet50,Cardiomegaly,sex,234,2
+equalized_odds,0,True,,0.157,resnet50,Cardiomegaly,sex,234,2
+intersectional,1,True,,0.083,resnet50,Cardiomegaly,sex,234,2
+groupdro,0,False,,0.016,resnet50,Cardiomegaly,sex,234,2
+gce,0,True,,0.012,resnet50,Cardiomegaly,sex,234,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,resnet50,Cardiomegaly,sex,234,2
+hbac,1,True,,2.475,resnet50,Lung Opacity,sex,827,2
+probe,1,True,,0.085,resnet50,Lung Opacity,sex,827,2
+statistical,0,True,,11.016,resnet50,Lung Opacity,sex,827,2
+geometric,0,True,,2.728,resnet50,Lung Opacity,sex,827,2
+frequency,1,True,,0.263,resnet50,Lung Opacity,sex,827,2
+bias_direction_pca,1,True,,0.014,resnet50,Lung Opacity,sex,827,2
+sis,1,True,,10.466,resnet50,Lung Opacity,sex,827,2
+demographic_parity,1,True,,0.668,resnet50,Lung Opacity,sex,827,2
+equalized_odds,1,True,,0.711,resnet50,Lung Opacity,sex,827,2
+intersectional,1,True,,0.322,resnet50,Lung Opacity,sex,827,2
+groupdro,0,False,,0.081,resnet50,Lung Opacity,sex,827,2
+gce,0,True,,0.19,resnet50,Lung Opacity,sex,827,2
+ssa,0,False,splits parameter required for SSA analysis,0.003,resnet50,Lung Opacity,sex,827,2
+hbac,1,True,,0.88,resnet50,Lung Lesion,sex,102,2
+probe,0,True,,0.032,resnet50,Lung Lesion,sex,102,2
+statistical,0,True,,9.698,resnet50,Lung Lesion,sex,102,2
+geometric,0,True,,0.095,resnet50,Lung Lesion,sex,102,2
+frequency,1,True,,0.032,resnet50,Lung Lesion,sex,102,2
+bias_direction_pca,1,True,,0.005,resnet50,Lung Lesion,sex,102,2
+sis,1,True,,1.465,resnet50,Lung Lesion,sex,102,2
+demographic_parity,0,True,,0.143,resnet50,Lung Lesion,sex,102,2
+equalized_odds,0,True,,0.123,resnet50,Lung Lesion,sex,102,2
+intersectional,0,True,,0.07,resnet50,Lung Lesion,sex,102,2
+groupdro,0,False,,0.024,resnet50,Lung Lesion,sex,102,2
+gce,0,True,,0.021,resnet50,Lung Lesion,sex,102,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,resnet50,Lung Lesion,sex,102,2
+hbac,1,True,,1.782,resnet50,Edema,sex,366,2
+probe,1,True,,0.03,resnet50,Edema,sex,366,2
+statistical,0,True,,10.29,resnet50,Edema,sex,366,2
+geometric,0,True,,1.013,resnet50,Edema,sex,366,2
+frequency,1,True,,0.101,resnet50,Edema,sex,366,2
+bias_direction_pca,1,True,,0.009,resnet50,Edema,sex,366,2
+sis,1,True,,5.193,resnet50,Edema,sex,366,2
+demographic_parity,0,True,,0.182,resnet50,Edema,sex,366,2
+equalized_odds,0,True,,0.19,resnet50,Edema,sex,366,2
+intersectional,0,True,,0.096,resnet50,Edema,sex,366,2
+groupdro,0,False,,0.071,resnet50,Edema,sex,366,2
+gce,0,True,,0.011,resnet50,Edema,sex,366,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,resnet50,Edema,sex,366,2
+hbac,1,True,,0.803,resnet50,Consolidation,sex,129,2
+probe,0,True,,0.024,resnet50,Consolidation,sex,129,2
+statistical,0,True,,9.687,resnet50,Consolidation,sex,129,2
+geometric,0,True,,0.186,resnet50,Consolidation,sex,129,2
+frequency,1,True,,0.018,resnet50,Consolidation,sex,129,2
+bias_direction_pca,1,True,,0.014,resnet50,Consolidation,sex,129,2
+sis,1,True,,1.799,resnet50,Consolidation,sex,129,2
+demographic_parity,0,True,,0.073,resnet50,Consolidation,sex,129,2
+equalized_odds,0,True,,0.068,resnet50,Consolidation,sex,129,2
+intersectional,0,True,,0.04,resnet50,Consolidation,sex,129,2
+groupdro,0,False,,0.011,resnet50,Consolidation,sex,129,2
+gce,0,True,,0.006,resnet50,Consolidation,sex,129,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,resnet50,Consolidation,sex,129,2
+hbac,1,True,,0.826,resnet50,Atelectasis,sex,266,2
+probe,0,True,,0.03,resnet50,Atelectasis,sex,266,2
+statistical,0,True,,9.974,resnet50,Atelectasis,sex,266,2
+geometric,0,True,,0.657,resnet50,Atelectasis,sex,266,2
+frequency,1,True,,0.088,resnet50,Atelectasis,sex,266,2
+bias_direction_pca,1,True,,0.008,resnet50,Atelectasis,sex,266,2
+sis,1,True,,3.396,resnet50,Atelectasis,sex,266,2
+demographic_parity,1,True,,0.244,resnet50,Atelectasis,sex,266,2
+equalized_odds,0,True,,0.302,resnet50,Atelectasis,sex,266,2
+intersectional,1,True,,0.124,resnet50,Atelectasis,sex,266,2
+groupdro,0,False,,0.012,resnet50,Atelectasis,sex,266,2
+gce,0,True,,0.095,resnet50,Atelectasis,sex,266,2
+ssa,0,False,splits parameter required for SSA analysis,0.003,resnet50,Atelectasis,sex,266,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.795,resnet50,Pneumothorax,sex,218,2
+probe,0,True,,0.022,resnet50,Pneumothorax,sex,218,2
+statistical,0,True,,9.934,resnet50,Pneumothorax,sex,218,2
+geometric,0,True,,0.356,resnet50,Pneumothorax,sex,218,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,resnet50,Pneumothorax,sex,218,2
+bias_direction_pca,1,True,,0.005,resnet50,Pneumothorax,sex,218,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 1",0.002,resnet50,Pneumothorax,sex,218,2
+demographic_parity,0,False,,0.003,resnet50,Pneumothorax,sex,218,2
+equalized_odds,0,False,,0.002,resnet50,Pneumothorax,sex,218,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.002,resnet50,Pneumothorax,sex,218,2
+groupdro,0,False,,0.009,resnet50,Pneumothorax,sex,218,2
+gce,0,False,At least 2 distinct labels are required,0.001,resnet50,Pneumothorax,sex,218,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,resnet50,Pneumothorax,sex,218,2
+hbac,1,True,,1.491,resnet50,Pleural Effusion,sex,730,2
+probe,1,True,,0.049,resnet50,Pleural Effusion,sex,730,2
+statistical,0,True,,10.833,resnet50,Pleural Effusion,sex,730,2
+geometric,0,True,,1.771,resnet50,Pleural Effusion,sex,730,2
+frequency,1,True,,0.148,resnet50,Pleural Effusion,sex,730,2
+bias_direction_pca,1,True,,0.026,resnet50,Pleural Effusion,sex,730,2
+sis,1,True,,9.446,resnet50,Pleural Effusion,sex,730,2
+demographic_parity,1,True,,0.681,resnet50,Pleural Effusion,sex,730,2
+equalized_odds,0,True,,0.682,resnet50,Pleural Effusion,sex,730,2
+intersectional,1,True,,0.377,resnet50,Pleural Effusion,sex,730,2
+groupdro,0,False,,0.019,resnet50,Pleural Effusion,sex,730,2
+gce,0,True,,0.233,resnet50,Pleural Effusion,sex,730,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,resnet50,Pleural Effusion,sex,730,2
+hbac,0,True,,0.689,resnet50,Fracture,sex,83,2
+probe,0,True,,0.026,resnet50,Fracture,sex,83,2
+statistical,0,True,,9.753,resnet50,Fracture,sex,83,2
+geometric,0,True,,0.078,resnet50,Fracture,sex,83,2
+frequency,1,True,,0.025,resnet50,Fracture,sex,83,2
+bias_direction_pca,1,True,,0.006,resnet50,Fracture,sex,83,2
+sis,1,True,,1.118,resnet50,Fracture,sex,83,2
+demographic_parity,1,True,,0.089,resnet50,Fracture,sex,83,2
+equalized_odds,0,True,,0.106,resnet50,Fracture,sex,83,2
+intersectional,1,True,,0.059,resnet50,Fracture,sex,83,2
+groupdro,0,False,,0.023,resnet50,Fracture,sex,83,2
+gce,0,True,,0.054,resnet50,Fracture,sex,83,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,resnet50,Fracture,sex,83,2
+hbac,1,True,,2.202,resnet50,Support Devices,sex,933,2
+probe,1,True,,0.077,resnet50,Support Devices,sex,933,2
+statistical,0,True,,11.247,resnet50,Support Devices,sex,933,2
+geometric,0,True,,2.628,resnet50,Support Devices,sex,933,2
+frequency,1,True,,0.321,resnet50,Support Devices,sex,933,2
+bias_direction_pca,1,True,,0.027,resnet50,Support Devices,sex,933,2
+sis,1,True,,11.168,resnet50,Support Devices,sex,933,2
+demographic_parity,1,True,,1.233,resnet50,Support Devices,sex,933,2
+equalized_odds,1,True,,1.219,resnet50,Support Devices,sex,933,2
+intersectional,1,True,,0.723,resnet50,Support Devices,sex,933,2
+groupdro,0,False,,0.033,resnet50,Support Devices,sex,933,2
+gce,0,True,,0.207,resnet50,Support Devices,sex,933,2
+ssa,0,False,splits parameter required for SSA analysis,0.003,resnet50,Support Devices,sex,933,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.914,densenet121,No Finding,sex,259,2
+probe,1,True,,0.023,densenet121,No Finding,sex,259,2
+statistical,0,True,,5.003,densenet121,No Finding,sex,259,2
+geometric,0,True,,0.405,densenet121,No Finding,sex,259,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,densenet121,No Finding,sex,259,2
+bias_direction_pca,1,True,,0.012,densenet121,No Finding,sex,259,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.005,densenet121,No Finding,sex,259,2
+demographic_parity,0,False,,0.003,densenet121,No Finding,sex,259,2
+equalized_odds,0,False,,0.001,densenet121,No Finding,sex,259,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,densenet121,No Finding,sex,259,2
+groupdro,0,False,,0.048,densenet121,No Finding,sex,259,2
+gce,0,False,At least 2 distinct labels are required,0.001,densenet121,No Finding,sex,259,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,densenet121,No Finding,sex,259,2
+hbac,1,True,,0.476,densenet121,Enlarged Cardiomediastinum,sex,90,2
+probe,0,True,,0.042,densenet121,Enlarged Cardiomediastinum,sex,90,2
+statistical,0,True,,4.601,densenet121,Enlarged Cardiomediastinum,sex,90,2
+geometric,0,True,,0.042,densenet121,Enlarged Cardiomediastinum,sex,90,2
+frequency,1,True,,0.035,densenet121,Enlarged Cardiomediastinum,sex,90,2
+bias_direction_pca,1,True,,0.007,densenet121,Enlarged Cardiomediastinum,sex,90,2
+sis,1,True,,0.627,densenet121,Enlarged Cardiomediastinum,sex,90,2
+demographic_parity,1,True,,0.062,densenet121,Enlarged Cardiomediastinum,sex,90,2
+equalized_odds,0,True,,0.064,densenet121,Enlarged Cardiomediastinum,sex,90,2
+intersectional,1,True,,0.018,densenet121,Enlarged Cardiomediastinum,sex,90,2
+groupdro,0,False,,0.01,densenet121,Enlarged Cardiomediastinum,sex,90,2
+gce,0,True,,0.002,densenet121,Enlarged Cardiomediastinum,sex,90,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,densenet121,Enlarged Cardiomediastinum,sex,90,2
+hbac,1,True,,0.861,densenet121,Cardiomegaly,sex,234,2
+probe,1,True,,0.024,densenet121,Cardiomegaly,sex,234,2
+statistical,0,True,,4.952,densenet121,Cardiomegaly,sex,234,2
+geometric,0,True,,0.24,densenet121,Cardiomegaly,sex,234,2
+frequency,1,True,,0.019,densenet121,Cardiomegaly,sex,234,2
+bias_direction_pca,1,True,,0.004,densenet121,Cardiomegaly,sex,234,2
+sis,1,True,,1.61,densenet121,Cardiomegaly,sex,234,2
+demographic_parity,1,True,,0.095,densenet121,Cardiomegaly,sex,234,2
+equalized_odds,0,True,,0.105,densenet121,Cardiomegaly,sex,234,2
+intersectional,1,True,,0.034,densenet121,Cardiomegaly,sex,234,2
+groupdro,0,False,,0.004,densenet121,Cardiomegaly,sex,234,2
+gce,0,True,,0.009,densenet121,Cardiomegaly,sex,234,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,densenet121,Cardiomegaly,sex,234,2
+hbac,1,True,,2.466,densenet121,Lung Opacity,sex,827,2
+probe,1,True,,0.048,densenet121,Lung Opacity,sex,827,2
+statistical,0,True,,5.524,densenet121,Lung Opacity,sex,827,2
+geometric,0,True,,1.089,densenet121,Lung Opacity,sex,827,2
+frequency,1,True,,0.145,densenet121,Lung Opacity,sex,827,2
+bias_direction_pca,1,True,,0.01,densenet121,Lung Opacity,sex,827,2
+sis,1,True,,4.786,densenet121,Lung Opacity,sex,827,2
+demographic_parity,1,True,,0.518,densenet121,Lung Opacity,sex,827,2
+equalized_odds,1,True,,0.577,densenet121,Lung Opacity,sex,827,2
+intersectional,1,True,,0.322,densenet121,Lung Opacity,sex,827,2
+groupdro,0,False,,0.021,densenet121,Lung Opacity,sex,827,2
+gce,0,True,,0.003,densenet121,Lung Opacity,sex,827,2
+ssa,0,False,splits parameter required for SSA analysis,0.003,densenet121,Lung Opacity,sex,827,2
+hbac,1,True,,0.486,densenet121,Lung Lesion,sex,102,2
+probe,0,True,,0.008,densenet121,Lung Lesion,sex,102,2
+statistical,0,True,,4.636,densenet121,Lung Lesion,sex,102,2
+geometric,0,True,,0.07,densenet121,Lung Lesion,sex,102,2
+frequency,1,True,,0.016,densenet121,Lung Lesion,sex,102,2
+bias_direction_pca,1,True,,0.005,densenet121,Lung Lesion,sex,102,2
+sis,1,True,,0.777,densenet121,Lung Lesion,sex,102,2
+demographic_parity,0,True,,0.095,densenet121,Lung Lesion,sex,102,2
+equalized_odds,0,True,,0.067,densenet121,Lung Lesion,sex,102,2
+intersectional,0,True,,0.026,densenet121,Lung Lesion,sex,102,2
+groupdro,0,False,,0.014,densenet121,Lung Lesion,sex,102,2
+gce,0,True,,0.001,densenet121,Lung Lesion,sex,102,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,densenet121,Lung Lesion,sex,102,2
+hbac,1,True,,1.949,densenet121,Edema,sex,366,2
+probe,1,True,,0.026,densenet121,Edema,sex,366,2
+statistical,0,True,,5.095,densenet121,Edema,sex,366,2
+geometric,0,True,,0.384,densenet121,Edema,sex,366,2
+frequency,1,True,,0.026,densenet121,Edema,sex,366,2
+bias_direction_pca,1,True,,0.004,densenet121,Edema,sex,366,2
+sis,1,True,,2.515,densenet121,Edema,sex,366,2
+demographic_parity,0,True,,0.075,densenet121,Edema,sex,366,2
+equalized_odds,0,True,,0.08,densenet121,Edema,sex,366,2
+intersectional,0,True,,0.042,densenet121,Edema,sex,366,2
+groupdro,0,False,,0.062,densenet121,Edema,sex,366,2
+gce,0,True,,0.004,densenet121,Edema,sex,366,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,densenet121,Edema,sex,366,2
+hbac,1,True,,0.88,densenet121,Consolidation,sex,129,2
+probe,1,True,,0.011,densenet121,Consolidation,sex,129,2
+statistical,0,True,,4.987,densenet121,Consolidation,sex,129,2
+geometric,0,True,,0.116,densenet121,Consolidation,sex,129,2
+frequency,1,True,,0.014,densenet121,Consolidation,sex,129,2
+bias_direction_pca,1,True,,0.004,densenet121,Consolidation,sex,129,2
+sis,1,True,,0.931,densenet121,Consolidation,sex,129,2
+demographic_parity,0,True,,0.067,densenet121,Consolidation,sex,129,2
+equalized_odds,0,True,,0.051,densenet121,Consolidation,sex,129,2
+intersectional,0,True,,0.015,densenet121,Consolidation,sex,129,2
+groupdro,0,False,,0.012,densenet121,Consolidation,sex,129,2
+gce,0,True,,0.002,densenet121,Consolidation,sex,129,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,densenet121,Consolidation,sex,129,2
+hbac,1,True,,0.643,densenet121,Atelectasis,sex,266,2
+probe,1,True,,0.033,densenet121,Atelectasis,sex,266,2
+statistical,0,True,,5.242,densenet121,Atelectasis,sex,266,2
+geometric,0,True,,0.334,densenet121,Atelectasis,sex,266,2
+frequency,1,True,,0.07,densenet121,Atelectasis,sex,266,2
+bias_direction_pca,1,True,,0.004,densenet121,Atelectasis,sex,266,2
+sis,1,True,,1.736,densenet121,Atelectasis,sex,266,2
+demographic_parity,1,True,,0.356,densenet121,Atelectasis,sex,266,2
+equalized_odds,0,True,,0.368,densenet121,Atelectasis,sex,266,2
+intersectional,1,True,,0.2,densenet121,Atelectasis,sex,266,2
+groupdro,0,False,,0.091,densenet121,Atelectasis,sex,266,2
+gce,0,True,,0.005,densenet121,Atelectasis,sex,266,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,densenet121,Atelectasis,sex,266,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.728,densenet121,Pneumothorax,sex,218,2
+probe,1,True,,0.024,densenet121,Pneumothorax,sex,218,2
+statistical,0,True,,5.068,densenet121,Pneumothorax,sex,218,2
+geometric,0,True,,0.271,densenet121,Pneumothorax,sex,218,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,densenet121,Pneumothorax,sex,218,2
+bias_direction_pca,1,True,,0.004,densenet121,Pneumothorax,sex,218,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 1",0.001,densenet121,Pneumothorax,sex,218,2
+demographic_parity,0,False,,0.001,densenet121,Pneumothorax,sex,218,2
+equalized_odds,0,False,,0.0,densenet121,Pneumothorax,sex,218,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,densenet121,Pneumothorax,sex,218,2
+groupdro,0,False,,0.061,densenet121,Pneumothorax,sex,218,2
+gce,0,False,At least 2 distinct labels are required,0.002,densenet121,Pneumothorax,sex,218,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,densenet121,Pneumothorax,sex,218,2
+hbac,1,True,,1.684,densenet121,Pleural Effusion,sex,730,2
+probe,1,True,,0.091,densenet121,Pleural Effusion,sex,730,2
+statistical,0,True,,5.455,densenet121,Pleural Effusion,sex,730,2
+geometric,0,True,,0.897,densenet121,Pleural Effusion,sex,730,2
+frequency,1,True,,0.247,densenet121,Pleural Effusion,sex,730,2
+bias_direction_pca,1,True,,0.01,densenet121,Pleural Effusion,sex,730,2
+sis,1,True,,4.512,densenet121,Pleural Effusion,sex,730,2
+demographic_parity,1,True,,0.984,densenet121,Pleural Effusion,sex,730,2
+equalized_odds,0,True,,1.151,densenet121,Pleural Effusion,sex,730,2
+intersectional,1,True,,0.659,densenet121,Pleural Effusion,sex,730,2
+groupdro,0,False,,0.014,densenet121,Pleural Effusion,sex,730,2
+gce,0,True,,0.008,densenet121,Pleural Effusion,sex,730,2
+ssa,0,False,splits parameter required for SSA analysis,0.003,densenet121,Pleural Effusion,sex,730,2
+hbac,1,True,,0.652,densenet121,Fracture,sex,83,2
+probe,1,True,,0.011,densenet121,Fracture,sex,83,2
+statistical,0,True,,4.741,densenet121,Fracture,sex,83,2
+geometric,0,True,,0.066,densenet121,Fracture,sex,83,2
+frequency,1,True,,0.031,densenet121,Fracture,sex,83,2
+bias_direction_pca,1,True,,0.004,densenet121,Fracture,sex,83,2
+sis,1,True,,0.616,densenet121,Fracture,sex,83,2
+demographic_parity,1,True,,0.1,densenet121,Fracture,sex,83,2
+equalized_odds,0,True,,0.149,densenet121,Fracture,sex,83,2
+intersectional,1,True,,0.015,densenet121,Fracture,sex,83,2
+groupdro,0,False,,0.007,densenet121,Fracture,sex,83,2
+gce,0,True,,0.002,densenet121,Fracture,sex,83,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,densenet121,Fracture,sex,83,2
+hbac,1,True,,1.935,densenet121,Support Devices,sex,933,2
+probe,1,True,,0.059,densenet121,Support Devices,sex,933,2
+statistical,0,True,,5.726,densenet121,Support Devices,sex,933,2
+geometric,0,True,,2.097,densenet121,Support Devices,sex,933,2
+frequency,1,True,,0.486,densenet121,Support Devices,sex,933,2
+bias_direction_pca,1,True,,0.009,densenet121,Support Devices,sex,933,2
+sis,1,True,,5.627,densenet121,Support Devices,sex,933,2
+demographic_parity,1,True,,2.002,densenet121,Support Devices,sex,933,2
+equalized_odds,1,True,,1.855,densenet121,Support Devices,sex,933,2
+intersectional,1,True,,1.464,densenet121,Support Devices,sex,933,2
+groupdro,0,False,,0.027,densenet121,Support Devices,sex,933,2
+gce,0,True,,0.092,densenet121,Support Devices,sex,933,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,densenet121,Support Devices,sex,933,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",1.126,vit_b_16,No Finding,sex,259,2
+probe,1,True,,0.034,vit_b_16,No Finding,sex,259,2
+statistical,0,True,,3.844,vit_b_16,No Finding,sex,259,2
+geometric,0,True,,0.389,vit_b_16,No Finding,sex,259,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,vit_b_16,No Finding,sex,259,2
+bias_direction_pca,1,True,,0.01,vit_b_16,No Finding,sex,259,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.007,vit_b_16,No Finding,sex,259,2
+demographic_parity,0,False,,0.001,vit_b_16,No Finding,sex,259,2
+equalized_odds,0,False,,0.001,vit_b_16,No Finding,sex,259,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,vit_b_16,No Finding,sex,259,2
+groupdro,0,False,,0.082,vit_b_16,No Finding,sex,259,2
+gce,0,False,At least 2 distinct labels are required,0.001,vit_b_16,No Finding,sex,259,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_16,No Finding,sex,259,2
+hbac,1,True,,0.818,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+probe,1,True,,0.01,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+statistical,0,True,,3.469,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+geometric,0,True,,0.112,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+frequency,1,True,,0.019,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+bias_direction_pca,1,True,,0.005,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+sis,1,True,,0.504,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+demographic_parity,1,True,,0.06,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+equalized_odds,0,True,,0.059,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+intersectional,1,True,,0.029,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+groupdro,0,False,,0.012,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+gce,0,True,,0.009,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_16,Enlarged Cardiomediastinum,sex,90,2
+hbac,1,True,,0.385,vit_b_16,Cardiomegaly,sex,234,2
+probe,1,True,,0.019,vit_b_16,Cardiomegaly,sex,234,2
+statistical,0,True,,3.73,vit_b_16,Cardiomegaly,sex,234,2
+geometric,0,True,,0.189,vit_b_16,Cardiomegaly,sex,234,2
+frequency,1,True,,0.041,vit_b_16,Cardiomegaly,sex,234,2
+bias_direction_pca,1,True,,0.003,vit_b_16,Cardiomegaly,sex,234,2
+sis,1,True,,1.194,vit_b_16,Cardiomegaly,sex,234,2
+demographic_parity,1,True,,0.092,vit_b_16,Cardiomegaly,sex,234,2
+equalized_odds,0,True,,0.084,vit_b_16,Cardiomegaly,sex,234,2
+intersectional,1,True,,0.064,vit_b_16,Cardiomegaly,sex,234,2
+groupdro,0,False,,0.007,vit_b_16,Cardiomegaly,sex,234,2
+gce,0,True,,0.008,vit_b_16,Cardiomegaly,sex,234,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_16,Cardiomegaly,sex,234,2
+hbac,1,True,,2.463,vit_b_16,Lung Opacity,sex,827,2
+probe,1,True,,0.041,vit_b_16,Lung Opacity,sex,827,2
+statistical,0,True,,4.201,vit_b_16,Lung Opacity,sex,827,2
+geometric,0,True,,0.907,vit_b_16,Lung Opacity,sex,827,2
+frequency,1,True,,0.114,vit_b_16,Lung Opacity,sex,827,2
+bias_direction_pca,1,True,,0.007,vit_b_16,Lung Opacity,sex,827,2
+sis,1,True,,3.78,vit_b_16,Lung Opacity,sex,827,2
+demographic_parity,1,True,,0.454,vit_b_16,Lung Opacity,sex,827,2
+equalized_odds,0,True,,0.569,vit_b_16,Lung Opacity,sex,827,2
+intersectional,1,True,,0.298,vit_b_16,Lung Opacity,sex,827,2
+groupdro,0,False,,0.106,vit_b_16,Lung Opacity,sex,827,2
+gce,0,True,,0.004,vit_b_16,Lung Opacity,sex,827,2
+ssa,0,False,splits parameter required for SSA analysis,0.003,vit_b_16,Lung Opacity,sex,827,2
+hbac,1,True,,0.857,vit_b_16,Lung Lesion,sex,102,2
+probe,1,True,,0.015,vit_b_16,Lung Lesion,sex,102,2
+statistical,0,True,,3.522,vit_b_16,Lung Lesion,sex,102,2
+geometric,0,True,,0.039,vit_b_16,Lung Lesion,sex,102,2
+frequency,1,True,,0.016,vit_b_16,Lung Lesion,sex,102,2
+bias_direction_pca,1,True,,0.005,vit_b_16,Lung Lesion,sex,102,2
+sis,1,True,,0.578,vit_b_16,Lung Lesion,sex,102,2
+demographic_parity,0,True,,0.084,vit_b_16,Lung Lesion,sex,102,2
+equalized_odds,0,True,,0.059,vit_b_16,Lung Lesion,sex,102,2
+intersectional,0,True,,0.039,vit_b_16,Lung Lesion,sex,102,2
+groupdro,0,False,,0.078,vit_b_16,Lung Lesion,sex,102,2
+gce,0,True,,0.003,vit_b_16,Lung Lesion,sex,102,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_16,Lung Lesion,sex,102,2
+hbac,1,True,,0.624,vit_b_16,Edema,sex,366,2
+probe,1,True,,0.015,vit_b_16,Edema,sex,366,2
+statistical,0,True,,3.901,vit_b_16,Edema,sex,366,2
+geometric,0,True,,0.382,vit_b_16,Edema,sex,366,2
+frequency,1,True,,0.052,vit_b_16,Edema,sex,366,2
+bias_direction_pca,1,True,,0.015,vit_b_16,Edema,sex,366,2
+sis,1,True,,2.022,vit_b_16,Edema,sex,366,2
+demographic_parity,0,True,,0.128,vit_b_16,Edema,sex,366,2
+equalized_odds,0,True,,0.11,vit_b_16,Edema,sex,366,2
+intersectional,0,True,,0.06,vit_b_16,Edema,sex,366,2
+groupdro,0,False,,0.005,vit_b_16,Edema,sex,366,2
+gce,0,True,,0.003,vit_b_16,Edema,sex,366,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_16,Edema,sex,366,2
+hbac,1,True,,0.758,vit_b_16,Consolidation,sex,129,2
+probe,0,True,,0.008,vit_b_16,Consolidation,sex,129,2
+statistical,0,True,,3.704,vit_b_16,Consolidation,sex,129,2
+geometric,0,True,,0.074,vit_b_16,Consolidation,sex,129,2
+frequency,1,True,,0.01,vit_b_16,Consolidation,sex,129,2
+bias_direction_pca,1,True,,0.003,vit_b_16,Consolidation,sex,129,2
+sis,1,True,,0.722,vit_b_16,Consolidation,sex,129,2
+demographic_parity,0,True,,0.048,vit_b_16,Consolidation,sex,129,2
+equalized_odds,0,True,,0.043,vit_b_16,Consolidation,sex,129,2
+intersectional,0,True,,0.053,vit_b_16,Consolidation,sex,129,2
+groupdro,0,False,,0.002,vit_b_16,Consolidation,sex,129,2
+gce,0,True,,0.002,vit_b_16,Consolidation,sex,129,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_16,Consolidation,sex,129,2
+hbac,1,True,,0.527,vit_b_16,Atelectasis,sex,266,2
+probe,1,True,,0.013,vit_b_16,Atelectasis,sex,266,2
+statistical,0,True,,3.774,vit_b_16,Atelectasis,sex,266,2
+geometric,0,True,,0.178,vit_b_16,Atelectasis,sex,266,2
+frequency,1,True,,0.056,vit_b_16,Atelectasis,sex,266,2
+bias_direction_pca,1,True,,0.011,vit_b_16,Atelectasis,sex,266,2
+sis,1,True,,1.264,vit_b_16,Atelectasis,sex,266,2
+demographic_parity,1,True,,0.117,vit_b_16,Atelectasis,sex,266,2
+equalized_odds,0,True,,0.142,vit_b_16,Atelectasis,sex,266,2
+intersectional,1,True,,0.071,vit_b_16,Atelectasis,sex,266,2
+groupdro,0,False,,0.049,vit_b_16,Atelectasis,sex,266,2
+gce,0,True,,0.003,vit_b_16,Atelectasis,sex,266,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_16,Atelectasis,sex,266,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.557,vit_b_16,Pneumothorax,sex,218,2
+probe,0,True,,0.02,vit_b_16,Pneumothorax,sex,218,2
+statistical,0,True,,3.74,vit_b_16,Pneumothorax,sex,218,2
+geometric,0,True,,0.195,vit_b_16,Pneumothorax,sex,218,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,vit_b_16,Pneumothorax,sex,218,2
+bias_direction_pca,1,True,,0.004,vit_b_16,Pneumothorax,sex,218,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 1",0.001,vit_b_16,Pneumothorax,sex,218,2
+demographic_parity,0,False,,0.0,vit_b_16,Pneumothorax,sex,218,2
+equalized_odds,0,False,,0.0,vit_b_16,Pneumothorax,sex,218,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,vit_b_16,Pneumothorax,sex,218,2
+groupdro,0,False,,0.027,vit_b_16,Pneumothorax,sex,218,2
+gce,0,False,At least 2 distinct labels are required,0.001,vit_b_16,Pneumothorax,sex,218,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_16,Pneumothorax,sex,218,2
+hbac,1,True,,1.11,vit_b_16,Pleural Effusion,sex,730,2
+probe,1,True,,0.037,vit_b_16,Pleural Effusion,sex,730,2
+statistical,0,True,,4.04,vit_b_16,Pleural Effusion,sex,730,2
+geometric,0,True,,0.719,vit_b_16,Pleural Effusion,sex,730,2
+frequency,1,True,,0.137,vit_b_16,Pleural Effusion,sex,730,2
+bias_direction_pca,1,True,,0.007,vit_b_16,Pleural Effusion,sex,730,2
+sis,1,True,,3.51,vit_b_16,Pleural Effusion,sex,730,2
+demographic_parity,1,True,,0.365,vit_b_16,Pleural Effusion,sex,730,2
+equalized_odds,0,True,,0.412,vit_b_16,Pleural Effusion,sex,730,2
+intersectional,1,True,,0.202,vit_b_16,Pleural Effusion,sex,730,2
+groupdro,0,False,,0.062,vit_b_16,Pleural Effusion,sex,730,2
+gce,0,True,,0.007,vit_b_16,Pleural Effusion,sex,730,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_16,Pleural Effusion,sex,730,2
+hbac,1,True,,0.517,vit_b_16,Fracture,sex,83,2
+probe,1,True,,0.015,vit_b_16,Fracture,sex,83,2
+statistical,0,True,,3.488,vit_b_16,Fracture,sex,83,2
+geometric,0,True,,0.055,vit_b_16,Fracture,sex,83,2
+frequency,1,True,,0.016,vit_b_16,Fracture,sex,83,2
+bias_direction_pca,1,True,,0.007,vit_b_16,Fracture,sex,83,2
+sis,1,True,,0.492,vit_b_16,Fracture,sex,83,2
+demographic_parity,1,True,,0.057,vit_b_16,Fracture,sex,83,2
+equalized_odds,0,True,,0.06,vit_b_16,Fracture,sex,83,2
+intersectional,1,True,,0.036,vit_b_16,Fracture,sex,83,2
+groupdro,0,False,,0.009,vit_b_16,Fracture,sex,83,2
+gce,0,True,,0.001,vit_b_16,Fracture,sex,83,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_16,Fracture,sex,83,2
+hbac,1,True,,3.162,vit_b_16,Support Devices,sex,933,2
+probe,1,True,,0.039,vit_b_16,Support Devices,sex,933,2
+statistical,0,True,,4.167,vit_b_16,Support Devices,sex,933,2
+geometric,0,True,,1.155,vit_b_16,Support Devices,sex,933,2
+frequency,1,True,,0.184,vit_b_16,Support Devices,sex,933,2
+bias_direction_pca,1,True,,0.013,vit_b_16,Support Devices,sex,933,2
+sis,1,True,,3.944,vit_b_16,Support Devices,sex,933,2
+demographic_parity,1,True,,0.674,vit_b_16,Support Devices,sex,933,2
+equalized_odds,1,True,,0.773,vit_b_16,Support Devices,sex,933,2
+intersectional,1,True,,0.345,vit_b_16,Support Devices,sex,933,2
+groupdro,0,False,,0.025,vit_b_16,Support Devices,sex,933,2
+gce,0,True,,0.009,vit_b_16,Support Devices,sex,933,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,vit_b_16,Support Devices,sex,933,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.693,vit_b_32,No Finding,sex,259,2
+probe,1,True,,0.018,vit_b_32,No Finding,sex,259,2
+statistical,0,True,,3.747,vit_b_32,No Finding,sex,259,2
+geometric,0,True,,0.233,vit_b_32,No Finding,sex,259,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.003,vit_b_32,No Finding,sex,259,2
+bias_direction_pca,1,True,,0.004,vit_b_32,No Finding,sex,259,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.001,vit_b_32,No Finding,sex,259,2
+demographic_parity,0,False,,0.001,vit_b_32,No Finding,sex,259,2
+equalized_odds,0,False,,0.001,vit_b_32,No Finding,sex,259,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,vit_b_32,No Finding,sex,259,2
+groupdro,0,False,,0.034,vit_b_32,No Finding,sex,259,2
+gce,0,False,At least 2 distinct labels are required,0.001,vit_b_32,No Finding,sex,259,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_32,No Finding,sex,259,2
+hbac,1,True,,0.552,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+probe,1,True,,0.017,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+statistical,0,True,,3.461,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+geometric,0,True,,0.07,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+frequency,1,True,,0.016,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+bias_direction_pca,1,True,,0.003,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+sis,1,True,,0.517,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+demographic_parity,1,True,,0.106,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+equalized_odds,0,True,,0.124,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+intersectional,1,True,,0.064,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+groupdro,0,False,,0.004,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+gce,0,True,,0.005,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_32,Enlarged Cardiomediastinum,sex,90,2
+hbac,1,True,,0.461,vit_b_32,Cardiomegaly,sex,234,2
+probe,1,True,,0.018,vit_b_32,Cardiomegaly,sex,234,2
+statistical,0,True,,3.83,vit_b_32,Cardiomegaly,sex,234,2
+geometric,0,True,,0.252,vit_b_32,Cardiomegaly,sex,234,2
+frequency,1,True,,0.029,vit_b_32,Cardiomegaly,sex,234,2
+bias_direction_pca,1,True,,0.004,vit_b_32,Cardiomegaly,sex,234,2
+sis,1,True,,1.221,vit_b_32,Cardiomegaly,sex,234,2
+demographic_parity,1,True,,0.127,vit_b_32,Cardiomegaly,sex,234,2
+equalized_odds,0,True,,0.123,vit_b_32,Cardiomegaly,sex,234,2
+intersectional,1,True,,0.058,vit_b_32,Cardiomegaly,sex,234,2
+groupdro,0,False,,0.005,vit_b_32,Cardiomegaly,sex,234,2
+gce,0,True,,0.002,vit_b_32,Cardiomegaly,sex,234,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_32,Cardiomegaly,sex,234,2
+hbac,1,True,,1.215,vit_b_32,Lung Opacity,sex,827,2
+probe,1,True,,0.106,vit_b_32,Lung Opacity,sex,827,2
+statistical,0,True,,4.243,vit_b_32,Lung Opacity,sex,827,2
+geometric,0,True,,1.473,vit_b_32,Lung Opacity,sex,827,2
+frequency,1,True,,0.195,vit_b_32,Lung Opacity,sex,827,2
+bias_direction_pca,1,True,,0.008,vit_b_32,Lung Opacity,sex,827,2
+sis,1,True,,3.673,vit_b_32,Lung Opacity,sex,827,2
+demographic_parity,1,True,,0.759,vit_b_32,Lung Opacity,sex,827,2
+equalized_odds,0,True,,0.738,vit_b_32,Lung Opacity,sex,827,2
+intersectional,1,True,,0.402,vit_b_32,Lung Opacity,sex,827,2
+groupdro,0,False,,0.009,vit_b_32,Lung Opacity,sex,827,2
+gce,0,True,,0.006,vit_b_32,Lung Opacity,sex,827,2
+ssa,0,False,splits parameter required for SSA analysis,0.008,vit_b_32,Lung Opacity,sex,827,2
+hbac,1,True,,0.384,vit_b_32,Lung Lesion,sex,102,2
+probe,1,True,,0.023,vit_b_32,Lung Lesion,sex,102,2
+statistical,0,True,,3.57,vit_b_32,Lung Lesion,sex,102,2
+geometric,0,True,,0.057,vit_b_32,Lung Lesion,sex,102,2
+frequency,1,True,,0.023,vit_b_32,Lung Lesion,sex,102,2
+bias_direction_pca,1,True,,0.004,vit_b_32,Lung Lesion,sex,102,2
+sis,1,True,,0.647,vit_b_32,Lung Lesion,sex,102,2
+demographic_parity,0,True,,0.093,vit_b_32,Lung Lesion,sex,102,2
+equalized_odds,0,True,,0.072,vit_b_32,Lung Lesion,sex,102,2
+intersectional,0,True,,0.048,vit_b_32,Lung Lesion,sex,102,2
+groupdro,0,False,,0.003,vit_b_32,Lung Lesion,sex,102,2
+gce,0,True,,0.002,vit_b_32,Lung Lesion,sex,102,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_32,Lung Lesion,sex,102,2
+hbac,1,True,,0.82,vit_b_32,Edema,sex,366,2
+probe,1,True,,0.037,vit_b_32,Edema,sex,366,2
+statistical,0,True,,3.887,vit_b_32,Edema,sex,366,2
+geometric,0,True,,0.509,vit_b_32,Edema,sex,366,2
+frequency,1,True,,0.05,vit_b_32,Edema,sex,366,2
+bias_direction_pca,1,True,,0.005,vit_b_32,Edema,sex,366,2
+sis,1,True,,1.872,vit_b_32,Edema,sex,366,2
+demographic_parity,0,True,,0.17,vit_b_32,Edema,sex,366,2
+equalized_odds,0,True,,0.154,vit_b_32,Edema,sex,366,2
+intersectional,0,True,,0.077,vit_b_32,Edema,sex,366,2
+groupdro,0,False,,0.003,vit_b_32,Edema,sex,366,2
+gce,0,True,,0.002,vit_b_32,Edema,sex,366,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_32,Edema,sex,366,2
+hbac,1,True,,0.533,vit_b_32,Consolidation,sex,129,2
+probe,1,True,,0.007,vit_b_32,Consolidation,sex,129,2
+statistical,0,True,,3.731,vit_b_32,Consolidation,sex,129,2
+geometric,0,True,,0.07,vit_b_32,Consolidation,sex,129,2
+frequency,1,True,,0.025,vit_b_32,Consolidation,sex,129,2
+bias_direction_pca,1,True,,0.003,vit_b_32,Consolidation,sex,129,2
+sis,1,True,,0.715,vit_b_32,Consolidation,sex,129,2
+demographic_parity,0,True,,0.031,vit_b_32,Consolidation,sex,129,2
+equalized_odds,0,True,,0.061,vit_b_32,Consolidation,sex,129,2
+intersectional,0,True,,0.029,vit_b_32,Consolidation,sex,129,2
+groupdro,0,False,,0.005,vit_b_32,Consolidation,sex,129,2
+gce,0,True,,0.001,vit_b_32,Consolidation,sex,129,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_32,Consolidation,sex,129,2
+hbac,1,True,,0.545,vit_b_32,Atelectasis,sex,266,2
+probe,1,True,,0.032,vit_b_32,Atelectasis,sex,266,2
+statistical,0,True,,3.771,vit_b_32,Atelectasis,sex,266,2
+geometric,0,True,,0.187,vit_b_32,Atelectasis,sex,266,2
+frequency,1,True,,0.042,vit_b_32,Atelectasis,sex,266,2
+bias_direction_pca,1,True,,0.005,vit_b_32,Atelectasis,sex,266,2
+sis,1,True,,1.168,vit_b_32,Atelectasis,sex,266,2
+demographic_parity,1,True,,0.141,vit_b_32,Atelectasis,sex,266,2
+equalized_odds,0,True,,0.145,vit_b_32,Atelectasis,sex,266,2
+intersectional,1,True,,0.091,vit_b_32,Atelectasis,sex,266,2
+groupdro,0,False,,0.034,vit_b_32,Atelectasis,sex,266,2
+gce,0,True,,0.004,vit_b_32,Atelectasis,sex,266,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_32,Atelectasis,sex,266,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.403,vit_b_32,Pneumothorax,sex,218,2
+probe,1,True,,0.019,vit_b_32,Pneumothorax,sex,218,2
+statistical,0,True,,3.742,vit_b_32,Pneumothorax,sex,218,2
+geometric,0,True,,0.176,vit_b_32,Pneumothorax,sex,218,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,vit_b_32,Pneumothorax,sex,218,2
+bias_direction_pca,1,True,,0.004,vit_b_32,Pneumothorax,sex,218,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 1",0.001,vit_b_32,Pneumothorax,sex,218,2
+demographic_parity,0,False,,0.0,vit_b_32,Pneumothorax,sex,218,2
+equalized_odds,0,False,,0.0,vit_b_32,Pneumothorax,sex,218,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,vit_b_32,Pneumothorax,sex,218,2
+groupdro,0,False,,0.01,vit_b_32,Pneumothorax,sex,218,2
+gce,0,False,At least 2 distinct labels are required,0.001,vit_b_32,Pneumothorax,sex,218,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,vit_b_32,Pneumothorax,sex,218,2
+hbac,1,True,,1.568,vit_b_32,Pleural Effusion,sex,730,2
+probe,1,True,,0.037,vit_b_32,Pleural Effusion,sex,730,2
+statistical,0,True,,4.064,vit_b_32,Pleural Effusion,sex,730,2
+geometric,0,True,,0.737,vit_b_32,Pleural Effusion,sex,730,2
+frequency,1,True,,0.093,vit_b_32,Pleural Effusion,sex,730,2
+bias_direction_pca,1,True,,0.008,vit_b_32,Pleural Effusion,sex,730,2
+sis,1,True,,3.421,vit_b_32,Pleural Effusion,sex,730,2
+demographic_parity,1,True,,0.463,vit_b_32,Pleural Effusion,sex,730,2
+equalized_odds,0,True,,0.48,vit_b_32,Pleural Effusion,sex,730,2
+intersectional,1,True,,0.231,vit_b_32,Pleural Effusion,sex,730,2
+groupdro,0,False,,0.05,vit_b_32,Pleural Effusion,sex,730,2
+gce,0,True,,0.019,vit_b_32,Pleural Effusion,sex,730,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_32,Pleural Effusion,sex,730,2
+hbac,1,True,,0.454,vit_b_32,Fracture,sex,83,2
+probe,0,True,,0.015,vit_b_32,Fracture,sex,83,2
+statistical,0,True,,3.585,vit_b_32,Fracture,sex,83,2
+geometric,0,True,,0.027,vit_b_32,Fracture,sex,83,2
+frequency,1,True,,0.024,vit_b_32,Fracture,sex,83,2
+bias_direction_pca,1,True,,0.002,vit_b_32,Fracture,sex,83,2
+sis,1,True,,0.459,vit_b_32,Fracture,sex,83,2
+demographic_parity,1,True,,0.056,vit_b_32,Fracture,sex,83,2
+equalized_odds,0,True,,0.105,vit_b_32,Fracture,sex,83,2
+intersectional,1,True,,0.052,vit_b_32,Fracture,sex,83,2
+groupdro,0,False,,0.035,vit_b_32,Fracture,sex,83,2
+gce,0,True,,0.001,vit_b_32,Fracture,sex,83,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,vit_b_32,Fracture,sex,83,2
+hbac,1,True,,2.435,vit_b_32,Support Devices,sex,933,2
+probe,1,True,,0.085,vit_b_32,Support Devices,sex,933,2
+statistical,0,True,,4.371,vit_b_32,Support Devices,sex,933,2
+geometric,0,True,,1.595,vit_b_32,Support Devices,sex,933,2
+frequency,1,True,,0.196,vit_b_32,Support Devices,sex,933,2
+bias_direction_pca,1,True,,0.021,vit_b_32,Support Devices,sex,933,2
+sis,1,True,,4.216,vit_b_32,Support Devices,sex,933,2
+demographic_parity,1,True,,0.778,vit_b_32,Support Devices,sex,933,2
+equalized_odds,0,True,,0.71,vit_b_32,Support Devices,sex,933,2
+intersectional,1,True,,0.414,vit_b_32,Support Devices,sex,933,2
+groupdro,0,False,,0.08,vit_b_32,Support Devices,sex,933,2
+gce,0,True,,0.01,vit_b_32,Support Devices,sex,933,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,vit_b_32,Support Devices,sex,933,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.575,dinov2_base,No Finding,sex,259,2
+probe,1,True,,0.02,dinov2_base,No Finding,sex,259,2
+statistical,0,True,,3.75,dinov2_base,No Finding,sex,259,2
+geometric,0,True,,0.347,dinov2_base,No Finding,sex,259,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,dinov2_base,No Finding,sex,259,2
+bias_direction_pca,1,True,,0.003,dinov2_base,No Finding,sex,259,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.001,dinov2_base,No Finding,sex,259,2
+demographic_parity,0,False,,0.001,dinov2_base,No Finding,sex,259,2
+equalized_odds,0,False,,0.001,dinov2_base,No Finding,sex,259,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,dinov2_base,No Finding,sex,259,2
+groupdro,0,False,,0.082,dinov2_base,No Finding,sex,259,2
+gce,0,False,At least 2 distinct labels are required,0.001,dinov2_base,No Finding,sex,259,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,dinov2_base,No Finding,sex,259,2
+hbac,1,True,,1.255,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+probe,1,True,,0.025,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+statistical,0,True,,3.484,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+geometric,0,True,,0.042,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+frequency,1,True,,0.035,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+bias_direction_pca,1,True,,0.004,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+sis,1,True,,0.527,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+demographic_parity,1,True,,0.059,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+equalized_odds,0,True,,0.076,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+intersectional,1,True,,0.059,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+groupdro,0,False,,0.091,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+gce,0,True,,0.003,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,dinov2_base,Enlarged Cardiomediastinum,sex,90,2
+hbac,1,True,,0.745,dinov2_base,Cardiomegaly,sex,234,2
+probe,1,True,,0.056,dinov2_base,Cardiomegaly,sex,234,2
+statistical,0,True,,3.775,dinov2_base,Cardiomegaly,sex,234,2
+geometric,0,True,,0.174,dinov2_base,Cardiomegaly,sex,234,2
+frequency,1,True,,0.044,dinov2_base,Cardiomegaly,sex,234,2
+bias_direction_pca,1,True,,0.003,dinov2_base,Cardiomegaly,sex,234,2
+sis,1,True,,1.204,dinov2_base,Cardiomegaly,sex,234,2
+demographic_parity,1,True,,0.086,dinov2_base,Cardiomegaly,sex,234,2
+equalized_odds,0,True,,0.122,dinov2_base,Cardiomegaly,sex,234,2
+intersectional,1,True,,0.055,dinov2_base,Cardiomegaly,sex,234,2
+groupdro,0,False,,0.003,dinov2_base,Cardiomegaly,sex,234,2
+gce,0,True,,0.001,dinov2_base,Cardiomegaly,sex,234,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,dinov2_base,Cardiomegaly,sex,234,2
+hbac,1,True,,1.095,dinov2_base,Lung Opacity,sex,827,2
+probe,1,True,,0.039,dinov2_base,Lung Opacity,sex,827,2
+statistical,0,True,,4.223,dinov2_base,Lung Opacity,sex,827,2
+geometric,0,True,,1.116,dinov2_base,Lung Opacity,sex,827,2
+frequency,1,True,,0.156,dinov2_base,Lung Opacity,sex,827,2
+bias_direction_pca,1,True,,0.007,dinov2_base,Lung Opacity,sex,827,2
+sis,1,True,,4.044,dinov2_base,Lung Opacity,sex,827,2
+demographic_parity,1,True,,1.402,dinov2_base,Lung Opacity,sex,827,2
+equalized_odds,0,True,,0.773,dinov2_base,Lung Opacity,sex,827,2
+intersectional,1,True,,0.336,dinov2_base,Lung Opacity,sex,827,2
+groupdro,0,False,,0.029,dinov2_base,Lung Opacity,sex,827,2
+gce,0,True,,0.012,dinov2_base,Lung Opacity,sex,827,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,dinov2_base,Lung Opacity,sex,827,2
+hbac,1,True,,0.6,dinov2_base,Lung Lesion,sex,102,2
+probe,1,True,,0.013,dinov2_base,Lung Lesion,sex,102,2
+statistical,0,True,,3.609,dinov2_base,Lung Lesion,sex,102,2
+geometric,0,True,,0.088,dinov2_base,Lung Lesion,sex,102,2
+frequency,1,True,,0.026,dinov2_base,Lung Lesion,sex,102,2
+bias_direction_pca,1,True,,0.003,dinov2_base,Lung Lesion,sex,102,2
+sis,1,True,,0.602,dinov2_base,Lung Lesion,sex,102,2
+demographic_parity,0,True,,0.073,dinov2_base,Lung Lesion,sex,102,2
+equalized_odds,0,True,,0.107,dinov2_base,Lung Lesion,sex,102,2
+intersectional,0,True,,0.02,dinov2_base,Lung Lesion,sex,102,2
+groupdro,0,False,,0.042,dinov2_base,Lung Lesion,sex,102,2
+gce,0,True,,0.002,dinov2_base,Lung Lesion,sex,102,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,dinov2_base,Lung Lesion,sex,102,2
+hbac,1,True,,1.275,dinov2_base,Edema,sex,366,2
+probe,1,True,,0.016,dinov2_base,Edema,sex,366,2
+statistical,0,True,,3.83,dinov2_base,Edema,sex,366,2
+geometric,0,True,,0.672,dinov2_base,Edema,sex,366,2
+frequency,1,True,,0.055,dinov2_base,Edema,sex,366,2
+bias_direction_pca,1,True,,0.005,dinov2_base,Edema,sex,366,2
+sis,1,True,,1.936,dinov2_base,Edema,sex,366,2
+demographic_parity,0,True,,0.091,dinov2_base,Edema,sex,366,2
+equalized_odds,0,True,,0.222,dinov2_base,Edema,sex,366,2
+intersectional,0,True,,0.334,dinov2_base,Edema,sex,366,2
+groupdro,0,False,,0.011,dinov2_base,Edema,sex,366,2
+gce,0,True,,0.005,dinov2_base,Edema,sex,366,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,dinov2_base,Edema,sex,366,2
+hbac,1,True,,0.797,dinov2_base,Consolidation,sex,129,2
+probe,1,True,,0.038,dinov2_base,Consolidation,sex,129,2
+statistical,0,True,,3.687,dinov2_base,Consolidation,sex,129,2
+geometric,0,True,,0.07,dinov2_base,Consolidation,sex,129,2
+frequency,1,True,,0.02,dinov2_base,Consolidation,sex,129,2
+bias_direction_pca,1,True,,0.005,dinov2_base,Consolidation,sex,129,2
+sis,1,True,,0.722,dinov2_base,Consolidation,sex,129,2
+demographic_parity,0,True,,0.038,dinov2_base,Consolidation,sex,129,2
+equalized_odds,0,True,,0.043,dinov2_base,Consolidation,sex,129,2
+intersectional,0,True,,0.034,dinov2_base,Consolidation,sex,129,2
+groupdro,0,False,,0.075,dinov2_base,Consolidation,sex,129,2
+gce,0,True,,0.002,dinov2_base,Consolidation,sex,129,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,dinov2_base,Consolidation,sex,129,2
+hbac,1,True,,0.649,dinov2_base,Atelectasis,sex,266,2
+probe,1,True,,0.018,dinov2_base,Atelectasis,sex,266,2
+statistical,0,True,,3.774,dinov2_base,Atelectasis,sex,266,2
+geometric,0,True,,0.201,dinov2_base,Atelectasis,sex,266,2
+frequency,1,True,,0.051,dinov2_base,Atelectasis,sex,266,2
+bias_direction_pca,1,True,,0.005,dinov2_base,Atelectasis,sex,266,2
+sis,1,True,,1.236,dinov2_base,Atelectasis,sex,266,2
+demographic_parity,1,True,,0.224,dinov2_base,Atelectasis,sex,266,2
+equalized_odds,0,True,,0.213,dinov2_base,Atelectasis,sex,266,2
+intersectional,1,True,,0.147,dinov2_base,Atelectasis,sex,266,2
+groupdro,0,False,,0.034,dinov2_base,Atelectasis,sex,266,2
+gce,0,True,,0.011,dinov2_base,Atelectasis,sex,266,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,dinov2_base,Atelectasis,sex,266,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.714,dinov2_base,Pneumothorax,sex,218,2
+probe,1,True,,0.007,dinov2_base,Pneumothorax,sex,218,2
+statistical,0,True,,3.742,dinov2_base,Pneumothorax,sex,218,2
+geometric,0,True,,0.277,dinov2_base,Pneumothorax,sex,218,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,dinov2_base,Pneumothorax,sex,218,2
+bias_direction_pca,1,True,,0.004,dinov2_base,Pneumothorax,sex,218,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 1",0.001,dinov2_base,Pneumothorax,sex,218,2
+demographic_parity,0,False,,0.001,dinov2_base,Pneumothorax,sex,218,2
+equalized_odds,0,False,,0.0,dinov2_base,Pneumothorax,sex,218,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,dinov2_base,Pneumothorax,sex,218,2
+groupdro,0,False,,0.047,dinov2_base,Pneumothorax,sex,218,2
+gce,0,False,At least 2 distinct labels are required,0.001,dinov2_base,Pneumothorax,sex,218,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,dinov2_base,Pneumothorax,sex,218,2
+hbac,1,True,,1.422,dinov2_base,Pleural Effusion,sex,730,2
+probe,1,True,,0.037,dinov2_base,Pleural Effusion,sex,730,2
+statistical,0,True,,4.081,dinov2_base,Pleural Effusion,sex,730,2
+geometric,0,True,,0.821,dinov2_base,Pleural Effusion,sex,730,2
+frequency,1,True,,0.115,dinov2_base,Pleural Effusion,sex,730,2
+bias_direction_pca,1,True,,0.006,dinov2_base,Pleural Effusion,sex,730,2
+sis,1,True,,3.335,dinov2_base,Pleural Effusion,sex,730,2
+demographic_parity,1,True,,0.468,dinov2_base,Pleural Effusion,sex,730,2
+equalized_odds,0,True,,0.498,dinov2_base,Pleural Effusion,sex,730,2
+intersectional,1,True,,0.271,dinov2_base,Pleural Effusion,sex,730,2
+groupdro,0,False,,0.099,dinov2_base,Pleural Effusion,sex,730,2
+gce,0,True,,0.007,dinov2_base,Pleural Effusion,sex,730,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,dinov2_base,Pleural Effusion,sex,730,2
+hbac,1,True,,0.719,dinov2_base,Fracture,sex,83,2
+probe,1,True,,0.018,dinov2_base,Fracture,sex,83,2
+statistical,0,True,,3.587,dinov2_base,Fracture,sex,83,2
+geometric,0,True,,0.046,dinov2_base,Fracture,sex,83,2
+frequency,1,True,,0.019,dinov2_base,Fracture,sex,83,2
+bias_direction_pca,1,True,,0.004,dinov2_base,Fracture,sex,83,2
+sis,1,True,,0.487,dinov2_base,Fracture,sex,83,2
+demographic_parity,1,True,,0.075,dinov2_base,Fracture,sex,83,2
+equalized_odds,0,True,,0.092,dinov2_base,Fracture,sex,83,2
+intersectional,1,True,,0.029,dinov2_base,Fracture,sex,83,2
+groupdro,0,False,,0.065,dinov2_base,Fracture,sex,83,2
+gce,0,True,,0.002,dinov2_base,Fracture,sex,83,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,dinov2_base,Fracture,sex,83,2
+hbac,1,True,,2.073,dinov2_base,Support Devices,sex,933,2
+probe,1,True,,0.048,dinov2_base,Support Devices,sex,933,2
+statistical,0,True,,4.263,dinov2_base,Support Devices,sex,933,2
+geometric,0,True,,1.011,dinov2_base,Support Devices,sex,933,2
+frequency,1,True,,0.284,dinov2_base,Support Devices,sex,933,2
+bias_direction_pca,1,True,,0.009,dinov2_base,Support Devices,sex,933,2
+sis,1,True,,4.099,dinov2_base,Support Devices,sex,933,2
+demographic_parity,1,True,,0.93,dinov2_base,Support Devices,sex,933,2
+equalized_odds,1,True,,1.011,dinov2_base,Support Devices,sex,933,2
+intersectional,1,True,,0.508,dinov2_base,Support Devices,sex,933,2
+groupdro,0,False,,0.073,dinov2_base,Support Devices,sex,933,2
+gce,0,True,,0.009,dinov2_base,Support Devices,sex,933,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,dinov2_base,Support Devices,sex,933,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.536,rad_dino,No Finding,sex,259,2
+probe,1,True,,0.017,rad_dino,No Finding,sex,259,2
+statistical,0,True,,3.774,rad_dino,No Finding,sex,259,2
+geometric,0,True,,0.221,rad_dino,No Finding,sex,259,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,rad_dino,No Finding,sex,259,2
+bias_direction_pca,1,True,,0.004,rad_dino,No Finding,sex,259,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.001,rad_dino,No Finding,sex,259,2
+demographic_parity,0,False,,0.001,rad_dino,No Finding,sex,259,2
+equalized_odds,0,False,,0.001,rad_dino,No Finding,sex,259,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.003,rad_dino,No Finding,sex,259,2
+groupdro,0,False,,0.009,rad_dino,No Finding,sex,259,2
+gce,0,False,At least 2 distinct labels are required,0.0,rad_dino,No Finding,sex,259,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,rad_dino,No Finding,sex,259,2
+hbac,1,True,,1.317,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+probe,1,True,,0.009,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+statistical,0,True,,3.459,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+geometric,0,True,,0.055,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+frequency,1,True,,0.012,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+bias_direction_pca,1,True,,0.003,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+sis,1,True,,0.502,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+demographic_parity,1,True,,0.035,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+equalized_odds,0,True,,0.048,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+intersectional,1,True,,0.033,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+groupdro,0,False,,0.075,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+gce,0,True,,0.019,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,rad_dino,Enlarged Cardiomediastinum,sex,90,2
+hbac,1,True,,0.565,rad_dino,Cardiomegaly,sex,234,2
+probe,1,True,,0.008,rad_dino,Cardiomegaly,sex,234,2
+statistical,0,True,,3.818,rad_dino,Cardiomegaly,sex,234,2
+geometric,0,True,,0.308,rad_dino,Cardiomegaly,sex,234,2
+frequency,1,True,,0.039,rad_dino,Cardiomegaly,sex,234,2
+bias_direction_pca,1,True,,0.01,rad_dino,Cardiomegaly,sex,234,2
+sis,1,True,,1.238,rad_dino,Cardiomegaly,sex,234,2
+demographic_parity,1,True,,0.05,rad_dino,Cardiomegaly,sex,234,2
+equalized_odds,0,True,,0.047,rad_dino,Cardiomegaly,sex,234,2
+intersectional,1,True,,0.035,rad_dino,Cardiomegaly,sex,234,2
+groupdro,0,False,,0.046,rad_dino,Cardiomegaly,sex,234,2
+gce,0,True,,0.012,rad_dino,Cardiomegaly,sex,234,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,rad_dino,Cardiomegaly,sex,234,2
+hbac,1,True,,1.552,rad_dino,Lung Opacity,sex,827,2
+probe,1,True,,0.033,rad_dino,Lung Opacity,sex,827,2
+statistical,0,True,,4.183,rad_dino,Lung Opacity,sex,827,2
+geometric,0,True,,1.116,rad_dino,Lung Opacity,sex,827,2
+frequency,1,True,,0.044,rad_dino,Lung Opacity,sex,827,2
+bias_direction_pca,1,True,,0.007,rad_dino,Lung Opacity,sex,827,2
+sis,1,True,,3.739,rad_dino,Lung Opacity,sex,827,2
+demographic_parity,1,True,,0.181,rad_dino,Lung Opacity,sex,827,2
+equalized_odds,0,True,,0.161,rad_dino,Lung Opacity,sex,827,2
+intersectional,1,True,,0.103,rad_dino,Lung Opacity,sex,827,2
+groupdro,0,False,,0.011,rad_dino,Lung Opacity,sex,827,2
+gce,0,True,,0.058,rad_dino,Lung Opacity,sex,827,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,rad_dino,Lung Opacity,sex,827,2
+hbac,1,True,,0.502,rad_dino,Lung Lesion,sex,102,2
+probe,1,True,,0.009,rad_dino,Lung Lesion,sex,102,2
+statistical,0,True,,3.499,rad_dino,Lung Lesion,sex,102,2
+geometric,0,True,,0.104,rad_dino,Lung Lesion,sex,102,2
+frequency,1,True,,0.013,rad_dino,Lung Lesion,sex,102,2
+bias_direction_pca,1,True,,0.004,rad_dino,Lung Lesion,sex,102,2
+sis,1,True,,0.586,rad_dino,Lung Lesion,sex,102,2
+demographic_parity,0,True,,0.046,rad_dino,Lung Lesion,sex,102,2
+equalized_odds,0,True,,0.051,rad_dino,Lung Lesion,sex,102,2
+intersectional,0,True,,0.028,rad_dino,Lung Lesion,sex,102,2
+groupdro,0,False,,0.024,rad_dino,Lung Lesion,sex,102,2
+gce,0,True,,0.004,rad_dino,Lung Lesion,sex,102,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,rad_dino,Lung Lesion,sex,102,2
+hbac,1,True,,1.15,rad_dino,Edema,sex,366,2
+probe,1,True,,0.015,rad_dino,Edema,sex,366,2
+statistical,0,True,,3.908,rad_dino,Edema,sex,366,2
+geometric,0,True,,0.365,rad_dino,Edema,sex,366,2
+frequency,1,True,,0.017,rad_dino,Edema,sex,366,2
+bias_direction_pca,1,True,,0.005,rad_dino,Edema,sex,366,2
+sis,1,True,,1.865,rad_dino,Edema,sex,366,2
+demographic_parity,0,True,,0.035,rad_dino,Edema,sex,366,2
+equalized_odds,0,True,,0.038,rad_dino,Edema,sex,366,2
+intersectional,0,True,,0.026,rad_dino,Edema,sex,366,2
+groupdro,0,False,,0.048,rad_dino,Edema,sex,366,2
+gce,0,True,,0.008,rad_dino,Edema,sex,366,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,rad_dino,Edema,sex,366,2
+hbac,1,True,,0.46,rad_dino,Consolidation,sex,129,2
+probe,1,True,,0.016,rad_dino,Consolidation,sex,129,2
+statistical,0,True,,3.803,rad_dino,Consolidation,sex,129,2
+geometric,0,True,,0.127,rad_dino,Consolidation,sex,129,2
+frequency,1,True,,0.015,rad_dino,Consolidation,sex,129,2
+bias_direction_pca,1,True,,0.004,rad_dino,Consolidation,sex,129,2
+sis,1,True,,1.096,rad_dino,Consolidation,sex,129,2
+demographic_parity,0,True,,0.111,rad_dino,Consolidation,sex,129,2
+equalized_odds,0,True,,0.036,rad_dino,Consolidation,sex,129,2
+intersectional,0,True,,0.031,rad_dino,Consolidation,sex,129,2
+groupdro,0,False,,0.019,rad_dino,Consolidation,sex,129,2
+gce,0,True,,0.005,rad_dino,Consolidation,sex,129,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,rad_dino,Consolidation,sex,129,2
+hbac,1,True,,0.58,rad_dino,Atelectasis,sex,266,2
+probe,1,True,,0.022,rad_dino,Atelectasis,sex,266,2
+statistical,0,True,,3.846,rad_dino,Atelectasis,sex,266,2
+geometric,0,True,,0.276,rad_dino,Atelectasis,sex,266,2
+frequency,1,True,,0.024,rad_dino,Atelectasis,sex,266,2
+bias_direction_pca,1,True,,0.004,rad_dino,Atelectasis,sex,266,2
+sis,1,True,,1.296,rad_dino,Atelectasis,sex,266,2
+demographic_parity,1,True,,0.036,rad_dino,Atelectasis,sex,266,2
+equalized_odds,0,True,,0.04,rad_dino,Atelectasis,sex,266,2
+intersectional,1,True,,0.024,rad_dino,Atelectasis,sex,266,2
+groupdro,0,False,,0.068,rad_dino,Atelectasis,sex,266,2
+gce,0,True,,0.014,rad_dino,Atelectasis,sex,266,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,rad_dino,Atelectasis,sex,266,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",1.173,rad_dino,Pneumothorax,sex,218,2
+probe,1,True,,0.039,rad_dino,Pneumothorax,sex,218,2
+statistical,0,True,,3.753,rad_dino,Pneumothorax,sex,218,2
+geometric,0,True,,0.171,rad_dino,Pneumothorax,sex,218,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.0,rad_dino,Pneumothorax,sex,218,2
+bias_direction_pca,1,True,,0.004,rad_dino,Pneumothorax,sex,218,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 1",0.001,rad_dino,Pneumothorax,sex,218,2
+demographic_parity,0,False,,0.001,rad_dino,Pneumothorax,sex,218,2
+equalized_odds,0,False,,0.0,rad_dino,Pneumothorax,sex,218,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,rad_dino,Pneumothorax,sex,218,2
+groupdro,0,False,,0.017,rad_dino,Pneumothorax,sex,218,2
+gce,0,False,At least 2 distinct labels are required,0.004,rad_dino,Pneumothorax,sex,218,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,rad_dino,Pneumothorax,sex,218,2
+hbac,1,True,,1.957,rad_dino,Pleural Effusion,sex,730,2
+probe,1,True,,0.028,rad_dino,Pleural Effusion,sex,730,2
+statistical,0,True,,4.207,rad_dino,Pleural Effusion,sex,730,2
+geometric,0,True,,0.903,rad_dino,Pleural Effusion,sex,730,2
+frequency,1,True,,0.034,rad_dino,Pleural Effusion,sex,730,2
+bias_direction_pca,1,True,,0.016,rad_dino,Pleural Effusion,sex,730,2
+sis,1,True,,3.351,rad_dino,Pleural Effusion,sex,730,2
+demographic_parity,1,True,,0.141,rad_dino,Pleural Effusion,sex,730,2
+equalized_odds,0,True,,0.146,rad_dino,Pleural Effusion,sex,730,2
+intersectional,1,True,,0.087,rad_dino,Pleural Effusion,sex,730,2
+groupdro,0,False,,0.079,rad_dino,Pleural Effusion,sex,730,2
+gce,0,True,,0.045,rad_dino,Pleural Effusion,sex,730,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,rad_dino,Pleural Effusion,sex,730,2
+hbac,1,True,,0.383,rad_dino,Fracture,sex,83,2
+probe,1,True,,0.008,rad_dino,Fracture,sex,83,2
+statistical,0,True,,3.504,rad_dino,Fracture,sex,83,2
+geometric,0,True,,0.043,rad_dino,Fracture,sex,83,2
+frequency,1,True,,0.01,rad_dino,Fracture,sex,83,2
+bias_direction_pca,1,True,,0.003,rad_dino,Fracture,sex,83,2
+sis,1,True,,0.486,rad_dino,Fracture,sex,83,2
+demographic_parity,1,True,,0.042,rad_dino,Fracture,sex,83,2
+equalized_odds,0,True,,0.048,rad_dino,Fracture,sex,83,2
+intersectional,1,True,,0.013,rad_dino,Fracture,sex,83,2
+groupdro,0,False,,0.011,rad_dino,Fracture,sex,83,2
+gce,0,True,,0.011,rad_dino,Fracture,sex,83,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,rad_dino,Fracture,sex,83,2
+hbac,1,True,,1.086,rad_dino,Support Devices,sex,933,2
+probe,1,True,,0.022,rad_dino,Support Devices,sex,933,2
+statistical,0,True,,4.334,rad_dino,Support Devices,sex,933,2
+geometric,0,True,,1.344,rad_dino,Support Devices,sex,933,2
+frequency,1,True,,0.052,rad_dino,Support Devices,sex,933,2
+bias_direction_pca,1,True,,0.008,rad_dino,Support Devices,sex,933,2
+sis,1,True,,4.256,rad_dino,Support Devices,sex,933,2
+demographic_parity,1,True,,0.205,rad_dino,Support Devices,sex,933,2
+equalized_odds,0,True,,0.185,rad_dino,Support Devices,sex,933,2
+intersectional,1,True,,0.111,rad_dino,Support Devices,sex,933,2
+groupdro,0,False,,0.067,rad_dino,Support Devices,sex,933,2
+gce,0,True,,0.04,rad_dino,Support Devices,sex,933,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,rad_dino,Support Devices,sex,933,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.58,medsiglip,No Finding,sex,259,2
+probe,0,True,,0.025,medsiglip,No Finding,sex,259,2
+statistical,0,True,,5.56,medsiglip,No Finding,sex,259,2
+geometric,0,True,,0.31,medsiglip,No Finding,sex,259,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,medsiglip,No Finding,sex,259,2
+bias_direction_pca,1,True,,0.005,medsiglip,No Finding,sex,259,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.002,medsiglip,No Finding,sex,259,2
+demographic_parity,0,False,,0.001,medsiglip,No Finding,sex,259,2
+equalized_odds,0,False,,0.001,medsiglip,No Finding,sex,259,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.001,medsiglip,No Finding,sex,259,2
+groupdro,0,False,,0.085,medsiglip,No Finding,sex,259,2
+gce,0,False,At least 2 distinct labels are required,0.002,medsiglip,No Finding,sex,259,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,medsiglip,No Finding,sex,259,2
+hbac,1,True,,0.51,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+probe,0,True,,0.019,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+statistical,0,True,,5.107,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+geometric,0,True,,0.06,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+frequency,1,True,,0.041,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+bias_direction_pca,1,True,,0.01,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+sis,1,True,,0.721,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+demographic_parity,1,True,,0.176,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+equalized_odds,0,True,,0.162,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+intersectional,1,True,,0.073,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+groupdro,0,False,,0.003,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+gce,0,True,,0.001,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,medsiglip,Enlarged Cardiomediastinum,sex,90,2
+hbac,1,True,,0.603,medsiglip,Cardiomegaly,sex,234,2
+probe,0,True,,0.024,medsiglip,Cardiomegaly,sex,234,2
+statistical,0,True,,5.68,medsiglip,Cardiomegaly,sex,234,2
+geometric,0,True,,0.357,medsiglip,Cardiomegaly,sex,234,2
+frequency,1,True,,0.072,medsiglip,Cardiomegaly,sex,234,2
+bias_direction_pca,1,True,,0.005,medsiglip,Cardiomegaly,sex,234,2
+sis,1,True,,1.831,medsiglip,Cardiomegaly,sex,234,2
+demographic_parity,1,True,,0.322,medsiglip,Cardiomegaly,sex,234,2
+equalized_odds,0,True,,0.467,medsiglip,Cardiomegaly,sex,234,2
+intersectional,1,True,,0.175,medsiglip,Cardiomegaly,sex,234,2
+groupdro,0,False,,0.061,medsiglip,Cardiomegaly,sex,234,2
+gce,0,True,,0.008,medsiglip,Cardiomegaly,sex,234,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,medsiglip,Cardiomegaly,sex,234,2
+hbac,1,True,,3.067,medsiglip,Lung Opacity,sex,827,2
+probe,0,True,,0.109,medsiglip,Lung Opacity,sex,827,2
+statistical,0,True,,6.236,medsiglip,Lung Opacity,sex,827,2
+geometric,0,True,,1.302,medsiglip,Lung Opacity,sex,827,2
+frequency,1,True,,0.241,medsiglip,Lung Opacity,sex,827,2
+bias_direction_pca,1,True,,0.016,medsiglip,Lung Opacity,sex,827,2
+sis,1,True,,5.617,medsiglip,Lung Opacity,sex,827,2
+demographic_parity,1,True,,1.453,medsiglip,Lung Opacity,sex,827,2
+equalized_odds,0,True,,1.379,medsiglip,Lung Opacity,sex,827,2
+intersectional,1,True,,0.681,medsiglip,Lung Opacity,sex,827,2
+groupdro,0,False,,0.088,medsiglip,Lung Opacity,sex,827,2
+gce,0,True,,0.013,medsiglip,Lung Opacity,sex,827,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,medsiglip,Lung Opacity,sex,827,2
+hbac,1,True,,0.666,medsiglip,Lung Lesion,sex,102,2
+probe,0,True,,0.017,medsiglip,Lung Lesion,sex,102,2
+statistical,0,True,,5.321,medsiglip,Lung Lesion,sex,102,2
+geometric,0,True,,0.165,medsiglip,Lung Lesion,sex,102,2
+frequency,1,True,,0.071,medsiglip,Lung Lesion,sex,102,2
+bias_direction_pca,1,True,,0.009,medsiglip,Lung Lesion,sex,102,2
+sis,1,True,,1.008,medsiglip,Lung Lesion,sex,102,2
+demographic_parity,0,True,,0.214,medsiglip,Lung Lesion,sex,102,2
+equalized_odds,0,True,,0.306,medsiglip,Lung Lesion,sex,102,2
+intersectional,0,True,,0.12,medsiglip,Lung Lesion,sex,102,2
+groupdro,0,False,,0.012,medsiglip,Lung Lesion,sex,102,2
+gce,0,True,,0.003,medsiglip,Lung Lesion,sex,102,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,medsiglip,Lung Lesion,sex,102,2
+hbac,1,True,,1.129,medsiglip,Edema,sex,366,2
+probe,0,True,,0.037,medsiglip,Edema,sex,366,2
+statistical,0,True,,5.964,medsiglip,Edema,sex,366,2
+geometric,0,True,,0.981,medsiglip,Edema,sex,366,2
+frequency,1,True,,0.074,medsiglip,Edema,sex,366,2
+bias_direction_pca,1,True,,0.007,medsiglip,Edema,sex,366,2
+sis,1,True,,2.904,medsiglip,Edema,sex,366,2
+demographic_parity,0,True,,0.15,medsiglip,Edema,sex,366,2
+equalized_odds,0,True,,0.155,medsiglip,Edema,sex,366,2
+intersectional,0,True,,0.062,medsiglip,Edema,sex,366,2
+groupdro,0,False,,0.033,medsiglip,Edema,sex,366,2
+gce,0,True,,0.008,medsiglip,Edema,sex,366,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,medsiglip,Edema,sex,366,2
+hbac,1,True,,0.712,medsiglip,Consolidation,sex,129,2
+probe,0,True,,0.024,medsiglip,Consolidation,sex,129,2
+statistical,0,True,,5.73,medsiglip,Consolidation,sex,129,2
+geometric,0,True,,0.126,medsiglip,Consolidation,sex,129,2
+frequency,1,True,,0.03,medsiglip,Consolidation,sex,129,2
+bias_direction_pca,1,True,,0.012,medsiglip,Consolidation,sex,129,2
+sis,1,True,,1.069,medsiglip,Consolidation,sex,129,2
+demographic_parity,0,True,,0.149,medsiglip,Consolidation,sex,129,2
+equalized_odds,0,True,,0.092,medsiglip,Consolidation,sex,129,2
+intersectional,0,True,,0.06,medsiglip,Consolidation,sex,129,2
+groupdro,0,False,,0.086,medsiglip,Consolidation,sex,129,2
+gce,0,True,,0.01,medsiglip,Consolidation,sex,129,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,medsiglip,Consolidation,sex,129,2
+hbac,1,True,,0.976,medsiglip,Atelectasis,sex,266,2
+probe,0,True,,0.04,medsiglip,Atelectasis,sex,266,2
+statistical,0,True,,5.743,medsiglip,Atelectasis,sex,266,2
+geometric,0,True,,0.387,medsiglip,Atelectasis,sex,266,2
+frequency,1,True,,0.104,medsiglip,Atelectasis,sex,266,2
+bias_direction_pca,1,True,,0.009,medsiglip,Atelectasis,sex,266,2
+sis,1,True,,1.759,medsiglip,Atelectasis,sex,266,2
+demographic_parity,1,True,,0.3,medsiglip,Atelectasis,sex,266,2
+equalized_odds,0,True,,0.331,medsiglip,Atelectasis,sex,266,2
+intersectional,1,True,,0.138,medsiglip,Atelectasis,sex,266,2
+groupdro,0,False,,0.017,medsiglip,Atelectasis,sex,266,2
+gce,0,True,,0.013,medsiglip,Atelectasis,sex,266,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,medsiglip,Atelectasis,sex,266,2
+hbac,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 0",0.662,medsiglip,Pneumothorax,sex,218,2
+probe,0,True,,0.029,medsiglip,Pneumothorax,sex,218,2
+statistical,0,True,,5.659,medsiglip,Pneumothorax,sex,218,2
+geometric,0,True,,0.278,medsiglip,Pneumothorax,sex,218,2
+frequency,0,False,FrequencyDetector requires at least two unique classes.,0.001,medsiglip,Pneumothorax,sex,218,2
+bias_direction_pca,1,True,,0.004,medsiglip,Pneumothorax,sex,218,2
+sis,0,False,"This solver needs samples of at least 2 classes in the data, but the data contains only one class: 1",0.002,medsiglip,Pneumothorax,sex,218,2
+demographic_parity,0,False,,0.001,medsiglip,Pneumothorax,sex,218,2
+equalized_odds,0,False,,0.001,medsiglip,Pneumothorax,sex,218,2
+intersectional,0,False,Intersectional analysis requires binary labels.,0.0,medsiglip,Pneumothorax,sex,218,2
+groupdro,0,False,,0.062,medsiglip,Pneumothorax,sex,218,2
+gce,0,False,At least 2 distinct labels are required,0.001,medsiglip,Pneumothorax,sex,218,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,medsiglip,Pneumothorax,sex,218,2
+hbac,1,True,,2.758,medsiglip,Pleural Effusion,sex,730,2
+probe,0,True,,0.118,medsiglip,Pleural Effusion,sex,730,2
+statistical,0,True,,6.174,medsiglip,Pleural Effusion,sex,730,2
+geometric,0,True,,1.315,medsiglip,Pleural Effusion,sex,730,2
+frequency,1,True,,0.412,medsiglip,Pleural Effusion,sex,730,2
+bias_direction_pca,1,True,,0.034,medsiglip,Pleural Effusion,sex,730,2
+sis,1,True,,5.124,medsiglip,Pleural Effusion,sex,730,2
+demographic_parity,1,True,,1.474,medsiglip,Pleural Effusion,sex,730,2
+equalized_odds,0,True,,1.614,medsiglip,Pleural Effusion,sex,730,2
+intersectional,1,True,,0.802,medsiglip,Pleural Effusion,sex,730,2
+groupdro,0,False,,0.09,medsiglip,Pleural Effusion,sex,730,2
+gce,0,True,,0.008,medsiglip,Pleural Effusion,sex,730,2
+ssa,0,False,splits parameter required for SSA analysis,0.001,medsiglip,Pleural Effusion,sex,730,2
+hbac,1,True,,0.703,medsiglip,Fracture,sex,83,2
+probe,0,True,,0.018,medsiglip,Fracture,sex,83,2
+statistical,0,True,,5.271,medsiglip,Fracture,sex,83,2
+geometric,0,True,,0.07,medsiglip,Fracture,sex,83,2
+frequency,1,True,,0.037,medsiglip,Fracture,sex,83,2
+bias_direction_pca,1,True,,0.004,medsiglip,Fracture,sex,83,2
+sis,1,True,,0.661,medsiglip,Fracture,sex,83,2
+demographic_parity,1,True,,0.139,medsiglip,Fracture,sex,83,2
+equalized_odds,0,True,,0.2,medsiglip,Fracture,sex,83,2
+intersectional,1,True,,0.036,medsiglip,Fracture,sex,83,2
+groupdro,0,False,,0.068,medsiglip,Fracture,sex,83,2
+gce,0,True,,0.006,medsiglip,Fracture,sex,83,2
+ssa,0,False,splits parameter required for SSA analysis,0.0,medsiglip,Fracture,sex,83,2
+hbac,1,True,,3.019,medsiglip,Support Devices,sex,933,2
+probe,0,True,,0.138,medsiglip,Support Devices,sex,933,2
+statistical,0,True,,6.386,medsiglip,Support Devices,sex,933,2
+geometric,0,True,,2.014,medsiglip,Support Devices,sex,933,2
+frequency,1,True,,0.397,medsiglip,Support Devices,sex,933,2
+bias_direction_pca,1,True,,0.022,medsiglip,Support Devices,sex,933,2
+sis,1,True,,5.737,medsiglip,Support Devices,sex,933,2
+demographic_parity,1,True,,1.431,medsiglip,Support Devices,sex,933,2
+equalized_odds,0,True,,1.581,medsiglip,Support Devices,sex,933,2
+intersectional,1,True,,0.7,medsiglip,Support Devices,sex,933,2
+groupdro,0,False,,0.089,medsiglip,Support Devices,sex,933,2
+gce,0,True,,0.044,medsiglip,Support Devices,sex,933,2
+ssa,0,False,splits parameter required for SSA analysis,0.002,medsiglip,Support Devices,sex,933,2

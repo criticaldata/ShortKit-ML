@@ -1,0 +1,28 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyTorch (CPU)
+        run: pip install torch==2.2.0 torchvision==0.17.0 --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install package and docs dependencies
+        run: pip install -e ".[all,docs]"
+
+      - name: Deploy to GitHub Pages
+        run: mkdocs gh-deploy --force

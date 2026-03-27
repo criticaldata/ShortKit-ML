@@ -1,0 +1,19 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\caption{Probe permutation test results ($n_{\mathrm{perm}}{=}100$, seed 42). A logistic regression probe is trained on true group labels and on 100 label-shuffled permutations. The empirical $p$-value is the fraction of null accuracies $\geq$ the observed accuracy. Values $p{<}0.01$ indicate the embedding encodes group membership beyond chance.}
+\label{tab:permutation_pvalues}
+\begin{tabular}{llcccc}
+\hline
+\textbf{Dataset} & \textbf{Attribute} & \textbf{Obs.\ Acc} & \textbf{Null Mean $\pm$ Std} & \textbf{$p$-value} \\
+\hline
+CheXpert & Race & 0.509 & 0.509 $\pm$ 0.013 & 0.50 \\
+CheXpert & Sex & 0.510 & 0.510 $\pm$ 0.013 & 0.53 \\
+MIMIC (RAD-DINO) & Sex & 0.990 & 0.500 $\pm$ 0.016 & $<$0.01 \\
+MIMIC (ViT-16) & Sex & 0.855 & 0.503 $\pm$ 0.016 & $<$0.01 \\
+MIMIC (MedSigLIP) & Sex & 0.960 & 0.500 $\pm$ 0.017 & $<$0.01 \\
+CelebA & Blond_Hair $\leftrightarrow$ Male & 0.920 & 0.520 $\pm$ 0.013 & $<$0.01 \\
+\hline
+\end{tabular}
+\end{table}
