@@ -68,3 +68,9 @@ body {
 .md-footer {
   background-color: var(--md-default-bg-color--lighter);
 }
+
+/* Hide site name text in header — logo image replaces it */
+.md-header__title .md-ellipsis,
+.md-nav__title .md-ellipsis {
+  display: none;
+}
