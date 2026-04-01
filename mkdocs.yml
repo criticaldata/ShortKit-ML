@@ -9,6 +9,8 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  logo: assets/shortkit.png
+  favicon: assets/shortkit.png
   palette:
     - scheme: default
       primary: indigo

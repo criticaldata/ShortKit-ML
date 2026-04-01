@@ -1,5 +1,3 @@
-# ShortKit-ML
-
 <p align="center">
   <img src="docs/assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
 </p>
