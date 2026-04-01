@@ -1,5 +1,9 @@
 # ShortKit-ML
 
+<p align="center">
+  <img src="docs/assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
+</p>
+
 > **ShortKit-ML** — Detect and mitigate shortcuts and biases in machine learning embedding spaces. 20+ detection and mitigation methods with a unified API. **Multi-attribute support** tests multiple sensitive attributes simultaneously. Model Comparison mode for benchmarking multiple embedding models.
 
 [![PyPI version](https://img.shields.io/pypi/v/shortkit-ml.svg)](https://pypi.org/project/shortkit-ml/)
