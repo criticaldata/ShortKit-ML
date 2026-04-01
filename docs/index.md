@@ -1,5 +1,9 @@
 # ShortKit-ML
 
+<p align="center">
+  <img src="assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
+</p>
+
 **Detect shortcuts and biases in machine learning embedding spaces using HBAC, Probe, Statistical, and Geometric methods.**
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)

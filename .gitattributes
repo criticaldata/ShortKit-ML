@@ -1,0 +1,6 @@
+# Tell GitHub Linguist to ignore generated LaTeX paper tables/figures for language stats
+output/paper_tables/*.tex linguist-generated=true
+output/paper_figures/*.tex linguist-generated=true
+
+# Also ignore Jupyter notebooks from language stats (they inflate Python %)
+*.ipynb linguist-vendored=true
