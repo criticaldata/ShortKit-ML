@@ -179,50 +179,11 @@ Custom conditions can be registered via `@register_condition("name")`. See [Cond
 
 ShortKit-ML ships an [MCP](https://modelcontextprotocol.io/) server so AI assistants (Claude, Cursor, etc.) can call detection tools directly from chat — no Python script required.
 
-### Install the MCP extra
-
 ```bash
-pip install -e ".[mcp]"
+uv pip install -e ".[mcp]"
 ```
 
-### Start the server
-
-```bash
-# via entry point (after install)
-shortkit-ml-mcp
-
-# or directly
-python -m shortcut_detect.mcp_server
-```
-
-### Available tools
-
-| Tool | Description |
-|------|-------------|
-| `list_methods` | List all 19 detection methods with descriptions |
-| `generate_synthetic_data` | Generate a synthetic shortcut dataset (linear / nonlinear / none) |
-| `run_detector` | Run selected methods on embeddings — returns verdict, risk level, per-method breakdown |
-| `get_summary` | Human-readable summary from a prior `run_detector` call |
-| `get_method_detail` | Full raw result dict for a single method |
-| `compare_methods` | Side-by-side comparison table + consensus vote across methods |
-
-### Connect to Claude Desktop
-
-Add the following to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
-
-```json
-{
-  "mcpServers": {
-    "shortkit-ml": {
-      "command": "python",
-      "args": ["-m", "shortcut_detect.mcp_server"],
-      "cwd": "/path/to/ShortKit-ML"
-    }
-  }
-}
-```
-
-A ready-to-edit template is included at [`claude_desktop_config.json`](claude_desktop_config.json).
+Full setup instructions for **Claude Code** and **Claude Desktop**, available tools, file-based input, and troubleshooting: [**criticaldata.github.io/ShortKit-ML/mcp-server**](https://criticaldata.github.io/ShortKit-ML/mcp-server/).
 
 ## Paper Benchmark Datasets
 
