@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "shortkit-ml": {
+      "type": "stdio",
+      "command": ".venv/bin/python",
+      "args": [
+        "-m",
+        "shortcut_detect.mcp_server"
+      ],
+      "env": {}
+    }
+  }
+}
