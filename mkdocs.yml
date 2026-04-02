@@ -158,6 +158,7 @@ nav:
       - Basic Usage: examples/basic.md
       - Real Data (CheXpert): examples/real-data.md
       - Advanced Analysis: examples/advanced.md
+  - MCP Server: mcp-server.md
   - Contributing: contributing.md
 
 extra:
