@@ -111,36 +111,6 @@ Once connected, you can run all 19 detection methods on synthetic data directly 
 
 ---
 
-## Option 3 — GitHub Copilot in VS Code
-
-GitHub Copilot Chat in VS Code can consume MCP servers directly in Agent mode. This repository includes a checked-in `.vscode/mcp.json` template so the ShortKit-ML server is ready to use once your `.venv` is installed.
-
-### 1. Install dependencies
-
-```bash
-uv pip install -e ".[mcp]"
-```
-
-### 2. Open the workspace in VS Code
-
-Make sure the repo root is open so VS Code can read `.vscode/mcp.json`.
-
-### 3. Start Copilot Chat in Agent mode
-
-Open Copilot Chat, switch the mode dropdown to **Agent**, and click the tools icon. Under the `shortkit-ml` MCP server, you should see the ShortKit-ML tools.
-
-### 4. Try a prompt
-
-```text
-Generate 200 synthetic samples with a linear shortcut and run probe, statistical, and hbac on them.
-```
-
-### 5. If you need to customize the Python path
-
-Edit `.vscode/mcp.json` and point `command` at your workspace `.venv/bin/python` path. Use the same `shortcut_detect.mcp_server` module entry point as Claude Code and Claude Desktop.
-
----
-
 ## Quick start — how to use the tools
 
 Once connected, the tools are **automatic** — Claude calls them for you based on what you ask. You never invoke them by name. Just describe what you want in plain English.
@@ -243,3 +213,37 @@ To reuse a previous run:
 ```
 Get the summary for session_id "my-run-1"
 ```
+
+---
+
+## GitHub Copilot in VS Code
+
+GitHub Copilot Chat in VS Code can consume the same MCP server through Agent mode. This repository includes a checked-in `.vscode/mcp.json` template so the ShortKit-ML server is ready to use once your `.venv` is installed.
+
+### 1. Install dependencies
+
+```bash
+uv pip install -e ".[mcp]"
+```
+
+### 2. Open the workspace in VS Code
+
+Make sure the repo root is open so VS Code can read `.vscode/mcp.json`.
+
+### 3. Start Copilot Chat in Agent mode
+
+Open Copilot Chat, switch the mode dropdown to **Agent**, and open the tools list. You should see the `shortkit-ml` MCP server and the ShortKit-ML tools.
+
+### 4. Try a prompt
+
+```text
+Generate 200 synthetic samples with a linear shortcut and run probe, statistical, and hbac on them.
+```
+
+### 5. Customize the Python path if needed
+
+Edit `.vscode/mcp.json` and point `command` at your workspace `.venv/bin/python` path. Use the same `shortcut_detect.mcp_server` module entry point as Claude Code and Claude Desktop.
+
+### Manual verification
+
+The repository-level config and tests are in place, but the Copilot Chat smoke test itself still needs to be confirmed in VS Code by opening the tools panel and running a real prompt.
