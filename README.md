@@ -177,13 +177,22 @@ Custom conditions can be registered via `@register_condition("name")`. See [Cond
 
 ## MCP Server
 
-ShortKit-ML ships an [MCP](https://modelcontextprotocol.io/) server so AI assistants (Claude, Cursor, etc.) can call detection tools directly from chat — no Python script required.
+ShortKit-ML ships an [MCP](https://modelcontextprotocol.io/) server so AI assistants (Claude, Cursor, GitHub Copilot in VS Code, etc.) can call detection tools directly from chat — no Python script required.
 
 ```bash
 uv pip install -e ".[mcp]"
 ```
 
-Full setup instructions for **Claude Code** and **Claude Desktop**, available tools, file-based input, and troubleshooting: [**criticaldata.github.io/ShortKit-ML/mcp-server**](https://criticaldata.github.io/ShortKit-ML/mcp-server/).
+### GitHub Copilot in VS Code
+
+1. After installing the MCP extra, open VS Code and go to Settings (Ctrl+,).
+2. Search for "GitHub Copilot Chat: MCP" and open the JSON settings.
+3. Copy the server configuration from the repo's `.vscode/mcp.json` file into the `github.copilot.chat.mcp` object in your settings.
+4. Ensure the `"command"` path points to your virtual environment's Python (e.g., update `.venv/bin/python` to the full path if needed).
+5. Restart VS Code or reload the GitHub Copilot Chat extension.
+6. The ShortKit-ML tools will now be available in Copilot Chat sessions.
+
+Full setup instructions for **Claude Code**, **Claude Desktop**, and **GitHub Copilot in VS Code**, available tools, file-based input, and troubleshooting: [**criticaldata.github.io/ShortKit-ML/mcp-server**](https://criticaldata.github.io/ShortKit-ML/mcp-server/).
 
 ## Paper Benchmark Datasets
 
