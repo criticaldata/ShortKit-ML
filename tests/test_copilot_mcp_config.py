@@ -10,7 +10,7 @@ def test_vscode_mcp_config_matches_project_entrypoint():
     vscode_config = json.loads((root / ".vscode" / "mcp.json").read_text(encoding="utf-8"))
 
     claude_server = claude_config["mcpServers"]["shortkit-ml"]
-    vscode_server = vscode_config["mcpServers"]["shortkit-ml"]
+    vscode_server = (vscode_config.get("mcpServers") or vscode_config.get("servers"))["shortkit-ml"]
 
     assert claude_server["type"] == "stdio"
     assert vscode_server["type"] == "stdio"
