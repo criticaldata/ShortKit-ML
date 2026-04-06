@@ -1,6 +1,6 @@
 # MCP Server
 
-ShortKit-ML ships a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that exposes shortcut detection as callable tools. AI assistants like Claude can run full analyses — generate data, run detectors, compare methods — directly from chat, with no Python script required.
+ShortKit-ML ships a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that exposes shortcut detection as callable tools. AI assistants like Claude and GitHub Copilot in VS Code can run full analyses — generate data, run detectors, compare methods — directly from chat, with no Python script required.
 
 ## Prerequisites
 
@@ -17,8 +17,6 @@ uv run python -m shortcut_detect.mcp_server
 ```
 
 The server should start without errors. Press `Ctrl+C` to stop it.
-
----
 
 ## Option 1 — Claude Code (recommended)
 
@@ -215,3 +213,37 @@ To reuse a previous run:
 ```
 Get the summary for session_id "my-run-1"
 ```
+
+---
+
+## GitHub Copilot in VS Code
+
+GitHub Copilot Chat in VS Code can consume the same MCP server through Agent mode. This repository includes a checked-in `.vscode/mcp.json` template so the ShortKit-ML server is ready to use once your `.venv` is installed.
+
+### 1. Install dependencies
+
+```bash
+uv pip install -e ".[mcp]"
+```
+
+### 2. Open the workspace in VS Code
+
+Make sure the repo root is open so VS Code can read `.vscode/mcp.json`.
+
+### 3. Start Copilot Chat in Agent mode
+
+Open Copilot Chat, switch the mode dropdown to **Agent**, and open the tools list. You should see the `shortkit-ml` MCP server and the ShortKit-ML tools.
+
+### 4. Try a prompt
+
+```text
+Generate 200 synthetic samples with a linear shortcut and run probe, statistical, and hbac on them.
+```
+
+### 5. Customize the Python path if needed
+
+Edit `.vscode/mcp.json` and point `command` at your workspace `.venv/bin/python` path. Use the same `shortcut_detect.mcp_server` module entry point as Claude Code and Claude Desktop.
+
+### Manual verification
+
+The repository-level config and tests are in place, but the Copilot Chat smoke test itself still needs to be confirmed in VS Code by opening the tools panel and running a real prompt.
