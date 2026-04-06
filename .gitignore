@@ -71,6 +71,7 @@ data/valid.csv
 data/chexpert_manifest.csv
 
 # output/ — keep paper tables/figures/benchmark results, ignore generated reports and embeddings
+output/**/*.html
 output/paper_benchmark/chexpert_embeddings/
 output/paper_benchmark/chexpert_results/
 output/comparison_*/
