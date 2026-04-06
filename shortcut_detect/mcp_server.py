@@ -1020,12 +1020,12 @@ def run_benchmark(
 # ---------------------------------------------------------------------------
 
 
-@mcp.tool(name="list_methods")
+@mcp.tool(name="list_methods", description="List all available shortcut detection methods with short descriptions.")
 def list_methods_tool() -> str:
     return list_methods()
 
 
-@mcp.tool(name="generate_synthetic_data")
+@mcp.tool(name="generate_synthetic_data", description="Generate synthetic shortcut detection data with configurable type, strength, and size.")
 def generate_synthetic_data_tool(
     n_samples: int = 200,
     n_features: int = 32,
@@ -1044,7 +1044,7 @@ def generate_synthetic_data_tool(
     )
 
 
-@mcp.tool(name="run_detector")
+@mcp.tool(name="run_detector", description="Run one or more shortcut detection methods on embeddings and return a summary result.")
 async def run_detector_tool(
     embeddings: list[list[float]] | None = None,
     labels: list[int] | None = None,
@@ -1076,7 +1076,7 @@ async def run_detector_tool(
         return json.dumps({"error": traceback.format_exc()})
 
 
-@mcp.tool(name="get_summary")
+@mcp.tool(name="get_summary", description="Retrieve a human-readable summary for a previous shortcut detection session.")
 async def get_summary_tool(
     session_id: str = "default",
     ctx: Context | None = None,
@@ -1093,7 +1093,7 @@ async def get_summary_tool(
     return str(session["summary"])
 
 
-@mcp.tool(name="get_method_detail")
+@mcp.tool(name="get_method_detail", description="Get detailed raw results for a specific detection method from a stored session.")
 async def get_method_detail_tool(
     method: str,
     session_id: str = "default",
@@ -1112,7 +1112,7 @@ async def get_method_detail_tool(
     return json.dumps(_safe_serialize(raw[method]), indent=2)
 
 
-@mcp.tool(name="compare_methods")
+@mcp.tool(name="compare_methods", description="Compare multiple shortcut detection methods side-by-side and return a consensus summary.")
 async def compare_methods_tool(
     embeddings: list[list[float]] | None = None,
     labels: list[int] | None = None,
@@ -1140,7 +1140,7 @@ async def compare_methods_tool(
         return json.dumps({"error": traceback.format_exc()})
 
 
-@mcp.tool(name="generate_report")
+@mcp.tool(name="generate_report", description="Generate an HTML/PDF/Markdown report for a saved session and optionally return encoded content.")
 async def generate_report_tool(
     session_id: str = "default",
     output_path: str | None = None,
@@ -1173,7 +1173,7 @@ async def generate_report_tool(
         return json.dumps({"error": traceback.format_exc()})
 
 
-@mcp.tool(name="run_benchmark")
+@mcp.tool(name="run_benchmark", description="Run the full synthetic benchmark suite or a provided benchmark configuration.")
 async def run_benchmark_tool(
     config: dict[str, Any] | None = None,
     config_path: str | None = None,
