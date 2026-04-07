@@ -5,7 +5,7 @@ Generates UMAP scatter plots for:
   - MIMIC-CXR RAD-DINO embeddings colored by sex and race
   - CelebA embeddings colored by Male attribute
 
-Output: output/paper_figures/L03_mimic_umap_sex.pdf
+Output: output/paper_figures/L03_mimic_lda_sex.pdf
         output/paper_figures/L03_mimic_umap_race.pdf
         output/paper_figures/L03_celeba_umap_male.pdf
 """
@@ -183,7 +183,7 @@ def generate_mimic_umap():
         sex_binary,
         color_map={0: SEX_COLORS["Female"], 1: SEX_COLORS["Male"]},
         label_names={0: "Female", 1: "Male"},
-        save_path=OUTPUT_DIR / "L03_mimic_umap_sex.pdf",
+        save_path=OUTPUT_DIR / "L03_mimic_lda_sex.pdf",
     )
 
     # --- UMAP (for race, where nonlinear structure may be informative) ---

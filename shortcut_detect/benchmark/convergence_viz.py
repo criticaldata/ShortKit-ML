@@ -207,7 +207,7 @@ def plot_convergence_matrix(
     title: str = "Method Convergence Matrix",
     figsize: tuple[float, float] | None = None,
     dpi: int = 150,
-    font_size: int = 10,
+    font_size: int = 14,
     save_path: str | Path | None = None,
     show_agreement_row: bool = True,
 ) -> plt.Figure:
@@ -224,7 +224,8 @@ def plot_convergence_matrix(
     dpi : int
         Resolution for raster output.
     font_size : int
-        Base font size for labels and annotations.
+        Base font size for labels and annotations.  Default 14 for
+        single-column IEEE readability.
     save_path : str or Path, optional
         If provided, the figure is saved to this path (format inferred from
         extension).
@@ -262,7 +263,7 @@ def plot_convergence_matrix(
 
     extra_rows = 1 if show_agreement_row else 0
     if figsize is None:
-        figsize = (max(6, n_experiments * 0.9 + 2), max(3, (n_methods + extra_rows) * 0.6 + 2))
+        figsize = (max(7, n_experiments * 1.1 + 2.5), max(4, (n_methods + extra_rows) * 0.7 + 2.5))
 
     fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
 
@@ -276,7 +277,7 @@ def plot_convergence_matrix(
         for j in range(n_experiments):
             marker = "\u2713" if bool_mat[i, j] else "\u2717"
             color = "white" if agreement_vals[j] >= n_methods else "black"
-            ax.text(j, i, marker, ha="center", va="center", fontsize=font_size, color=color)
+            ax.text(j, i, marker, ha="center", va="center", fontsize=font_size + 2, color=color)
 
     # Agreement summary row
     if show_agreement_row:
@@ -288,7 +289,7 @@ def plot_convergence_matrix(
                 levels[exp],
                 ha="center",
                 va="center",
-                fontsize=font_size - 1,
+                fontsize=font_size,
                 fontweight="bold",
                 color="#333333",
             )
@@ -298,15 +299,13 @@ def plot_convergence_matrix(
     ax.set_yticks(range(n_methods))
     ax.set_yticklabels(matrix.methods, fontsize=font_size)
     ax.set_xticks(range(n_experiments))
-    ax.set_xticklabels(matrix.experiment_names, fontsize=font_size - 1, rotation=45, ha="right")
-    ax.set_title(title, fontsize=font_size + 2, pad=12)
+    ax.set_xticklabels(matrix.experiment_names, fontsize=font_size, rotation=45, ha="right")
+    ax.set_title(title, fontsize=font_size + 4, pad=14)
 
     # Colorbar
     cbar = fig.colorbar(im, ax=ax, ticks=range(n_methods + 1), shrink=0.8)
     cbar.set_label("Methods agreeing", fontsize=font_size)
-    cbar.ax.set_yticklabels(
-        [f"{i}/{n_methods}" for i in range(n_methods + 1)], fontsize=font_size - 1
-    )
+    cbar.ax.set_yticklabels([f"{i}/{n_methods}" for i in range(n_methods + 1)], fontsize=font_size)
 
     fig.tight_layout()
 
@@ -322,7 +321,7 @@ def plot_agreement_summary(
     title: str = "Agreement Level Distribution",
     figsize: tuple[float, float] | None = None,
     dpi: int = 150,
-    font_size: int = 10,
+    font_size: int = 14,
     save_path: str | Path | None = None,
 ) -> plt.Figure:
     """Bar chart showing how many experiments fall into each agreement level.

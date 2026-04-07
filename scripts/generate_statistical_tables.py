@@ -75,27 +75,69 @@ def _fast_probe_permutation(emb, labels, n_permutations=100, seed=42):
 # ---------------------------------------------------------------------------
 
 
-def _load_chexpert_race():
-    """CheXpert: WHITE vs non-WHITE binary probe."""
-    emb = np.load(DATA_DIR / "chest_embeddings.npy")
-    meta = pd.read_csv(DATA_DIR / "chexpert_manifest.csv")
+def _load_chexpert_race(backbone: str = "resnet50"):
+    """CheXpert: WHITE vs non-WHITE binary probe (multi-backbone)."""
+    mb_dir = DATA_DIR / "chexpert_multibackbone"
+    emb = np.load(mb_dir / f"{backbone}_embeddings.npy")
+    meta = pd.read_csv(mb_dir / f"{backbone}_metadata.csv")
     labels = (meta["race"] == "WHITE").astype(int).values  # 1=WHITE, 0=non-WHITE
     return emb, labels
 
 
-def _load_chexpert_sex():
-    """CheXpert: Male vs Female (drop Unknown)."""
-    emb = np.load(DATA_DIR / "chest_embeddings.npy")
-    meta = pd.read_csv(DATA_DIR / "chexpert_manifest.csv")
+def _load_chexpert_sex(backbone: str = "resnet50"):
+    """CheXpert: Male vs Female (drop Unknown, multi-backbone)."""
+    mb_dir = DATA_DIR / "chexpert_multibackbone"
+    emb = np.load(mb_dir / f"{backbone}_embeddings.npy")
+    meta = pd.read_csv(mb_dir / f"{backbone}_metadata.csv")
     mask = meta["sex"].isin(["Male", "Female"])
     labels = (meta.loc[mask, "sex"] == "Male").astype(int).values
     return emb[mask.values], labels
 
 
+def _load_chexpert_age(backbone: str = "resnet50"):
+    """CheXpert: Age >= 60 vs Age < 60 binary probe (multi-backbone)."""
+    mb_dir = DATA_DIR / "chexpert_multibackbone"
+    emb = np.load(mb_dir / f"{backbone}_embeddings.npy")
+    meta = pd.read_csv(mb_dir / f"{backbone}_metadata.csv")
+    mask = meta["age"].notna()
+    labels = (meta.loc[mask, "age"] >= 60).astype(int).values  # 1=>=60, 0=<60
+    return emb[mask.values], labels
+
+
+def _load_mimic_age(backbone: str = "rad_dino"):
+    """MIMIC-CXR: Age >= 60 vs Age < 60 binary probe."""
+    emb_path = DATA_DIR / "mimic_cxr" / f"{backbone}_embeddings.npy"
+    meta_path = DATA_DIR / "mimic_cxr" / f"{backbone}_metadata.csv"
+    if not emb_path.exists() or not meta_path.exists():
+        print(f"    [SKIP] MIMIC {backbone} data not found locally")
+        return None, None
+    emb = np.load(emb_path)
+    meta = pd.read_csv(meta_path)
+    if "age" not in meta.columns:
+        print(f"    [SKIP] MIMIC {backbone} metadata has no 'age' column")
+        return None, None
+    mask = meta["age"].notna()
+    labels = (meta.loc[mask, "age"] >= 60).astype(int).values
+    return emb[mask.values], labels
+
+
+# CheXpert backbones to include in Tables 12/13 (matching Table 11)
+_CHEXPERT_BACKBONES = [
+    ("resnet50", "ResNet-50"),
+    ("densenet121", "DenseNet"),
+    ("vit_b_16", "ViT-B/16"),
+]
+
+
 def _load_mimic(backbone: str, attribute: str):
     """MIMIC-CXR embeddings for a given backbone and attribute."""
-    emb = np.load(DATA_DIR / "mimic_cxr" / f"{backbone}_embeddings.npy")
-    meta = pd.read_csv(DATA_DIR / "mimic_cxr" / f"{backbone}_metadata.csv")
+    emb_path = DATA_DIR / "mimic_cxr" / f"{backbone}_embeddings.npy"
+    meta_path = DATA_DIR / "mimic_cxr" / f"{backbone}_metadata.csv"
+    if not emb_path.exists() or not meta_path.exists():
+        print(f"    [SKIP] MIMIC {backbone} data not found locally")
+        return None, None
+    emb = np.load(emb_path)
+    meta = pd.read_csv(meta_path)
     if attribute == "sex":
         labels = (meta["sex"] == "Male").astype(int).values
     elif attribute == "race":
@@ -130,40 +172,30 @@ def generate_table_a():
 
     rows = []
 
-    # --- CheXpert ---
-    print("  CheXpert / Race (WHITE vs non-WHITE) ...")
-    emb, labels = _load_chexpert_race()
-    res = _fast_probe_permutation(emb, labels, n_permutations=100, seed=42)
-    rows.append(
-        {
-            "Dataset": "CheXpert",
-            "Attribute": "Race",
-            "Observed Acc": res["observed_accuracy"],
-            "Null Mean": res["null_mean"],
-            "Null Std": res["null_std"],
-            "p-value": res["p_value"],
-        }
-    )
-    print(
-        f"    obs={res['observed_accuracy']:.4f}  null={res['null_mean']:.4f}+/-{res['null_std']:.4f}  p={res['p_value']:.4f}"
-    )
-
-    print("  CheXpert / Sex ...")
-    emb, labels = _load_chexpert_sex()
-    res = _fast_probe_permutation(emb, labels, n_permutations=100, seed=42)
-    rows.append(
-        {
-            "Dataset": "CheXpert",
-            "Attribute": "Sex",
-            "Observed Acc": res["observed_accuracy"],
-            "Null Mean": res["null_mean"],
-            "Null Std": res["null_std"],
-            "p-value": res["p_value"],
-        }
-    )
-    print(
-        f"    obs={res['observed_accuracy']:.4f}  null={res['null_mean']:.4f}+/-{res['null_std']:.4f}  p={res['p_value']:.4f}"
-    )
+    # --- CheXpert (per-backbone, matching Table 11) ---
+    for bb_key, bb_label in _CHEXPERT_BACKBONES:
+        for attr in ["Race", "Sex", "Age"]:
+            print(f"  CheXpert ({bb_label}) / {attr} ...")
+            if attr == "Race":
+                emb, labels = _load_chexpert_race(bb_key)
+            elif attr == "Sex":
+                emb, labels = _load_chexpert_sex(bb_key)
+            else:
+                emb, labels = _load_chexpert_age(bb_key)
+            res = _fast_probe_permutation(emb, labels, n_permutations=100, seed=42)
+            rows.append(
+                {
+                    "Dataset": f"CheXpert ({bb_label})",
+                    "Attribute": attr,
+                    "Observed Acc": res["observed_accuracy"],
+                    "Null Mean": res["null_mean"],
+                    "Null Std": res["null_std"],
+                    "p-value": res["p_value"],
+                }
+            )
+            print(
+                f"    obs={res['observed_accuracy']:.4f}  null={res['null_mean']:.4f}+/-{res['null_std']:.4f}  p={res['p_value']:.4f}"
+            )
 
     # --- MIMIC-CXR ---
     for backbone, bb_label in [
@@ -171,9 +203,14 @@ def generate_table_a():
         ("vit16_cls", "ViT-16"),
         ("medsiglip", "MedSigLIP"),
     ]:
-        for attr in ["sex"]:
+        for attr in ["race", "sex", "age"]:
             print(f"  MIMIC / {bb_label} / {attr} ...")
-            emb, labels = _load_mimic(backbone, attr)
+            if attr == "race":
+                emb, labels = _load_mimic(backbone, "race")
+            elif attr == "sex":
+                emb, labels = _load_mimic(backbone, "sex")
+            else:
+                emb, labels = _load_mimic_age(backbone)
             if emb is None:
                 continue
             res = _fast_probe_permutation(emb, labels, n_permutations=100, seed=42)
@@ -314,57 +351,38 @@ def generate_table_b():
 
     rows = []
 
-    # --- CheXpert Race ---
-    print("  CheXpert / Race ...")
-    emb, labels = _load_chexpert_race()
-    ci = _probe_accuracy_bootstrap(emb, labels)
-    d = _cohens_d(emb, labels)
-    n_sig = _count_fdr_significant(emb, labels)
-    n0, n1 = int(np.sum(labels == 0)), int(np.sum(labels == 1))
-    rows.append(
-        {
-            "Dataset": "CheXpert",
-            "Attribute": "Race",
-            "N": len(labels),
-            "N_g0": n0,
-            "N_g1": n1,
-            "Emb Dim": emb.shape[1],
-            "Cohen_d": d,
-            "Probe Mean": ci["mean"],
-            "CI Lower": ci["ci_lower"],
-            "CI Upper": ci["ci_upper"],
-            "FDR Sig": n_sig,
-        }
-    )
-    print(
-        f"    N={len(labels)}, d={d:.3f}, acc={ci['mean']:.3f} [{ci['ci_lower']:.3f}, {ci['ci_upper']:.3f}], sig={n_sig}"
-    )
-
-    # --- CheXpert Sex ---
-    print("  CheXpert / Sex ...")
-    emb, labels = _load_chexpert_sex()
-    ci = _probe_accuracy_bootstrap(emb, labels)
-    d = _cohens_d(emb, labels)
-    n_sig = _count_fdr_significant(emb, labels)
-    n0, n1 = int(np.sum(labels == 0)), int(np.sum(labels == 1))
-    rows.append(
-        {
-            "Dataset": "CheXpert",
-            "Attribute": "Sex",
-            "N": len(labels),
-            "N_g0": n0,
-            "N_g1": n1,
-            "Emb Dim": emb.shape[1],
-            "Cohen_d": d,
-            "Probe Mean": ci["mean"],
-            "CI Lower": ci["ci_lower"],
-            "CI Upper": ci["ci_upper"],
-            "FDR Sig": n_sig,
-        }
-    )
-    print(
-        f"    N={len(labels)}, d={d:.3f}, acc={ci['mean']:.3f} [{ci['ci_lower']:.3f}, {ci['ci_upper']:.3f}], sig={n_sig}"
-    )
+    # --- CheXpert (per-backbone, matching Table 11) ---
+    for bb_key, bb_label in _CHEXPERT_BACKBONES:
+        for attr in ["Race", "Sex", "Age"]:
+            print(f"  CheXpert ({bb_label}) / {attr} ...")
+            if attr == "Race":
+                emb, labels = _load_chexpert_race(bb_key)
+            elif attr == "Sex":
+                emb, labels = _load_chexpert_sex(bb_key)
+            else:
+                emb, labels = _load_chexpert_age(bb_key)
+            ci = _probe_accuracy_bootstrap(emb, labels)
+            d = _cohens_d(emb, labels)
+            n_sig = _count_fdr_significant(emb, labels)
+            n0, n1 = int(np.sum(labels == 0)), int(np.sum(labels == 1))
+            rows.append(
+                {
+                    "Dataset": f"CheXpert ({bb_label})",
+                    "Attribute": attr,
+                    "N": len(labels),
+                    "N_g0": n0,
+                    "N_g1": n1,
+                    "Emb Dim": emb.shape[1],
+                    "Cohen_d": d,
+                    "Probe Mean": ci["mean"],
+                    "CI Lower": ci["ci_lower"],
+                    "CI Upper": ci["ci_upper"],
+                    "FDR Sig": n_sig,
+                }
+            )
+            print(
+                f"    N={len(labels)}, d={d:.3f}, acc={ci['mean']:.3f} [{ci['ci_lower']:.3f}, {ci['ci_upper']:.3f}], sig={n_sig}"
+            )
 
     # --- MIMIC-CXR ---
     for backbone, bb_label in [
@@ -372,32 +390,38 @@ def generate_table_b():
         ("vit16_cls", "ViT-16"),
         ("medsiglip", "MedSigLIP"),
     ]:
-        print(f"  MIMIC / {bb_label} / Sex ...")
-        emb, labels = _load_mimic(backbone, "sex")
-        if emb is None:
-            continue
-        ci = _probe_accuracy_bootstrap(emb, labels)
-        d = _cohens_d(emb, labels)
-        n_sig = _count_fdr_significant(emb, labels)
-        n0, n1 = int(np.sum(labels == 0)), int(np.sum(labels == 1))
-        rows.append(
-            {
-                "Dataset": f"MIMIC ({bb_label})",
-                "Attribute": "Sex",
-                "N": len(labels),
-                "N_g0": n0,
-                "N_g1": n1,
-                "Emb Dim": emb.shape[1],
-                "Cohen_d": d,
-                "Probe Mean": ci["mean"],
-                "CI Lower": ci["ci_lower"],
-                "CI Upper": ci["ci_upper"],
-                "FDR Sig": n_sig,
-            }
-        )
-        print(
-            f"    N={len(labels)}, d={d:.3f}, acc={ci['mean']:.3f} [{ci['ci_lower']:.3f}, {ci['ci_upper']:.3f}], sig={n_sig}"
-        )
+        for attr, attr_label in [("race", "Race"), ("sex", "Sex"), ("age", "Age")]:
+            print(f"  MIMIC / {bb_label} / {attr_label} ...")
+            if attr == "race":
+                emb, labels = _load_mimic(backbone, "race")
+            elif attr == "sex":
+                emb, labels = _load_mimic(backbone, "sex")
+            else:
+                emb, labels = _load_mimic_age(backbone)
+            if emb is None:
+                continue
+            ci = _probe_accuracy_bootstrap(emb, labels)
+            d = _cohens_d(emb, labels)
+            n_sig = _count_fdr_significant(emb, labels)
+            n0, n1 = int(np.sum(labels == 0)), int(np.sum(labels == 1))
+            rows.append(
+                {
+                    "Dataset": f"MIMIC ({bb_label})",
+                    "Attribute": attr_label,
+                    "N": len(labels),
+                    "N_g0": n0,
+                    "N_g1": n1,
+                    "Emb Dim": emb.shape[1],
+                    "Cohen_d": d,
+                    "Probe Mean": ci["mean"],
+                    "CI Lower": ci["ci_lower"],
+                    "CI Upper": ci["ci_upper"],
+                    "FDR Sig": n_sig,
+                }
+            )
+            print(
+                f"    N={len(labels)}, d={d:.3f}, acc={ci['mean']:.3f} [{ci['ci_lower']:.3f}, {ci['ci_upper']:.3f}], sig={n_sig}"
+            )
 
     # --- CelebA ---
     print("  CelebA / Male ...")
