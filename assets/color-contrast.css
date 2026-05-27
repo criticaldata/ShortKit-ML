@@ -1,0 +1,76 @@
+:root {
+  --contrast-text: #0f172a;
+  --contrast-muted: rgba(15, 23, 42, 0.7);
+  --contrast-bg: #f7fbff;
+  --contrast-border: rgba(15, 23, 42, 0.18);
+  --contrast-slate-text: #e2e8f0;
+  --contrast-slate-border: rgba(226, 232, 240, 0.3);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-fg-color: var(--contrast-text);
+  --md-default-fg-color--light: rgba(15, 23, 42, 0.83);
+  --md-default-fg-color--lighter: rgba(15, 23, 42, 0.63);
+  --md-default-bg-color: var(--contrast-bg);
+  --md-default-bg-color--light: #ffffff;
+  --md-default-bg-color--lighter: #f1f5f9;
+  --md-typeset-color: var(--md-default-fg-color);
+  --md-typeset-border-color: var(--contrast-border);
+  --md-typeset-a-color: #1d4ed8;
+  --md-admonition-title-color: var(--md-default-fg-color);
+  --md-primary-fg-color: #1d4ed8;
+  --md-code-bg-color: rgba(15, 23, 42, 0.05);
+  --md-code-fg-color: var(--contrast-text);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-fg-color: var(--contrast-slate-text);
+  --md-default-fg-color--light: rgba(226, 232, 240, 0.9);
+  --md-default-fg-color--lighter: rgba(226, 232, 240, 0.65);
+  --md-default-bg-color: #020617;
+  --md-default-bg-color--light: #0b1224;
+  --md-default-bg-color--lighter: #111b2f;
+  --md-typeset-color: var(--md-default-fg-color);
+  --md-typeset-border-color: var(--contrast-slate-border);
+  --md-typeset-a-color: #38bdf8;
+  --md-primary-fg-color: #38bdf8;
+  --md-code-bg-color: rgba(15, 23, 42, 0.65);
+}
+
+body {
+  background-color: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+}
+
+.md-nav__link,
+.md-nav__title {
+  color: var(--md-default-fg-color);
+}
+
+.md-nav__link::before,
+.md-nav__link:focus-visible {
+  border-color: var(--md-primary-fg-color);
+}
+
+.md-typeset a {
+  color: var(--md-typeset-a-color);
+}
+
+.md-typeset table {
+  border-color: var(--md-typeset-border-color);
+}
+
+.md-typeset pre,
+.md-typeset code {
+  background-color: var(--md-code-bg-color);
+}
+
+.md-footer {
+  background-color: var(--md-default-bg-color--lighter);
+}
+
+/* Hide site name text in header — logo image replaces it */
+.md-header__title .md-ellipsis,
+.md-nav__title .md-ellipsis {
+  display: none;
+}
