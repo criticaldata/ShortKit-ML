@@ -10,6 +10,8 @@
 [![CI](https://github.com/criticaldata/ShortKit-ML/actions/workflows/tests.yml/badge.svg)](https://github.com/criticaldata/ShortKit-ML/actions/workflows/tests.yml)
 [![Dataset on HF](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-ShortKIT--ML--data-yellow.svg)](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data)
 [![Docs](https://img.shields.io/badge/docs-criticaldata.github.io-blue.svg)](https://criticaldata.github.io/ShortKit-ML/)
+[![Paper](https://img.shields.io/badge/paper-medRxiv-red.svg)](https://www.medrxiv.org/content/10.64898/2026.04.29.26352053v1)
+
 
 ## Table of Contents
 
