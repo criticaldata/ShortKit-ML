@@ -31,7 +31,8 @@ uncertain and blank rows dropped and counted):
    MASK_FRAC of dimensions with the largest loading on the A direction, in
    training, test and audit embeddings; control: the same number of random
    dimensions) and LastLayerRetraining (DFR: the head refitted on a
-   group-balanced subset of the confounded training set; the embeddings are
+   subset of the confounded training set balanced over the four (A, Y)
+   groups; the embeddings are
    unchanged, so the audit after equals the audit before by construction).
 """
 
@@ -226,17 +227,19 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, k_mitig, threads):
             for name, tf in transforms():
                 t1 = time.time()
                 if tf is None:  # DFR: embeddings unchanged, head refitted on a group-balanced subset
-                    dfr = mitig_mod.LastLayerRetraining(random_state=s).fit(Xk[i_conf], yk[i_conf], ak[i_conf])
+                    dfr = mitig_mod.LastLayerRetraining(random_state=s).fit(Xk[i_conf], yk[i_conf], 2 * ak[i_conf] + yk[i_conf])
                     pm = dfr.classifier_.predict_proba(dfr.scaler_.transform(Xte.astype(np.float64)))[:, 1]
                     after = before
+                    n_fit = int(dfr._n_balanced)
                 else:
                     Ztr, Zte, Zpool = tf(Xk[i_conf]), tf(Xte), tf(Xk[te_pool])
                     h_m = head(Ztr, yk[i_conf], s)
                     pm = h_m.predict_proba(Zte)[:, 1]
+                    n_fit = int(len(i_conf))
                     after = conditional_audit(Zpool, ak[te_pool], yk[te_pool], cfg,
                                               groups=pk[te_pool]).results["probe"]
                 mit_rows.append({**info, "seed": s, "method": name, "n_train": int(len(i_conf)),
-                                 "n_test": int(len(i_te)), "n_audit_pool": int(len(te_pool)),
+                                 "n_test": int(len(i_te)), "n_audit_pool": int(len(te_pool)), "n_head_fit": n_fit,
                                  "task_auroc_before": rel["auroc_conf"],
                                  "task_auroc_after": float(roc_auc_score(yte, pm)),
                                  "tpr_gap_before": rel["tpr_gap"],
@@ -270,7 +273,7 @@ def main() -> int:
                   "threshold": 0.5, "tasks": TASKS, "attributes": ["sex (Male=1)", "age 60+ (=1)"],
                   "mitigations": {k: f"{c}({v or 'defaults'})" for k, (c, v) in MITIGATIONS.items()},
                   "masking": f"ShortcutMasker zero, top {MASK_FRAC:.0%} of dims by A-direction loading; control random dims",
-                  "dfr": "LastLayerRetraining defaults (L1, C = 1, balanced classes) on a group-balanced subset",
+                  "dfr": "LastLayerRetraining defaults (L1, C = 1, balanced classes) on a subset of the confounded training set balanced over the four (A, Y) groups",
                   "split": "patient-level StratifiedGroupKFold(2) on (A, Y)"}
     man.notes += [CHEXPERT_JOIN_NOTE, "attribute removal: " + ATTR_REMOVAL]
     man.add_data(DATA / "train.csv", DATA / "chexpert_multibackbone" / "race_mapping.csv")
