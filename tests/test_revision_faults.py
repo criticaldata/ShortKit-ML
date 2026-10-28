@@ -211,3 +211,15 @@ class TestLabelMethodsSeeTheAttribute:
         assert res["success"]
         assert res["attribute_test"] is not None
         assert 0.0 <= res["attribute_test"]["p_value"] <= 1.0
+
+
+def test_chexpert_hf_sex_mapping_matches_dataset_card():
+    """CheXpert sex was inverted at extraction (0 is Male in the HF mirror)."""
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "scripts" / "extract_chexpert_hf_multibackbone.py"
+    spec = importlib.util.spec_from_file_location("extract_hf", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.HF_SEX_MAP == {0: "Male", 1: "Female"}
