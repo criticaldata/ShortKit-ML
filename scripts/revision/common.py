@@ -150,7 +150,22 @@ def chexpert_paths(backbone: str) -> tuple[Path, Path]:
 
 def mimic_paths(backbone: str) -> tuple[Path, Path]:
     d = DATA / "mimic_cxr"
-    return d / f"{backbone}_embeddings.npy", d / f"{backbone}_metadata.csv"
+    # the stored ViT-B/32 file does not match its metadata; prepare_mimic_source.py rebuilds it
+    emb = "vit32_cls_embeddings_realigned.npy" if backbone == "vit32_cls" else f"{backbone}_embeddings.npy"
+    return d / emb, d / f"{backbone}_metadata.csv"
+
+
+MIMIC_RACE_MISSING = ("UNKNOWN", "UNABLE TO OBTAIN", "PATIENT DECLINED TO ANSWER")
+
+
+def _code_mimic_race(v) -> str | None:
+    if pd.isna(v) or str(v).upper().strip() in MIMIC_RACE_MISSING:
+        return None  # no race recorded: missing, not non-White
+    v = str(v).upper().strip()
+    for prefix in ("WHITE", "BLACK", "ASIAN"):
+        if v.startswith(prefix):
+            return prefix
+    return "OTHER"
 
 
 def celeba_paths() -> tuple[Path, Path]:
@@ -270,6 +285,10 @@ def load_mimic(backbone: str) -> tuple[np.ndarray, pd.DataFrame]:
     X = np.load(emb).astype(np.float32)
     meta = pd.read_csv(meta_p)
     assert X.shape[0] == len(meta)
+    raw = pd.read_csv(DATA / "mimic_cxr" / "mimic_race_raw.csv")
+    assert (raw.image_path.to_numpy() == meta.image_path.to_numpy()).all()
+    meta["race_raw"] = raw.race_raw.to_numpy()
+    meta["race"] = [_code_mimic_race(v) for v in meta.race_raw]
     return X, meta
 
 

@@ -237,3 +237,28 @@ def test_chexpert_race_unknown_and_refused_are_missing():
     assert _code_chexpert_race("Other, Hispanic") == "OTHER"
     assert _code_chexpert_race("Native Hawaiian or Other Pacific Islander") == "NHPI"
     assert _code_chexpert_race("White, non-Hispanic") == "WHITE"
+
+
+def test_mimic_race_unknown_declined_unable_are_missing():
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "revision"))
+    from common import _code_mimic_race
+
+    for v in ("UNKNOWN", "UNABLE TO OBTAIN", "PATIENT DECLINED TO ANSWER", None):
+        assert _code_mimic_race(v) is None
+    assert _code_mimic_race("WHITE - RUSSIAN") == "WHITE"
+    assert _code_mimic_race("BLACK/CAPE VERDEAN") == "BLACK"
+    assert _code_mimic_race("HISPANIC/LATINO - CUBAN") == "OTHER"
+
+
+def test_mimic_vit32_uses_rebuilt_embeddings():
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "revision"))
+    from common import mimic_paths
+
+    assert mimic_paths("vit32_cls")[0].name == "vit32_cls_embeddings_realigned.npy"
+    assert mimic_paths("rad_dino")[0].name == "rad_dino_embeddings.npy"

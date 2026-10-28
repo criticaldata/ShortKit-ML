@@ -892,6 +892,11 @@ def alignment():
     if aud is not None:
         sx = aud[(aud.variant == "primary") & (aud.attribute == "sex") & (aud.detector == "probe")]
         sex_auc = {(r.dataset, r.backbone): float(r.statistic) for r in sx.itertuples()}
+    sp = load("alignment_check/alignment_sexprobe.csv")
+    if sp is not None:  # stored ViT-B/32 file: plain sex probe from the alignment check
+        for r in sp[sp.backbone == "vit32_cls_stored"].itertuples():
+            sex_auc[(r.dataset, r.backbone)] = float(r.sex_auroc)
+        BACKBONE_LABELS.setdefault("vit32_cls_stored", "ViT-B/32 (stored file, replaced)")
     real = a[~a.b.str.contains("shuffled")]
     shuf = a[a.b.str.contains("shuffled")]
     rows, bad = [], []
@@ -916,7 +921,8 @@ def alignment():
                          "Probe at chance": "yes" if probe_bad else "no",
                          "Excluded": "yes" if excluded else "no"})
             put(f"alignment_max_spearman_{ds}_{bb}", float(mx), "{:.3f}")
-    for key, bb in (("vit32_sex_auroc_mimic", "vit32_cls"), ("vit16_sex_auroc_mimic", "vit16_cls")):
+    for key, bb in (("vit32_sex_auroc_mimic", "vit32_cls"), ("vit16_sex_auroc_mimic", "vit16_cls"),
+                    ("vit32_stored_sex_auroc_mimic", "vit32_cls_stored")):
         if ("mimic", bb) in sex_auc:
             put(key, sex_auc[("mimic", bb)])
     put("alignment_misaligned_backbones", ", ".join(bad) if bad else "none", None)

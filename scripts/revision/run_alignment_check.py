@@ -23,9 +23,11 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
     CHEXPERT_BACKBONES,
+    DATA,
     MIMIC_BACKBONES,
     Manifest,
     chexpert_paths,
+    load_mimic,
     mimic_paths,
     results_root,
 )
@@ -41,6 +43,7 @@ def _sim(X: np.ndarray) -> np.ndarray:
 
 def main() -> int:
     from scipy.stats import spearmanr
+    from sklearn.metrics import roc_auc_score
 
     out = results_root() / "alignment_check"
     out.mkdir(parents=True, exist_ok=True)
@@ -56,6 +59,8 @@ def main() -> int:
             p = paths(bb)[0]
             man.add_data(p)
             sims[bb] = _sim(np.load(p)[:N_ROWS].astype(np.float64))[iu]
+        if ds == "mimic":
+            sims_mimic = sims
         perm = np.random.default_rng(0).permutation(N_ROWS)
         for a in bbs:
             for b in bbs:
@@ -65,6 +70,31 @@ def main() -> int:
             other = next(b for b in bbs if b != a)
             rows.append({"dataset": ds, "a": a, "b": f"{other} (shuffled {a})",
                          "spearman": float(spearmanr(_sim(Xs)[iu], sims[other])[0])})
+    # the stored MIMIC ViT-B/32 file (before prepare_mimic_source.py rebuilt it), kept as evidence
+    stored = DATA / "mimic_cxr" / "vit32_cls_embeddings.npy"
+    probes = []
+    if stored.exists():
+        man.add_data(stored)
+        S = np.load(stored).astype(np.float64)
+        s_sim = _sim(S[:N_ROWS])[iu]
+        for b in MIMIC_BACKBONES:
+            rows.append({"dataset": "mimic", "a": "vit32_cls_stored", "b": b,
+                         "spearman": float(spearmanr(s_sim, sims_mimic[b])[0])})
+        perm = np.random.default_rng(0).permutation(N_ROWS)
+        rows.append({"dataset": "mimic", "a": "vit32_cls_stored", "b": "rad_dino (shuffled vit32_cls_stored)",
+                     "spearman": float(spearmanr(_sim(S[:N_ROWS][perm])[iu], sims_mimic["rad_dino"])[0])})
+        # plain sex probe (5-fold CV) on the stored and the rebuilt file
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.model_selection import cross_val_predict
+        from sklearn.pipeline import make_pipeline
+        from sklearn.preprocessing import StandardScaler
+
+        sex = (load_mimic("vit32_cls")[1].sex == "Male").to_numpy().astype(int)
+        for name, X in (("vit32_cls_stored", S), ("vit32_cls", load_mimic("vit32_cls")[0])):
+            pr = cross_val_predict(make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000)), X, sex,
+                                   cv=5, method="predict_proba")[:, 1]
+            probes.append({"dataset": "mimic", "backbone": name, "sex_auroc": float(roc_auc_score(sex, pr))})
+    pd.DataFrame(probes).to_csv(out / "alignment_sexprobe.csv", index=False)
     pd.DataFrame(rows).to_csv(out / "alignment.csv", index=False)
     man.time("all", time.time() - t0)
     man.write()
