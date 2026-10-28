@@ -660,12 +660,16 @@ def head():
     if m is not None and not m.empty:
         put("mitig1_name", "adversarial debiasing")
         put("mitig2_name", "contrastive debiasing")
+        put("mitig3_name", "shortcut masking")
+        put("mitig4_name", "last-layer retraining")
         put("mitig_n_seeds", int(m.seed.nunique()), "{:d}")
         rows = []
         label = {"adversarial": "Adversarial debiasing", "adversarial_control": "Same encoder, adversary weight 0",
-                 "contrastive": "Contrastive debiasing", "contrastive_control": "Same encoder, contrastive weight 0"}
+                 "contrastive": "Contrastive debiasing", "contrastive_control": "Same encoder, contrastive weight 0",
+                 "masking": "Shortcut masking", "masking_control": "Same number of random dimensions",
+                 "dfr": "Last-layer retraining (DFR)"}
         mids = []
-        for i, meth in ((1, "adversarial"), (2, "contrastive")):
+        for i, meth in ((1, "adversarial"), (2, "contrastive"), (3, "masking"), (4, "dfr")):
             g = m[m.method == meth]
             c = m[m.method == f"{meth}_control"]
             # all seeds (section 9); deltas against the raw embeddings
@@ -685,8 +689,13 @@ def head():
                 put(f"mitig{i}_vs_control_probe_auroc", (j.probe_auroc_after - j.probe_auroc_after_c).mean())
                 put(f"mitig{i}_vs_control_task_auroc", (j.task_auroc_after - j.task_auroc_after_c).mean())
                 put(f"mitig{i}_vs_control_tpr_gap", (j.tpr_gap_after - j.tpr_gap_after_c).mean())
+            if meth == "dfr":
+                # the head is refit, the embeddings are not changed
+                put("mitig4_frac_tpr_gap_smaller", (g.tpr_gap_after.abs() < g.tpr_gap_before.abs()).mean())
             for mm_ in (meth, f"{meth}_control"):
                 gm = m[m.method == mm_]
+                if gm.empty:
+                    continue
                 for attr in ["sex", "age"]:
                     ga = gm[gm.attribute == attr]
                     if ga.empty:
@@ -699,7 +708,7 @@ def head():
                                  "Task before": f2(ga.task_auroc_before.mean()), "Task after": f2(ga.task_auroc_after.mean()),
                                  "TPR gap before": f2(ga.tpr_gap_before.mean()), "TPR gap after": f2(ga.tpr_gap_after.mean())})
                 mids.append(len(rows))
-        hdr = ["Encoder", "$A$", "Probe before", "Probe after", "Sig. before", "Sig. after",
+        hdr = ["Method", "$A$", "Probe before", "Probe after", "Sig. before", "Sig. after",
                "Task AUROC before", "Task AUROC after", "TPR gap before", "TPR gap after"]
         write_tabular("mitigation_before_after", pd.DataFrame(rows), "ll" + "c" * 8, escape_cells=False,
                       header=hdr, midrules=mids[:-1])

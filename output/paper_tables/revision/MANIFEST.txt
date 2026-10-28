@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit c40d837622bd7e0e01c1e191da559df05fe8e87e
+tables/figures built at commit 91b5bb94425706b55b7e5379c925c1837baaea40
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -214,6 +214,64 @@ timings (s):
 note: copied unchanged from /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/extraction_check (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
 
 ===== head_experiment =====
+run: head reliance experiment (section 7, items 1 to 3)
+commit: 91b5bb94425706b55b7e5379c925c1837baaea40
+working tree has uncommitted changes: False
+command: python scripts/revision/run_head_experiment.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 12:42:37 GMT
+wall_seconds: 1944.5
+
+config:
+{
+  "seeds": 10,
+  "mitigation_seeds": 3,
+  "K_audit": 500,
+  "K_mitigation_audits": 200,
+  "age": "age at the first study (patient-constant)",
+  "rho_train": 0.9,
+  "rho_test": 0.5,
+  "head": "StandardScaler + LogisticRegression(C=1)",
+  "threshold": 0.5,
+  "tasks": {
+    "pneumothorax": "Pneumothorax",
+    "pleural_effusion": "Pleural Effusion",
+    "cardiomegaly": "Cardiomegaly"
+  },
+  "attributes": [
+    "sex (Male=1)",
+    "age 60+ (=1)"
+  ],
+  "mitigations": {
+    "adversarial": "AdversarialDebiasing(defaults)",
+    "adversarial_control": "AdversarialDebiasing({'adversary_weight': 0.0})",
+    "contrastive": "ContrastiveDebiasing(defaults)",
+    "contrastive_control": "ContrastiveDebiasing({'contrastive_weight': 0.0})"
+  },
+  "masking": "ShortcutMasker zero, top 5% of dims by A-direction loading; control random dims",
+  "dfr": "LastLayerRetraining defaults (L1, C = 1, balanced classes) on a group-balanced subset",
+  "split": "patient-level StratifiedGroupKFold(2) on (A, Y)"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  3ce55cfc0a8337bec26cb7acf9af02df  data/chexpert_multibackbone/vit_b_32_embeddings.npy
+  eb997aa0d38051c1cc231cefca177571  data/chexpert_multibackbone/dinov2_base_embeddings.npy
+  27383c64a40f071bc81830ab2db78b23  data/chexpert_multibackbone/rad_dino_embeddings.npy
+  85852a8e90d5eaf736617a4a928a168e  data/chexpert_multibackbone/medsiglip_embeddings.npy
+
+timings (s):
+  all_cells: 1944.297
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - attribute removal: Unit direction u = difference of A-group means after centring each Y stratum, estimated on the whole training pool (raw embedding space); test embeddings are replaced by x - ((x - m) . u) u, with m the training-pool mean, and the confounded head is reapplied.
+
+===== head_experiment_before_dfr_masking =====
 run: head reliance experiment (section 7, items 1 to 3)
 commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
