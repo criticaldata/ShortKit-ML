@@ -2,6 +2,9 @@
 
 **Probe-based detection** tests whether protected group information can be predicted from embeddings. If a simple classifier can accurately predict group membership, the embeddings contain shortcut information.
 
+!!! note "The paper's conditional probe"
+    The accuracy thresholds on this page belong to the interactive `SKLearnProbe` and decide nothing in the paper. The paper's primary test is the conditional probe in `shortcut_detect.audit.conditional_audit`: an L2 logistic regression (`C=1.0`) predicts the attribute from the standardised embedding concatenated with the task label; the score is the out-of-fold AUROC of 5-fold cross-validation stratified on attribute and task and grouped by patient; the p-value comes from permuting the attribute within task-label strata, between patients where patient ids are given (K=500 in the clinical audits). Conditioning on the task label is what keeps an embedding that encodes only the task from being flagged when attribute and task are correlated.
+
 ## How It Works
 
 1. **Train a probe classifier** on embeddings to predict protected attributes

@@ -41,7 +41,7 @@ The conftest will start the dashboard if it is not already running at `http://12
 | M02 Background Randomization | test_background_randomization_m02 | Skipped |
 | M03 GroupDRO | test_detection_groupdro | Pass |
 | M04 Adversarial Debiasing | test_adversarial_debiasing_m04 | Pass |
-| M05 Explanation Regularization | — | Not implemented |
+| M05 Explanation Regularization | n/a | Not implemented |
 | M06 Last Layer Retraining | test_last_layer_retraining_m06 | Pass |
 | M07 Contrastive Debiasing | test_contrastive_debiasing_m07 | Pass |
 | I01 I02 I03 Report/Dashboard/CSV | test_report_pdf_csv_download | Pass |

@@ -4,11 +4,11 @@ ShortKit-ML provides multiple complementary methods for detecting shortcuts in e
 
 ## Why Multiple Methods?
 
-No single method can detect all types of shortcuts. Using multiple methods provides:
+Each method reads a different property of the embedding (cluster structure, per-dimension differences, centroid distance, a fitted direction), and the secondary scores are on interpretable scales. Agreement between methods is reported as a description. It is not a decision rule: in the paper's synthetic benchmark the detectors' flags were strongly correlated, and requiring several to agree lowered sensitivity without a useful gain in specificity.
 
-- **Comprehensive coverage** - Different methods catch different bias patterns
-- **Validation** - Agreement across methods increases confidence
-- **Insights** - Each method reveals different aspects of the bias
+## The paper's audit
+
+The accompanying paper runs `shortcut_detect.audit.conditional_audit`. The risk levels on these pages play no part in it. Its single primary test is the conditional probe: an L2 logistic regression predicting the attribute from the embedding concatenated with the task label, scored by out-of-fold AUROC (5-fold CV stratified on attribute and task, grouped by patient when `groups` is given). The null is a conditional permutation: the attribute is shuffled within task-label strata, between patients where patient ids exist, K times; the p-value is (1 + number of null statistics at or above the observed) / (K + 1). The five secondary detectors (statistical, geometric, bias direction PCA, HBAC, frequency) share that null, and the six p-values of a cell are Benjamini-Hochberg adjusted. The number of flagged detectors is reported as a description only. `AuditConfig` defaults: `C=1.0`, `n_clusters=8`, `top_k_fraction=0.05`, `n_permutations=200`; the clinical audits set `n_permutations_probe=500`. SIS, the fairness gaps and the training-dynamics methods are outside the score. The audit measures shortcut potential, whether the attribute is recoverable from the embedding given the task; a positive result does not show that a classifier trained on the embedding uses the attribute.
 
 ## Methods Comparison
 
@@ -106,7 +106,7 @@ The aggregation strategy is controlled by the `condition_name` parameter:
 |-----------|----------|----------|
 | `indicator_count` (default) | Counts total risk indicators. 2+ = HIGH, 1 = MODERATE, 0 = LOW | Simple audits, general use |
 | `majority_vote` | Counts methods with indicators as votes | Conservative consensus-based screening |
-| `weighted_risk` | Weights each detector by evidence strength (probe accuracy, stat significance, HBAC confidence, geometric effect size) | Paper results, nuanced analysis |
+| `weighted_risk` | Weights each detector by evidence strength (probe accuracy, stat significance, HBAC confidence, geometric effect size) | Graded scoring |
 | `multi_attribute` | Cross-references risk across sensitive attributes; escalates when multiple attributes flag risk | Multi-demographic analysis (race + sex + age) |
 | `meta_classifier` | Trained sklearn meta-classifier on detector features, or heuristic fallback | Advanced pipelines with synthetic training data |
 
@@ -163,5 +163,5 @@ All methods have limitations you should be aware of:
 
 1. **Sample Size** - Most methods need sufficient samples per group (n > 30)
 2. **Linearity** - Some methods assume linear relationships
-3. **Independence** - Assumes embeddings are i.i.d. samples
+3. **Independence** - Assumes embeddings are i.i.d. samples; when several images come from one patient, pass patient ids as `groups` to `conditional_audit` so folds and permutations are patient-level
 4. **Single Protected Attribute** - Most fairness methods assume one protected attribute; use [Intersectional Analysis](intersectional-analysis.md) for multiple attributes.

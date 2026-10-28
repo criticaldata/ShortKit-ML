@@ -62,7 +62,7 @@ sudo apt-get install libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libff
 sudo dnf install pango gdk-pixbuf2 libffi-devel
 ```
 
-If you don't need PDF export, you can skip this—HTML and Markdown reports work without these dependencies.
+If you don't need PDF export, you can skip this: HTML and Markdown reports work without these dependencies.
 
 ### Install Pre-commit Hooks
 

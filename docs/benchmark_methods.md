@@ -1,12 +1,16 @@
 # Benchmark Methods: Decision Log & Reproducibility Guide
 
-This document records which detection methods are included in the paper benchmarks, why each was included or excluded, and how to reproduce all results.
+This document records the method selection of the **first submission** (13 methods compared against fixed thresholds) and how to replay it. The revised paper scores six calibrated detectors instead, with the conditional probe as the single primary test; see [Results](#results) below and [Paper Results](reproducibility.md#revised-paper-cmpb-revision-2026).
 
-## Method Selection Summary
+## What the revised paper scores
 
-Of ShortKit-ML's 19 implemented detection methods, **13 are benchmarked** in the paper. The remaining 6 require raw images, concept sets, or specialized data loaders that are incompatible with the embedding-only evaluation protocol.
+Of the 20 implemented detection methods, six need only the embedding, the attribute and the task label and are calibrated by the conditional permutation null: the conditional probe (primary) and the statistical, geometric, bias direction PCA, HBAC and frequency detectors (secondary, same null, reported as diagnostics). The number of flagged detectors in a cell is descriptive only; no agreement threshold is used. SIS is outside the score (it fits on the task label with a fixed 15% subset and has no attribute-aware form). Demographic parity, equalized odds and intersectional gaps are computed only for the trained heads of the classification-head experiment, and GroupDRO, GCE, SSA, early-epoch clustering, CAV, SpRAy, GradCAM, causal effect, the CVAE and the VAE contribute to no result in the paper.
 
-### Benchmarked Methods (13)
+## First-submission method selection
+
+Of the 19 detection methods counted in the first submission, **13 were benchmarked** there. The remaining 6 require raw images, concept sets, or specialized data loaders that are incompatible with the embedding-only evaluation protocol.
+
+### Benchmarked Methods (13, first submission)
 
 | # | Method | Key | Tier | Paradigm | What It Detects | Detection Logic |
 |---|--------|-----|------|----------|-----------------|-----------------|
@@ -63,7 +67,9 @@ Of ShortKit-ML's 19 implemented detection methods, **13 are benchmarked** in the
 | **CelebA** | ResNet-50 | 10,000 | Male + 39 binary attrs | 13 |
 | **Cross-dataset** | ResNet-50 (CheXpert) + RAD-DINO (MIMIC) | varies by diagnosis | sex, race | 13 (intersectional fails on single-attr CheXpert) |
 
-## Reproducing All Results
+## Replaying the first-submission benchmark
+
+The commands below rerun the 13-method protocol. The `old` stage of `scripts/revision/run_all.sh` reruns its clinical tables with the fixed flag reader for the comparison in the revised paper.
 
 ### Prerequisites
 
@@ -122,7 +128,7 @@ python -m shortcut_detect.benchmark.paper_runner --config examples/paper_benchma
 
 ## Results
 
-The 13-method detection-rate summary from the first submission is superseded. The revised paper reports a conditional audit (per-detector permutation tests with BH correction) instead; its tables and figures are built by the pipeline in [Paper Results](reproducibility.md#revised-paper-cmpb-revision-2026) and written to `output/paper_tables/revision/`.
+The 13-method detection-rate summary from the first submission is superseded. The revised paper reports a conditional audit (the conditional probe as primary test, five secondary detectors sharing its permutation null, BH correction within a cell) instead; its tables and figures are built by the pipeline in [Paper Results](reproducibility.md#revised-paper-cmpb-revision-2026) and written to `output/paper_tables/revision/`, with the resolved numbers in `numbers.json` there.
 
 ## File Locations
 

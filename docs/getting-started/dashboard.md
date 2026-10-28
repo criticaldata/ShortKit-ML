@@ -18,12 +18,18 @@ The dashboard opens at [http://127.0.0.1:7860](http://127.0.0.1:7860)
 
 ### Sample Data
 
-The dashboard comes pre-loaded with **CheXpert medical imaging data**:
+The default data source is **Sample Data (CheXpert - Lightweight)**:
 
-- 2,000 samples
-- 512-dimensional embeddings
-- Race-based demographic groups
-- Ready for immediate exploration
+- 2,000 rows drawn at random (`random_state=42`) from the CheXpert `train.csv`, with real metadata and demographics
+- 512-dimensional **synthetic** embeddings generated over that metadata (the first 10 dimensions carry a planted shortcut)
+- Race groups (WHITE, BLACK/AFRICAN AMERICAN, ASIAN, OTHER) from the demographics file
+- Tick **Use real CheXpert embeddings** to load `data/chest_embeddings.npy`, `chest_labels.npy` and `chest_group_labels.npy` instead, when they exist
+
+These sample embeddings are not the arrays used in the paper; those are on the gated Hugging Face dataset described in [Reproducing the Paper](../reproducibility.md#revised-paper-cmpb-revision-2026).
+
+### Raw Text Mode
+
+With **Input Mode** set to *Use Raw Data*, upload a CSV with a `text` column and name a HuggingFace model (for example `sentence-transformers/all-MiniLM-L6-v2`); the dashboard embeds the text before running detection. This needs the `hf` extra (`pip install "shortkit-ml[hf]"`), which pins `transformers>=4.39,<5`.
 
 ### Custom Data Upload
 
@@ -45,24 +51,56 @@ embedding_0,embedding_1,embedding_2,...,task_label,group_label
 
 ### Detection Methods
 
-Select which detection methods to run:
+The **Detection** tab offers 16 methods; the first ten are selected by default:
 
 - **HBAC** - Clustering analysis
 - **Probe** - Classifier-based detection
 - **Statistical** - Hypothesis testing
 - **Geometric** - Subspace analysis
+- **Equalized Odds** - TPR/FPR gaps across groups
+- **GroupDRO** - Worst-group robustness
+- **Demographic Parity** - Positive rate gaps across groups
+- **Intersectional** - Gaps across intersections of attributes (needs two or more attributes: `attr_*` columns, or `group_label` plus one `attr_*`)
+- **Bias Direction PCA** - Projection gap along the bias direction
+- **Early-Epoch Clustering (SPARE)** - Clusters of early-epoch representations
+- **GCE** - High-loss minority samples
+- **SIS** - Sufficient input subsets
+- **SSA** - Spread Spurious Attribute; the dashboard builds the labelled/unlabelled split (see *SSA Settings*)
 - **Causal Effect** - Spurious attribute detection (requires `attr_*` columns)
+- **Frequency** - Signal concentrated in few dimensions
+- **Generative CVAE** - Counterfactual embedding shifts
+
+An **Overall Assessment Condition** dropdown picks how method results are aggregated (`indicator_count` by default), and a **Multiple Testing Correction** accordion sets the correction for the statistical test. These risk levels and conditions are the interactive detector's heuristics; the paper's audit (`shortcut_detect.audit.conditional_audit`) uses the conditional probe with a permutation null instead, and none of the thresholds here decide anything in the paper.
+
+**Run Detection** fits the selected methods and renders the results panel. Methods that fail or are skipped are listed in a *method(s) did not run* box with the error, rather than dropped silently. The HTML report includes a section per method, among them SSA and Generative CVAE sections when those methods ran.
 
 ### Visualizations
 
-The dashboard provides interactive visualizations:
+The HTML report embeds PCA and t-SNE projections coloured by group, a 3D projection, dimension-importance and p-value heatmaps from the statistical test, and HBAC cluster purities.
 
-- **t-SNE/UMAP plots** - Embedding space visualization colored by group
-- **Feature importance** - Which dimensions show group differences
-- **Cluster dendrograms** - HBAC hierarchical structure
-- **ROC curves** - Probe classifier performance
+### Model Comparison
 
-Advanced, optional tools (GradCAM attention overlap, GT mask overlap, SpRAy heatmap clustering, CAV concept testing, and VAE image shortcut detection) are available in the **Advanced Analysis** tab. You can also optionally include CAV in the main Detection report by uploading a concept bundle.
+The **Model Comparison** tab runs the same methods on two or more embedding sets (several CSVs, or several HuggingFace models over one raw-text CSV) and reports them side by side (**Run Comparison**).
+
+### Advanced Analysis
+
+The **Advanced Analysis** tab holds optional tools that do not need a detection run first. Each accordion has one button:
+
+| Accordion | Button | What it does |
+|-----------|--------|--------------|
+| GradCAM Attention Overlap | Generate GradCAM Heatmaps | Heatmaps for uploaded images and a torch model |
+| GradCAM GT Mask Overlap | Run Mask Overlap | Overlap between heatmaps and ground-truth masks |
+| SpRAy Heatmap Clustering | Run SpRAy Clustering | Spectral clustering of heatmaps |
+| CAV Concept Testing | Run CAV Analysis | Concept activation vectors from a concept bundle |
+| VAE Image Shortcut Detection | Run VAE Analysis | VAE latent disentanglement on images |
+| Shortcut Feature Masking (M01) | Run Shortcut Masking | Mask or inpaint image regions, or zero/randomise embedding dimensions |
+| Background Randomization (M02) | Run Background Randomization | Swap foregrounds across backgrounds |
+| Adversarial Debiasing (M04) | Run Adversarial Debiasing | Gradient-reversal encoder; returns debiased embeddings as CSV |
+| Last Layer Retraining (M06 DFR) | Run Last Layer Retraining | Refits an L1 logistic head (C and penalty adjustable) on a subset balanced over attribute x task label groups (2A+Y), as in the paper; returns `dfr_prediction` |
+| Contrastive Debiasing (M07 CNC) | Run Contrastive Debiasing | Positives are same task, other group; negatives other task; returns debiased embeddings |
+| Explanation Regularization (M05 RRR) | Run Explanation Regularization | Penalises input gradients on shortcut regions; needs a model and images |
+
+The three embedding-level mitigations and DFR can read the embeddings exported by the last detection run (*Use embeddings from last detection run*) or an uploaded CSV with `task_label` and a group column. You can also include CAV in the main Detection report by uploading a concept bundle.
 
 ### Report Export
 
@@ -96,14 +134,6 @@ Export your analysis:
 | n_neighbors (UMAP) | 15 | UMAP neighborhood size |
 | Color palette | Categorical | Color scheme for groups |
 
-## Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Enter` | Run analysis |
-| `Ctrl+S` | Download report |
-| `Esc` | Cancel operation |
-
 ## Screenshot
 
 ![Dashboard Interface](../assets/dashboard-preview.png)
@@ -122,31 +152,19 @@ pip install --upgrade gradio
 
 ### Port Already in Use
 
+The app picks the first free port from 7860 upwards. To force one:
+
 ```bash
-# Use a different port
-python app.py --port 7861
-```
-
-### Large File Upload Fails
-
-The default upload limit is 100MB. For larger files:
-
-```python
-# In app.py, modify the launch command
-demo.launch(max_file_size=500)  # 500MB limit
+GRADIO_SERVER_PORT=7861 python app.py
 ```
 
 ## Programmatic Access
 
-You can also run the dashboard programmatically:
+`app.py` builds a `gr.Blocks` object named `demo` at import time and launches it only under `if __name__ == "__main__":`
 
 ```python
-from app import create_demo
+from app import demo
 
-# Create the Gradio demo
-demo = create_demo()
-
-# Launch with custom settings
 demo.launch(
     server_name="0.0.0.0",  # Allow external access
     server_port=7860,
@@ -165,7 +183,7 @@ COPY . .
 RUN pip install -e ".[dashboard]"
 
 EXPOSE 7860
-CMD ["python", "app.py", "--host", "0.0.0.0"]
+CMD ["python", "app.py"]
 ```
 
 ```bash

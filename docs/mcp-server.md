@@ -1,6 +1,6 @@
 # MCP Server
 
-ShortKit-ML ships a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that exposes shortcut detection as callable tools. AI assistants like Claude and GitHub Copilot in VS Code can run full analyses — generate data, run detectors, compare methods — directly from chat, with no Python script required.
+ShortKit-ML ships a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that exposes shortcut detection as callable tools. AI assistants like Claude and GitHub Copilot in VS Code can run full analyses (generate data, run detectors, compare methods) directly from chat, with no Python script required.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ uv run python -m shortcut_detect.mcp_server
 
 The server should start without errors. Press `Ctrl+C` to stop it.
 
-## Option 1 — Claude Code (recommended)
+## Claude Code (recommended)
 
 Claude Code reads a `.mcp.json` file from the project root. This file is already committed to the repo, so no manual setup is needed after installing the package.
 
@@ -58,7 +58,7 @@ The `shortkit-ml` tools are now available in any Claude Code session opened from
 
 ---
 
-## Option 2 — Claude Desktop (macOS)
+## Claude Desktop (macOS)
 
 Claude Desktop requires manual configuration because it does not inherit your shell's `PATH`.
 
@@ -97,7 +97,7 @@ Once connected, you can run all 19 detection methods on synthetic data directly 
 
 ![ShortKit-ML running in Claude Desktop](assets/mcp-claude-desktop-demo.png)
 
-*Claude Desktop running all 19 ShortKit-ML methods on a synthetic dataset — overall verdict: HIGH RISK, with HBAC, Bias Direction PCA, Demographic Parity, Frequency, and SIS all flagging strong shortcut signals.*
+*Claude Desktop running all 19 ShortKit-ML methods on a synthetic dataset; overall verdict: HIGH RISK, with HBAC, Bias Direction PCA, Demographic Parity, Frequency, and SIS all flagging strong shortcut signals.*
 
 ### Common errors
 
@@ -105,15 +105,15 @@ Once connected, you can run all 19 detection methods on synthetic data directly 
 |-------|-------|-----|
 | `Server disconnected` | Bare `uv` or `python` used as command | Use the full `.venv/bin/python` path |
 | `ModuleNotFoundError: No module named 'mcp'` | `mcp` not installed in `.venv` | Run `uv pip install -e ".[mcp]"` |
-| `ModuleNotFoundError: No module named 'shortcut_detect'` | `uv run` used as command — picks its own managed Python, not `.venv` | Use `.venv/bin/python` directly |
+| `ModuleNotFoundError: No module named 'shortcut_detect'` | `uv run` used as command; it picks its own managed Python, not `.venv` | Use `.venv/bin/python` directly |
 
 > **Why not `uv run`?** Claude Desktop spawns the command with a restricted `PATH`. `uv run` ignores the project `.venv` and falls back to its own managed Python interpreter, where `shortcut_detect` is not installed.
 
 ---
 
-## Quick start — how to use the tools
+## Using the tools
 
-Once connected, the tools are **automatic** — Claude calls them for you based on what you ask. You never invoke them by name. Just describe what you want in plain English.
+Once connected, the tools are **automatic**: Claude calls them for you based on what you ask. You never invoke them by name. Just describe what you want in plain English.
 
 To force Claude to use a specific tool, mention the action explicitly in your prompt (e.g. *"use the detector"*, *"generate synthetic data"*, *"compare methods"*).
 
@@ -173,7 +173,7 @@ Generate an HTML report for the last detector run and give me the file path.
 |------|-------------|
 | `list_methods` | Returns all 19 detection methods with descriptions |
 | `generate_synthetic_data` | Generates a synthetic shortcut dataset (linear / nonlinear / none, configurable strength) |
-| `run_detector` | Runs selected methods on embeddings — returns verdict, risk level, per-method breakdown |
+| `run_detector` | Runs selected methods on embeddings; returns verdict, risk level, per-method breakdown |
 | `get_summary` | Human-readable summary from a prior `run_detector` call |
 | `get_method_detail` | Full raw result dict for a single method |
 | `compare_methods` | Side-by-side comparison table + consensus vote across methods |
@@ -183,7 +183,7 @@ Generate an HTML report for the last detector run and give me the file path.
 ### Example session
 
 ```python
-# From Claude chat — no code needed, just describe what you want:
+# From Claude chat, no code needed, just describe what you want:
 # "Generate 200 linear shortcut samples, run probe + statistical + hbac, and compare"
 
 # Behind the scenes Claude calls:
@@ -206,7 +206,7 @@ Supported formats: `.npy`, `.npz`, `.csv`, `.tsv`, `.txt`.
 
 ## Session persistence
 
-Results are cached to `~/.cache/shortkit-ml-mcp/` via `joblib` and survive server restarts. Each MCP client gets an isolated session — concurrent users cannot overwrite each other's results.
+Results are cached to `~/.cache/shortkit-ml-mcp/` via `joblib` and survive server restarts. Each MCP client gets an isolated session; concurrent users cannot overwrite each other's results.
 
 To reuse a previous run:
 

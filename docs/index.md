@@ -2,7 +2,7 @@
   <img src="assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
 </p>
 
-**ShortKit-ML** — Detect and mitigate shortcuts and biases in machine learning embedding spaces. 20+ detection and mitigation methods with a unified API. **Multi-attribute support** tests multiple sensitive attributes simultaneously. Model Comparison mode for benchmarking multiple embedding models.
+**ShortKit-ML**: Detect and mitigate shortcuts and biases in machine learning embedding spaces. 20+ detection and mitigation methods with a unified API. **Multi-attribute support** tests multiple sensitive attributes simultaneously. Model Comparison mode for benchmarking multiple embedding models.
 
 [![PyPI version](https://img.shields.io/pypi/v/shortkit-ml.svg)](https://pypi.org/project/shortkit-ml/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -99,7 +99,7 @@ python app.py
 
 **Features:**
 
-- Sample data: CheXpert medical imaging (2000 samples, 512-dim)
+- Sample data: 2,000 CheXpert records with real metadata and synthetic 512-dim embeddings (real arrays with a checkbox)
 - Custom CSV upload
 - PDF/HTML report export
 - Interactive visualizations
@@ -130,6 +130,10 @@ pip install -e ".[all]"
 | **Geometric** | Bias directions & subspaces | Fast | No |
 | **GradCAM** | Attention overlap with shortcuts | Slow | Yes |
 | **SpRAy** | Heatmap clustering (Clever Hans) | Medium | Optional |
+
+## The paper's audit
+
+The accompanying paper (under revision at *Computer Methods and Programs in Biomedicine*; [preprint](https://www.medrxiv.org/content/10.64898/2026.04.29.26352053v1)) does not use the risk levels above. It runs `shortcut_detect.audit.conditional_audit`: a conditional probe, calibrated by permuting the attribute within task-label strata and at patient level, is the single primary test, and five secondary detectors share that null as diagnostics. See [Reproducing the Paper](reproducibility.md#revised-paper-cmpb-revision-2026).
 
 ## Who Uses This?
 

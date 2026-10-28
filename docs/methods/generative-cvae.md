@@ -16,12 +16,12 @@ The Generative CVAE detector trains a Conditional Variational Autoencoder (CVAE)
 
 ## Required Inputs
 
-- `embeddings`: `np.ndarray` `(n, d)` — representation space
-- `group_labels`: `np.ndarray` `(n,)` — binary spurious attribute labels (0/1)
+- `embeddings`: `np.ndarray` `(n, d)`, representation space
+- `group_labels`: `np.ndarray` `(n,)`, binary spurious attribute labels (0/1)
 
 Optional:
 
-- `labels`: `np.ndarray` `(n,)` — task labels (required for probe training; if omitted, detection is inconclusive)
+- `labels`: `np.ndarray` `(n,)`, task labels (required for probe training; if omitted, detection is inconclusive)
 - `probe_classifier`: Pre-trained sklearn-like classifier or callable
 
 ## Unified API Example

@@ -200,7 +200,7 @@ for group, metrics in detector.group_metrics_.items():
 * **Binary labels are required**. Multi-class is not supported.
 * **Group labels are required**. Cannot operate without them.
 * Small groups (< `min_group_size`) will have NaN metrics.
-* Measures correlation, not causation—use alongside other methods.
+* Measures correlation, not causation; use alongside other methods.
 
 ---
 

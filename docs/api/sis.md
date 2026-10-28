@@ -1,6 +1,6 @@
 # SIS API
 
-Sufficient Input Subsets — finds the minimal subset of embedding dimensions that is sufficient to determine the model's prediction, exposing shortcut features.
+Sufficient Input Subsets finds the minimal subset of embedding dimensions that is sufficient to determine the model's prediction, exposing shortcut features.
 
 ## Class Reference
 
