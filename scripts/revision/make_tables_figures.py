@@ -93,10 +93,12 @@ def tex_escape(s) -> str:
 
 
 def write_tabular(name: str, df: pd.DataFrame, colfmt: str | None = None, escape_cells=True,
-                  header: list[str] | None = None, midrules: list[int] | None = None) -> None:
+                  header: list[str] | None = None, midrules: list[int] | None = None,
+                  prehead: list[str] | None = None) -> None:
     cols = header or [tex_escape(c) for c in df.columns]
     colfmt = colfmt or ("l" * 1 + "c" * (len(cols) - 1))
-    lines = [f"\\begin{{tabular}}{{{colfmt}}}", "\\toprule", " & ".join(cols) + " \\\\", "\\midrule"]
+    lines = [f"\\begin{{tabular}}{{{colfmt}}}", "\\toprule", *(prehead or []),
+             " & ".join(cols) + " \\\\", "\\midrule"]
     for i, (_, r) in enumerate(df.iterrows()):
         if midrules and i in midrules:
             lines.append("\\midrule")
@@ -341,6 +343,15 @@ def synthetic():
 # ---------------------------------------------------------------------------
 
 
+def f3s(x):
+    """Three decimals; a non-zero value that would print as 0.000 goes to scientific notation."""
+    t = f"{x:.3f}"
+    if x != 0 and float(t) == 0:
+        m, e = f"{x:.1e}".split("e")
+        return f"${m}{{\\times}}10^{{{int(e)}}}$"
+    return t
+
+
 def _cell_text(sub: pd.DataFrame, det: str, with_ci=False):
     r = sub[sub.detector == det]
     if r.empty:
@@ -384,6 +395,32 @@ def clinical():
         hdr = ["Backbone", "Attribute", "Probe AUROC (95\\% CI)", "$p$"] + [DET_LABEL[d] for d in DET[1:]] + ["Flags"]
         write_tabular(f"clinical_audit_{ds}", t, "ll" + "c" * (len(hdr) - 2), escape_cells=False,
                       header=hdr, midrules=mids[:-1])
+        # every detector's raw statistics per cell (statistic, null mean and SD, raw p, BH q)
+        attrs = ["sex", "age", "race"]
+        rows, mids = [], []
+        for bb in order:
+            if prim[(prim.dataset == ds) & (prim.backbone == bb)].empty:
+                continue
+            for d in DET:
+                r = {"Backbone": bb_label(ds, bb) if d == DET[0] else "", "Detector": DET_LABEL[d]}
+                for attr in attrs:
+                    s = prim[(prim.dataset == ds) & (prim.backbone == bb) & (prim.attribute == attr) & (prim.detector == d)]
+                    if s.empty:
+                        r.update({f"{attr}_{k}": "n/a" for k in ("s", "m", "sd", "p", "q")})
+                        continue
+                    s = s.iloc[0]
+                    dd = 3 if d in {"statistical", "hbac_nmi"} else 2
+                    r.update({f"{attr}_s": f"{s.statistic:.{dd}f}", f"{attr}_m": f3s(s.null_mean),
+                              f"{attr}_sd": f3s(s.null_sd), f"{attr}_p": f"{s.p_value:.3f}",
+                              f"{attr}_q": f"{s.p_bh:.3f}"})
+                rows.append(r)
+            mids.append(len(rows))
+        hdr = ["Backbone", "Detector"] + ["$s$", "Null mean", "Null SD", "$p$", "$q$"] * len(attrs)
+        pre = [" & & " + " & ".join(f"\\multicolumn{{5}}{{c}}{{{lab}}}" for lab in
+                                    ("Sex", "Age 60+", "White vs non-White")) + " \\\\",
+               " ".join(f"\\cmidrule(lr){{{3 + 5 * i}-{7 + 5 * i}}}" for i in range(len(attrs)))]
+        write_tabular(f"clinical_audit_raw_{ds}", pd.DataFrame(rows), "ll" + "c" * (len(hdr) - 2),
+                      escape_cells=False, header=hdr, midrules=mids[:-1], prehead=pre)
         # summaries leave out backbones whose rows fail the alignment check (rows stay in the table)
         ok = ~prim.backbone.map(lambda b, ds=ds: (ds, b) in MISALIGNED)
         pp = prim[(prim.dataset == ds) & (prim.detector == "probe") & ok]
@@ -744,6 +781,29 @@ def head():
                "Task AUROC before", "Task AUROC after", "TPR gap before", "TPR gap after"]
         write_tabular("mitigation_before_after", pd.DataFrame(rows), "ll" + "c" * 8, escape_cells=False,
                       header=hdr, midrules=mids[:-1])
+        # per backbone: method minus its control on the same cell and seed (DFR: after minus before),
+        # mean over attributes, tasks and seeds
+        k = ["backbone", "attribute", "task", "seed"]
+        meths = ["adversarial", "contrastive", "masking", "dfr"]
+        rows = []
+        for bb in CHEXPERT_BACKBONES + ["All"]:
+            r = {"Backbone": bb_label("chexpert", bb) if bb != "All" else "All backbones"}
+            for meth in meths:
+                g = m[m.method == meth] if bb == "All" else m[(m.method == meth) & (m.backbone == bb)]
+                if meth == "dfr":
+                    dg, da = g.tpr_gap_after - g.tpr_gap_before, g.task_auroc_after - g.task_auroc_before
+                else:
+                    c = m[m.method == f"{meth}_control"]
+                    j = g.set_index(k).join(c.set_index(k), rsuffix="_c", how="inner")
+                    dg, da = j.tpr_gap_after - j.tpr_gap_after_c, j.task_auroc_after - j.task_auroc_after_c
+                r[f"{meth}_gap"], r[f"{meth}_auc"] = f2(dg.mean()), f2(da.mean())
+            rows.append(r)
+        hdr = ["Backbone"] + ["$\\Delta$ TPR gap", "$\\Delta$ AUROC"] * len(meths)
+        pre = [" & " + " & ".join(f"\\multicolumn{{2}}{{c}}{{{lab}}}" for lab in
+                                  ("Adversarial", "Contrastive", "Masking", "DFR")) + " \\\\",
+               " ".join(f"\\cmidrule(lr){{{2 + 2 * i}-{3 + 2 * i}}}" for i in range(len(meths)))]
+        write_tabular("mitigation_by_backbone", pd.DataFrame(rows), "l" + "c" * (len(hdr) - 1),
+                      escape_cells=False, header=hdr, midrules=[len(rows) - 1], prehead=pre)
 
 
 # ---------------------------------------------------------------------------
