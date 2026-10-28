@@ -27,6 +27,12 @@ uncertain and blank rows dropped and counted):
    contrastive_weight = 0), which separates the effect of passing through a
    smaller learned encoder from the effect of the mitigation. Every
    mitigation seed is audited.
+4. Two more package methods that run on embeddings: ShortcutMasker (zero the
+   MASK_FRAC of dimensions with the largest loading on the A direction, in
+   training, test and audit embeddings; control: the same number of random
+   dimensions) and LastLayerRetraining (DFR: the head refitted on a
+   group-balanced subset of the confounded training set; the embeddings are
+   unchanged, so the audit after equals the audit before by construction).
 """
 
 from __future__ import annotations
@@ -126,6 +132,7 @@ MITIGATIONS = {
     "contrastive": ("ContrastiveDebiasing", {}),
     "contrastive_control": ("ContrastiveDebiasing", {"contrastive_weight": 0.0}),
 }
+MASK_FRAC = 0.05  # share of embedding dimensions masked by ShortcutMasker
 
 
 def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, k_mitig, threads):
@@ -200,19 +207,34 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, k_mitig, threads):
             cfg = AuditConfig(n_permutations=k_mitig, n_bootstrap=0, detectors=("probe",), seed=42)
             before = conditional_audit(Xk[te_pool], ak[te_pool], yk[te_pool], cfg,
                                        groups=pk[te_pool]).results["probe"]
-            for name, (cls_name, kw) in MITIGATIONS.items():
+            def transforms():
+                for name, (cls_name, kw) in MITIGATIONS.items():
+                    mit = getattr(mitig_mod, cls_name)(random_state=s, device="cpu", **kw)
+                    if cls_name == "AdversarialDebiasing":
+                        mit.fit(Xk[i_conf], ak[i_conf], yk[i_conf])
+                    else:
+                        mit.fit(Xk[i_conf], yk[i_conf], ak[i_conf])
+                    yield name, mit.transform
+                k = max(1, round(MASK_FRAC * Xk.shape[1]))
+                top = np.argsort(-np.abs(u))[:k]
+                rnd = np.random.default_rng(10_000 + s).choice(Xk.shape[1], k, replace=False)
+                for name, dims in (("masking", top), ("masking_control", rnd)):
+                    masker = mitig_mod.ShortcutMasker(strategy="zero", random_state=s)
+                    yield name, (lambda Z, d=dims, m=masker: m.mask_embeddings(Z, d))
+                yield "dfr", None
+
+            for name, tf in transforms():
                 t1 = time.time()
-                mit = getattr(mitig_mod, cls_name)(random_state=s, device="cpu", **kw)
-                if cls_name == "AdversarialDebiasing":
-                    mit.fit(Xk[i_conf], ak[i_conf], yk[i_conf])
+                if tf is None:  # DFR: embeddings unchanged, head refitted on a group-balanced subset
+                    dfr = mitig_mod.LastLayerRetraining(random_state=s).fit(Xk[i_conf], yk[i_conf], ak[i_conf])
+                    pm = dfr.classifier_.predict_proba(dfr.scaler_.transform(Xte.astype(np.float64)))[:, 1]
+                    after = before
                 else:
-                    mit.fit(Xk[i_conf], yk[i_conf], ak[i_conf])
-                Ztr = mit.transform(Xk[i_conf])
-                Zte = mit.transform(Xte)
-                Zpool = mit.transform(Xk[te_pool])
-                h_m = head(Ztr, yk[i_conf], s)
-                pm = h_m.predict_proba(Zte)[:, 1]
-                after = conditional_audit(Zpool, ak[te_pool], yk[te_pool], cfg, groups=pk[te_pool]).results["probe"]
+                    Ztr, Zte, Zpool = tf(Xk[i_conf]), tf(Xte), tf(Xk[te_pool])
+                    h_m = head(Ztr, yk[i_conf], s)
+                    pm = h_m.predict_proba(Zte)[:, 1]
+                    after = conditional_audit(Zpool, ak[te_pool], yk[te_pool], cfg,
+                                              groups=pk[te_pool]).results["probe"]
                 mit_rows.append({**info, "seed": s, "method": name, "n_train": int(len(i_conf)),
                                  "n_test": int(len(i_te)), "n_audit_pool": int(len(te_pool)),
                                  "task_auroc_before": rel["auroc_conf"],
@@ -247,6 +269,8 @@ def main() -> int:
                   "rho_train": RHO_TRAIN, "rho_test": 0.5, "head": "StandardScaler + LogisticRegression(C=1)",
                   "threshold": 0.5, "tasks": TASKS, "attributes": ["sex (Male=1)", "age 60+ (=1)"],
                   "mitigations": {k: f"{c}({v or 'defaults'})" for k, (c, v) in MITIGATIONS.items()},
+                  "masking": f"ShortcutMasker zero, top {MASK_FRAC:.0%} of dims by A-direction loading; control random dims",
+                  "dfr": "LastLayerRetraining defaults (L1, C = 1, balanced classes) on a group-balanced subset",
                   "split": "patient-level StratifiedGroupKFold(2) on (A, Y)"}
     man.notes += [CHEXPERT_JOIN_NOTE, "attribute removal: " + ATTR_REMOVAL]
     man.add_data(DATA / "train.csv", DATA / "chexpert_multibackbone" / "race_mapping.csv")
