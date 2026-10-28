@@ -112,16 +112,24 @@ def pfmt(p):
 # ---------------------------------------------------------------------------
 
 
+def clinical_config() -> dict:
+    """Config block of the clinical audit manifest, so settings match the run."""
+    text = (ROOT / "clinical_audit" / "MANIFEST.txt").read_text()
+    block = text.split("config:\n", 1)[1].split("\n}\n", 1)[0] + "\n}"
+    return json.loads(block)
+
+
 def settings():
-    put("K_probe", 200, "{:d}")
-    put("K_secondary", 200, "{:d}")
-    put("probe_C", 1.0, "{:.0f}")
-    put("hbac_k", 8, "{:d}")
-    put("freq_topk", 5, "{:d}", text="5")
-    RAW["freq_topk_fraction"] = 0.05
+    cfg = clinical_config()
+    put("K_probe", cfg["K_probe"], "{:d}")
+    put("K_secondary", cfg["K"], "{:d}")
+    put("probe_C", cfg["C"], "{:.0f}")
+    put("hbac_k", cfg["n_clusters"], "{:d}")
+    put("freq_topk", round(100 * cfg["top_k_fraction"]), "{:d}")
+    RAW["freq_topk_fraction"] = cfg["top_k_fraction"]
     put("code_commit", git_sha())
-    put("clinical_seed", 42, "{:d}")
-    put("n_bootstrap", 2000, "{:d}")
+    put("clinical_seed", cfg["seed"], "{:d}")
+    put("n_bootstrap", cfg["n_bootstrap"], "{:d}")
     put("alpha", 0.05, "{:.2f}")
     put("synthetic_task_dims", 4, "{:d}")
     put("synthetic_attr_dims", 4, "{:d}")
