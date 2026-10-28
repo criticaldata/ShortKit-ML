@@ -35,6 +35,7 @@ def main() -> int:
     from shortcut_detect.audit import AuditConfig, conditional_audit
 
     out = results_root() / "negative_control"
+    out.mkdir(parents=True, exist_ok=True)
     man = Manifest(out, "patient-level fake attribute negative control")
     man.config = vars(args)
     man.add_data(chexpert_paths(args.backbone)[0], DATA / "train.csv",
@@ -54,6 +55,7 @@ def main() -> int:
             for d, v in r.results.items():
                 rows.append({"draw": s, "mode": mode, "detector": d, "statistic": v.statistic,
                              "p_value": v.p_value, "flag_bh": v.flag})
+        pd.DataFrame(rows).to_csv(out / "negative_control.csv", index=False)
         print(s, f"{time.time() - t0:.0f}s", flush=True)
     df = pd.DataFrame(rows)
     df.to_csv(out / "negative_control.csv", index=False)
