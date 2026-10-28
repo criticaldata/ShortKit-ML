@@ -164,7 +164,8 @@ CHEXPERT_JOIN_NOTE = (
     "labels are read from the official data/train.csv joined by image path via "
     "race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert "
     "demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images "
-    "without a demographics record are missing (the shipped manifest coded them OTHER), and "
+    "without a demographics record, or recorded as Unknown or Patient Refused, are missing "
+    "(the shipped manifest coded them OTHER, so non-White), and "
     "Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). "
     "Age as an attribute is the patient's age at their first study in the cohort, so it is "
     "constant per patient."
@@ -175,11 +176,13 @@ def _code_chexpert_race(v) -> str | None:
     if pd.isna(v):
         return None
     v = str(v)
+    if "Unknown" in v or v == "Patient Refused":
+        return None  # no race recorded: missing, like images without a demographics record
     for prefix, code in (("White", "WHITE"), ("Black", "BLACK"), ("Asian", "ASIAN"),
                          ("Native Hawaiian", "NHPI"), ("Pacific Islander", "NHPI")):
         if v.startswith(prefix):
             return code
-    return "OTHER"  # Other, Unknown, Patient Refused, American Indian / Native American
+    return "OTHER"  # Other, American Indian / Native American
 
 
 @functools.lru_cache(maxsize=1)
