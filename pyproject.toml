@@ -81,6 +81,7 @@ reporting = [
     "markdown>=3.5.0",  # Markdown generation
     "weasyprint>=60.0",  # PDF generation (optional)
     "openpyxl>=3.1.0",  # Excel file support
+    "umap-learn>=0.5.0",  # embedding visualisations
 ]
 dashboard = [
     "gradio>=5.0.0",  # Interactive web interface
@@ -97,6 +98,7 @@ mcp = [
 ]
 all = [
     # Aggregated extras for docs, reporting, dashboard, hf, and dev tools
+    "umap-learn>=0.5.0",
     "black>=23.0.0",
     "mcp>=1.0.0,<2",
     "gradio>=5.0.0",

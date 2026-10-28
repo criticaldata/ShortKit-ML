@@ -457,7 +457,7 @@ def clinical():
             mids.append(len(rows))
         t = pd.DataFrame(rows)
         if attr == "race":
-            hdr = ["Dataset", "Backbone", "White vs non-White", "W/B/A, 50+ per group", "W/B/A, 50+ per (group, $Y$)"]
+            hdr = ["Dataset", "Backbone", "White vs non-White", "Groups with 50+ (W/B/A)", "Groups with 50+ per $Y$"]
             t = t[["Dataset", "Backbone"] + variants]
             notes = df[(df.attribute == "race") & (df.variant != "primary")][["dataset", "variant", "note", "n_images"]].drop_duplicates()
             notes.to_csv(TAB / "race_sensitivity_groups.csv", index=False)
@@ -826,6 +826,32 @@ def analyses():
         fig.savefig(FIG / "lda_sex_mimic_raddino_heldout.pdf")
         plt.close(fig)
         put("lda_heldout_auroc_mimic_raddino_sex", auc, "{:.3f}")
+    um = load("analyses/umap_mimic_raddino_race.csv")
+    if um is not None:
+        _apply_pub_style()
+        fig, ax = plt.subplots(figsize=(5.0, 4.2))
+        for race, c in (("White", OI["sky"]), ("Black", OI["vermillion"]), ("Asian", OI["green"]),
+                        ("Other", OI["purple"])):
+            s = um[um.race == race]
+            ax.scatter(s.x, s.y, s=6, alpha=0.7, color=c, label=f"{race} ({len(s)})", linewidths=0)
+        ax.set_xticks([]), ax.set_yticks([])
+        ax.set_title("MIMIC-CXR RAD-DINO, coloured by race", fontsize=10)
+        ax.legend(frameon=False, fontsize=8, markerscale=2)
+        fig.savefig(FIG / "umap_mimic_raddino_race.pdf")
+        plt.close(fig)
+        put("umap_mimic_n_shown", len(um), "{:,.0f}")
+    uc = load("analyses/umap_celeba_resnet50_male.csv")
+    if uc is not None:
+        _apply_pub_style()
+        fig, ax = plt.subplots(figsize=(5.0, 4.2))
+        for male, lab, c in ((False, "Not Male", OI["orange"]), (True, "Male", OI["blue"])):
+            s = uc[uc.male == male]
+            ax.scatter(s.x, s.y, s=4, alpha=0.6, color=c, label=f"{lab} ({len(s)})", linewidths=0)
+        ax.set_xticks([]), ax.set_yticks([])
+        ax.set_title("CelebA ResNet-50, coloured by Male", fontsize=10)
+        ax.legend(frameon=False, fontsize=8, markerscale=2)
+        fig.savefig(FIG / "umap_celeba_resnet50_male.pdf")
+        plt.close(fig)
 
 
 def marker():
@@ -927,7 +953,7 @@ def alignment():
                          "Shuffled control": f2(ctl, 3), "Sex probe AUROC": f2(auc),
                          "Similarity fails": "yes" if sim_bad else "no",
                          "Probe at chance": "yes" if probe_bad else "no",
-                         "Excluded": "yes" if excluded else "no"})
+                         "Replaced": "yes" if excluded else "no"})
             put(f"alignment_max_spearman_{ds}_{bb}", float(mx), "{:.3f}")
     for key, bb in (("vit32_sex_auroc_mimic", "vit32_cls"), ("vit16_sex_auroc_mimic", "vit16_cls"),
                     ("vit32_stored_sex_auroc_mimic", "vit32_cls_stored")):
@@ -936,7 +962,7 @@ def alignment():
     put("alignment_misaligned_backbones", ", ".join(bad) if bad else "none", None)
     write_tabular("alignment_check", pd.DataFrame(rows), "llcccccc",
                   header=["Dataset", "Backbone", "Max Spearman", "Shuffled control", "Sex probe AUROC",
-                          "Similarity fails", "Probe at chance", "Excluded"])
+                          "Similarity fails", "Probe at chance", "Replaced"])
 
 
 def finish():
