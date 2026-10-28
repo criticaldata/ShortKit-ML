@@ -428,6 +428,9 @@ def clinical():
             int(((prim.dataset == ds) & (prim.detector == "probe") & ~ok).sum()), "{:d}")
         put(f"n_cells_probe_sig_{ds}", int(pp.flag.sum()), "{:d}")
         put(f"n_cells_probe_raw_sig_{ds}", int((pp.p_value < 0.05).sum()), "{:d}")
+        if "cell_seconds" in pp:  # wall time of one cell, all six detectors, on the audit machine
+            put(f"cell_seconds_{ds}", [pp.cell_seconds.min(), pp.cell_seconds.max()],
+                text=rng_text(pp.cell_seconds.min(), pp.cell_seconds.max(), "{:.0f}"))
         put(f"n_cells_primary_{ds}", int(len(pp)), "{:d}")
         sx = pp[pp.attribute == "sex"].statistic
         put(f"probe_auroc_sex_min_{ds}", sx.min())
@@ -639,6 +642,10 @@ def head():
             bw.append(spearmanr(bs.probe_auroc, bs.tpr_gap)[0])
         lo, hi = np.nanpercentile(bw, [2.5, 97.5])
         put(f"spearman_probe_tprgap_within_{attr}_cluster_ci", [lo, hi], text=rng_text(lo, hi))
+        # spread of the cell means against seed noise within a cell (range restriction check)
+        g = hf[hf.attribute == attr].groupby(["backbone", "task"]).tpr_gap
+        put(f"tprgap_cell_sd_{attr}", g.mean().std())
+        put(f"tprgap_seed_sd_{attr}", g.std().mean())
 
     # the cells are not independent: the 7 backbones embed the same images, and the
     # attributes and tasks reuse the same patients
@@ -1063,6 +1070,33 @@ def sensitivity():
         put("mlp_spearman_within_sex", g.loc["rho probe vs MLP TPR gap, within sex"].value)
         put("mlp_spearman_within_age", g.loc["rho probe vs MLP TPR gap, within age"].value)
         put("mlp_vs_logistic_gap_spearman", g.loc["rho MLP TPR gap vs logistic TPR gap"].value)
+    race = load("head_race/summary_race.csv")
+    if race is not None:
+        g = race.set_index("stat")
+        r = g.loc["rho probe vs TPR gap, all cells"]
+        put("race_head_n_cells", int(r.n), "{:d}")
+        put("race_head_spearman", r.value)
+        put("race_head_spearman_ci", [r.ci_backbones_lo, r.ci_backbones_hi], text=rng_text(r.ci_backbones_lo, r.ci_backbones_hi))
+        put("race_head_n_skipped", int(g.loc["n (cell, seed) draws skipped"].value), "{:d}")
+        put("race_head_tpr_gap_mean", g.loc["mean tpr_gap"].value)
+        lo, hi = g.loc["probe_auroc min"].value, g.loc["probe_auroc max"].value
+        put("race_head_probe_auroc_range", [lo, hi], text=rng_text(lo, hi))
+        hr = load("head_race/head_reliance.csv")
+        if hr is not None:
+            hr = hr[hr.feasible.astype(bool)]
+            rows = []
+            for bb in CHEXPERT_BACKBONES:
+                for task in ("pneumothorax", "pleural_effusion", "cardiomegaly"):
+                    c = hr[(hr.backbone == bb) & (hr.task == task)]
+                    if c.empty:
+                        continue
+                    rows.append({"Encoder": bb_label("chexpert", bb), "Y": task.replace("_", " ").title(),
+                                 "n train": f"{int(c.n_train.min())}-{int(c.n_train.max())}",
+                                 "Probe": f2(c.probe_auroc.iloc[0]), "p": pfmt(c.probe_p.iloc[0]),
+                                 "TPR gap": f"{c.tpr_gap.mean():.2f} ({c.tpr_gap.std():.2f})",
+                                 "AUROC drop": f2(c.auroc_drop.mean())})
+            hdr = ["Encoder", "$Y$", "$n$ train (min-max)", "Probe", "$p$", "TPR gap (SD)", "AUROC drop"]
+            write_tabular("head_race", pd.DataFrame(rows), "ll" + "c" * (len(hdr) - 2), escape_cells=False, header=hdr)
     dc = load("dfr_control/dfr_control_summary.csv")
     if dc is not None:
         g = dc.set_index("method")

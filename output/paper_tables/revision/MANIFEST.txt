@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit 8d9a8e2b2f16a062c80bb475022ec4b0a0390790
+tables/figures built at commit 85e5508d66aa83719f8c8169178fdbf5a8fe488e
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -724,6 +724,65 @@ notes:
   - tpr_gap_logistic_rerun: logistic head refitted on the same draw; it should equal tpr_gap in the logistic results for the same (cell, seed), which confirms pairing.
   - pairing check against the logistic run: 0 mismatches over 420 rows
   - MLP fits not converged at max_iter: 0 of 420 seeds
+
+===== head_race =====
+run: head reliance experiment with race as the attribute (reliance part only)
+commit: 85e5508d66aa83719f8c8169178fdbf5a8fe488e
+working tree has uncommitted changes: True
+command: python scripts/revision/run_head_race.py --jobs 3
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 18:54:46 GMT
+wall_seconds: 181.3
+
+config:
+{
+  "seeds": 10,
+  "K_audit": 500,
+  "rho_train": 0.9,
+  "rho_test": 0.5,
+  "head": "StandardScaler + LogisticRegression(C=1)",
+  "threshold": 0.5,
+  "tasks": [
+    "pneumothorax",
+    "pleural_effusion",
+    "cardiomegaly"
+  ],
+  "attributes": [
+    "race (non-White=1, White=0; missing race dropped)"
+  ],
+  "backbones": [
+    "resnet50",
+    "densenet121",
+    "vit_b_16",
+    "vit_b_32",
+    "dinov2_base",
+    "rad_dino",
+    "medsiglip"
+  ],
+  "split": "patient-level StratifiedGroupKFold(2) on (A, Y), identical code to run_head_experiment.py",
+  "bootstrap": "2000 over cells (seed 0); 2000 over whole backbones (seed 1)"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 179.851
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - n_labelled counts images with a 0/1 task label and a recorded race; images without a recorded race are dropped before the audit and the split.
+  - feasible = False rows: the (cell, seed) draw could not reach N >= 40 at rho_train = 0.9 (or 5 test images per group); n_train holds the N the split allowed.
+  - labelled images dropped for missing race, per task: {'pneumothorax': 42, 'pleural_effusion': 109, 'cardiomegaly': 33}
+  - (cell, seed) draws skipped at rho_train = 0.9: 7 of 210
 
 ===== labelled_only =====
 run: CheXpert probe sensitivity: labelled

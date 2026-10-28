@@ -2,7 +2,7 @@
 # End-to-end revision pipeline (CMPB-D-26-02542). Called by
 # `scripts/reproduce_paper.sh revision`; can also run selected stages:
 #   scripts/revision/run_all.sh [stage ...]
-# Stages: old clinical negctl synthetic nullcheck head dfr mlp analyses umap marker extraction alignment overlap sensitivity tables (default: all, in order)
+# Stages: old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity tables (default: all, in order)
 # Run on request only: prepare_mimic (rebuilds two MIMIC inputs from the qml-mimic-cxr-embeddings parquet files)
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -13,7 +13,7 @@ if [ -z "${SHORTKIT_REVISION_DIR:-}" ]; then
 fi
 mkdir -p "${SHORTKIT_REVISION_DIR}"
 STAGES=("$@")
-[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic nullcheck head dfr mlp analyses umap marker extraction alignment overlap sensitivity tables)
+[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity tables)
 echo "results: ${SHORTKIT_REVISION_DIR}"
 for s in "${STAGES[@]}"; do
     start=$(date +%s)
@@ -29,6 +29,7 @@ for s in "${STAGES[@]}"; do
         head)      "${PY}" "${REPO}/scripts/revision/run_head_experiment.py" ;;
         dfr)       "${PY}" "${REPO}/scripts/revision/run_dfr_control.py" ;;
         mlp)       "${PY}" "${REPO}/scripts/revision/run_head_mlp.py" ;;
+        race)      "${PY}" "${REPO}/scripts/revision/run_head_race.py" ;;
         analyses)  "${PY}" "${REPO}/scripts/revision/run_analyses.py" ;;
         umap)      "${PY}" "${REPO}/scripts/revision/run_umap.py" ;;
         marker)    "${PY}" "${REPO}/scripts/revision/run_planted_marker.py" ;;
