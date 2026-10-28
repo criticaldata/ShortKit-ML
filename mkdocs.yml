@@ -1,6 +1,6 @@
 site_name: ShortKit-ML
 site_description: Detect shortcuts and biases in machine learning embedding spaces
-site_author: Sebastian Cajas, Aldo Marzullo, Sahil Kapadia, Qingpeng Kong, Filipe Santos, Alessandro Quarta, Leo Celi
+site_author: Sebastian Cajas, Aldo Marzullo, Sahil Kapadia, Filipe Santos, Felipe Ocampo Osorio, Qingpeng Kong, Alessandro Quarta, Po-Chih Kuo, Milit Patel, Raul Ignacio Rojas Sillery, Leo Anthony Celi
 site_url: https://criticaldata.github.io/ShortKit-ML/
 
 repo_name: criticaldata/ShortKit-ML
@@ -154,6 +154,7 @@ nav:
       - Contrastive Debiasing (M07): api/contrastive-debiasing.md
       - Embedding Sources: api/embedding-sources.md
       - Reporting: api/reporting.md
+      - Audit (paper): api/audit.md
   - Examples:
       - Basic Usage: examples/basic.md
       - Real Data (CheXpert): examples/real-data.md
