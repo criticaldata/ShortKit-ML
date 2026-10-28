@@ -98,3 +98,5 @@ site/
 *.tmp
 temp/
 tmp/
+examples/output/comprehensive_shortcut_report.pdf
+examples/output/csv_exports/embeddings_for_mitigation.csv
