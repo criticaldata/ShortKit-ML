@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_ccf1bb5
-tables/figures built at commit b519984bc951640e83f79ccc8be3b38fe952b2ec
+tables/figures built at commit bcf7993b864682786342f8e7d8e2f271af6c1d45
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -119,6 +119,8 @@ timings (s):
 notes:
   - Profile before choosing K (28 Oct, one cell, CheXpert ResNet-50 d=2048, sex, K=200, 6 torch threads): whole cell 40 s; probe 9.3 s, frequency_topk 7.3 s, bias_direction 4.0 s, geometric 2.3 s, hbac_nmi 0.5 s, statistical 0.2 s. K for the probe therefore set to 200, the same as the vectorised statistics. Section 9 (after verification) sets K = 500 for the probe and 5 x 5 repeated grouped CV for the observed probe statistics; the same cell then takes 76 s (probe 18.7 s, frequency_topk 19.1 s).
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+
+note (added by hand, 28 Oct): this run covered CheXpert only (datasets above). The MIMIC-CXR and CelebA rows in audit_rows.csv were kept from the run at commit 1e49670 (2026-10-28_revision_1e49670/clinical_audit), whose code is identical for those datasets.
 
 ===== extraction_check =====
 run: re-extraction of CheXpert backbones without code (X-6)
