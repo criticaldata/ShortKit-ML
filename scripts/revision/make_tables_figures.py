@@ -61,6 +61,12 @@ FALSEPOS_CMAP = LinearSegmentedColormap.from_list("fp", ["#fff7ec", OI["vermilli
 
 NUM: dict[str, str] = {}
 MISALIGNED: set[tuple[str, str]] = set()  # (dataset, backbone), filled by alignment()
+# the MIMIC-CXR "medsiglip" files were extracted with google/siglip-so400m-patch14-384 (source README)
+DATASET_LABELS = {("mimic", "medsiglip"): "SigLIP (So400m)"}
+
+
+def bb_label(ds: str, bb: str) -> str:
+    return DATASET_LABELS.get((ds, bb), BACKBONE_LABELS.get(bb, bb))
 RAW: dict[str, object] = {}
 
 
@@ -365,7 +371,7 @@ def clinical():
                     continue
                 pr = sub[sub.detector == "probe"].iloc[0]
                 rows.append({
-                    "Backbone": BACKBONE_LABELS[bb] if attr == "sex" else "",
+                    "Backbone": bb_label(ds, bb) if attr == "sex" else "",
                     "Attribute": {"sex": "Sex", "age": "Age 60+", "race": "White vs non-White"}[attr],
                     "Probe AUROC (95% CI)": _cell_text(sub, "probe", True),
                     "p": pfmt(pr.p_value),
@@ -441,7 +447,7 @@ def clinical():
         rows, mids = [], []
         for ds in ["chexpert", "mimic"]:
             for bb in sens[sens.dataset == ds].backbone.unique():
-                r = {"Dataset": {"chexpert": "CheXpert", "mimic": "MIMIC-CXR"}[ds], "Backbone": BACKBONE_LABELS[bb]}
+                r = {"Dataset": {"chexpert": "CheXpert", "mimic": "MIMIC-CXR"}[ds], "Backbone": bb_label(ds, bb)}
                 for v in variants:
                     s = sens[(sens.dataset == ds) & (sens.backbone == bb) & (sens.attribute == attr) & (sens.variant == v)]
                     r[v] = "n/a" if s.empty else f"{s.statistic.iloc[0]:.2f} ($p$ {pfmt(s.p_value.iloc[0])})"
@@ -472,7 +478,7 @@ def clinical():
         labels, Z, F, S = [], [], [], []
         for (bb, attr), g in sub.groupby(["backbone", "attribute"], sort=False):
             g = g.set_index("detector").reindex(DET)
-            lab = BACKBONE_LABELS[bb].replace(" (rows misaligned)", " (misaligned)")
+            lab = bb_label(ds, bb).replace(" (rows misaligned)", " (misaligned)")
             labels.append(f"{lab} | {attr}")
             Z.append(g.z.to_numpy(float))
             F.append(g.flag.to_numpy(bool))
@@ -913,9 +919,10 @@ def alignment():
             if excluded:
                 bad.append(f"{ds}:{bb}")
                 MISALIGNED.add((ds, bb))
-                BACKBONE_LABELS[bb] = BACKBONE_LABELS.get(bb, bb) + " (rows misaligned)"
+                if not bb.endswith("_stored"):
+                    BACKBONE_LABELS[bb] = BACKBONE_LABELS.get(bb, bb) + " (rows misaligned)"
             rows.append({"Dataset": {"chexpert": "CheXpert", "mimic": "MIMIC-CXR"}[ds],
-                         "Backbone": BACKBONE_LABELS.get(bb, bb), "Max Spearman": f2(mx, 3),
+                         "Backbone": bb_label(ds, bb), "Max Spearman": f2(mx, 3),
                          "Shuffled control": f2(ctl, 3), "Sex probe AUROC": f2(auc),
                          "Similarity fails": "yes" if sim_bad else "no",
                          "Probe at chance": "yes" if probe_bad else "no",
