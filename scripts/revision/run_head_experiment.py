@@ -70,6 +70,8 @@ ATTR_REMOVAL = (
 def attribute_vector(meta: pd.DataFrame, attr: str) -> np.ndarray:
     if attr == "sex":
         return (meta["sex"].to_numpy() == "Male").astype(int)
+    if attr == "race":  # non-White = 1, White = 0, missing race = -1 (the caller drops it); per patient
+        return np.where(meta["race"].isna(), -1, (meta["race"].astype(str) != "WHITE").astype(int))
     return (meta["age_first_study"].to_numpy(dtype=float) >= 60).astype(int)  # constant per patient
 
 
