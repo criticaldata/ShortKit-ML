@@ -39,14 +39,16 @@ from common import (  # noqa: E402
 )
 
 K = 200
-K_PROBE = 200
+K_PROBE = 500  # revision decisions, section 9
 N_BOOT = 2000
 SEED = 42
 PROFILE_NOTE = (
     "Profile before choosing K (28 Oct, one cell, CheXpert ResNet-50 d=2048, sex, K=200, "
     "6 torch threads): whole cell 40 s; probe 9.3 s, frequency_topk 7.3 s, bias_direction 4.0 s, "
     "geometric 2.3 s, hbac_nmi 0.5 s, statistical 0.2 s. K for the probe therefore set to 200, "
-    "the same as the vectorised statistics."
+    "the same as the vectorised statistics. Section 9 (after verification) sets K = 500 for the "
+    "probe and 5 x 5 repeated grouped CV for the observed probe statistics; the same cell then "
+    "takes 76 s (probe 18.7 s, frequency_topk 19.1 s)."
 )
 
 

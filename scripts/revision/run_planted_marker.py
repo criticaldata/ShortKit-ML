@@ -81,7 +81,9 @@ def main() -> int:
     man = Manifest(out, "planted marker (section 7 item 4)")
     man.config = {"r_audit": R_AUDIT, "r_head": R_HEAD, "backbone": "torchvision resnet50 IMAGENET1K_V2 (DEFAULT)",
                   "marker": "white square, side 8% of min(w,h), top-left at (0.3w, 0.3h)", "K": args.K,
-                  "seeds": args.seeds, "task": "Pneumothorax (task_label)"}
+                  "seeds": args.seeds, "task": "Pneumothorax (task_label)",
+                  "permutation": "image-level attribute: whole patients' marker vectors reassigned among "
+                                 "patients with the same Y vector"}
     man.notes.append(CHEXPERT_JOIN_NOTE)
     cache = DATA / "chexpert_multibackbone" / "_cache" / "images.pkl"
     man.add_data(cache)
@@ -107,7 +109,9 @@ def main() -> int:
         pos = np.flatnonzero(y == 1)
         m[rng.choice(pos, size=int(round(R_AUDIT * len(pos))), replace=False)] = 1
         E = np.where(m[:, None] == 1, Em, Ec)
-        res = conditional_audit(E, m, y, AuditConfig(n_permutations=args.K, n_bootstrap=0, seed=s), groups=pid)
+        # the marker is an image-level attribute: block permutation of whole patients' marker vectors
+        res = conditional_audit(E, m, y, AuditConfig(n_permutations=args.K, n_bootstrap=0, seed=s,
+                                                     attribute_level="image"), groups=pid)
         # head
         sgk = StratifiedGroupKFold(n_splits=2, shuffle=True, random_state=s)
         tr, te = next(sgk.split(E, y, pid))

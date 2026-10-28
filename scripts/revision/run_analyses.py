@@ -83,7 +83,7 @@ def chexpert_metadata_columns(meta: pd.DataFrame) -> dict[str, np.ndarray]:
         "Support Devices": lab("Support Devices"),
         "sex": meta["sex"].to_numpy(),
         "age 60+": (meta["age"] >= 60).astype(int).to_numpy(),
-        "race White": (meta["race"] == "WHITE").astype(int).to_numpy(),
+        "race White": np.where(meta["race"].isna(), "missing", (meta["race"] == "WHITE").astype(int).astype(str)),
         "Pneumothorax": lab("Pneumothorax"),
         "Pleural Effusion": lab("Pleural Effusion"),
         "No Finding": lab("No Finding"),
@@ -96,6 +96,9 @@ def group_size_stability(dataset, X, meta, sizes, reps, K, threads):
     torch.set_num_threads(threads)
     from shortcut_detect.audit import AuditConfig, conditional_audit
 
+    known = meta["race"].notna().to_numpy()  # missing race excluded (section 9)
+    meta = meta[known].reset_index(drop=True)
+    X = X[known]
     y = meta["task_label"].to_numpy().astype(int)
     race = meta["race"].astype(str).to_numpy()
     a = np.where(race == "WHITE", "White", "non-White")
