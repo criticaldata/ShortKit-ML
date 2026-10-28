@@ -162,6 +162,8 @@ def synthetic():
         if d in DET_KEY:
             put(f"fpr_null_{DET_KEY[d]}", sub.reject.mean())
             put(f"fpr_null_bhflag_{DET_KEY[d]}", sub.flag.mean())
+            for rho in sorted(df.rho.unique()):  # per-rho values next to the pooled one
+                put(f"fpr_null_{DET_KEY[d]}_rho{round(10 * rho):02d}", sub[sub.rho == rho].reject.mean())
     put("fpr_null_probe_rho09", null[(null.detector == "probe") & (null.rho == 0.9)].reject.mean())
     put("fpr_null_unconditional_probe_rho09",
         null[(null.detector == "probe_unconditional") & (null.rho == 0.9)].reject.mean())
@@ -258,11 +260,22 @@ def synthetic():
     plt.close(fig)
 
     # flag correlation and effective number of detectors
+    def eff_n(frame):
+        c = frame[DET].corr().to_numpy()
+        # a detector whose flag never varies has no defined correlation; count it as
+        # uncorrelated (off-diagonal 0) with unit variance (diagonal 1)
+        c = np.nan_to_num(c)
+        np.fill_diagonal(c, 1.0)
+        lam = np.clip(np.linalg.eigvalsh(c), 0, None)
+        return float(lam.sum() ** 2 / (lam ** 2).sum())
+
     corr = w[DET].corr()
     off = corr.to_numpy()[~np.eye(len(DET), dtype=bool)]
-    lam = np.clip(np.linalg.eigvalsh(np.nan_to_num(corr.to_numpy())), 0, None)
     put("mean_flag_correlation", float(np.nanmean(off)))
-    put("effective_n_detectors", float(lam.sum() ** 2 / (lam ** 2).sum()), "{:.1f}")
+    put("effective_n_detectors", eff_n(w), "{:.1f}")
+    wr = w.reset_index()
+    for (v, dl), g in wr.groupby(["variant", "delta"]):
+        put(f"effective_n_detectors_{v}_d{f'{dl:g}'.replace('.', '')}", eff_n(g), "{:.1f}")
     ct = corr.round(2)
     ct.index = [DET_LABEL[d] for d in ct.index]
     ct.columns = [DET_LABEL[d] for d in ct.columns]
@@ -365,6 +378,16 @@ def clinical():
             key = f"probe_auroc_sex_grouped_vs_plain_chexpert_{bb.replace('_', '')}"
             put(key, [a.statistic.iloc[0], b.statistic.iloc[0]],
                 text=f"{a.statistic.iloc[0]:.3f} grouped vs {b.statistic.iloc[0]:.3f} plain")
+    pr_all = prim[prim.detector == "probe"]
+    if "repeat_sd" in pr_all.columns:
+        for ds in ("chexpert", "mimic", "celeba"):
+            v = pr_all[pr_all.dataset == ds].repeat_sd
+            if v.notna().any():
+                put(f"probe_repeat_sd_max_{ds}", float(v.max()), "{:.3f}")
+    if "n_inconsistent_groups" in pr_all.columns:
+        c_ = pr_all[pr_all.dataset == "celeba"]
+        if not c_.empty:
+            put("celeba_n_inconsistent_identities", int(c_.n_inconsistent_groups.max()), "{:d}")
     # CelebA
     c = prim[prim.dataset == "celeba"]
     if not c.empty:
@@ -496,7 +519,8 @@ def head():
         auroc_drop=("auroc_drop", "mean"), output_shift=("output_shift", "mean"),
         auroc_aligned=("auroc_aligned", "mean"), auroc_misaligned=("auroc_misaligned", "mean"),
         ece_A1=("ece_A1", "mean"), ece_A0=("ece_A0", "mean"), n_train=("n_train", "mean"),
-        n_test=("n_test", "mean"), n_seeds=("seed", "nunique")).reset_index()
+        n_test=("n_test", "mean"), n_train_min=("n_train", "min"), n_train_max=("n_train", "max"),
+        n_test_min=("n_test", "min"), n_test_max=("n_test", "max"), n_seeds=("seed", "nunique")).reset_index()
     cell.to_csv(TAB / "head_reliance_cells.csv", index=False)
     put("n_head_cells", int(len(cell)), "{:d}")
     put("head_n_seeds", int(h.seed.nunique()), "{:d}")
@@ -520,6 +544,39 @@ def head():
         s = cell[cell.attribute == attr]
         r, _ = spearmanr(s.probe_auroc, s.tpr_gap)
         put(f"spearman_probe_tprgap_within_{attr}", r)
+
+    # the cells are not independent: the 7 backbones embed the same images, and the
+    # attributes and tasks reuse the same patients
+    def partial_spearman(frame):
+        from scipy.stats import rankdata
+
+        D = pd.get_dummies(frame.attribute + "|" + frame.task, drop_first=False).to_numpy(float)
+        res = []
+        for col in ("probe_auroc", "tpr_gap"):
+            r_ = rankdata(frame[col].to_numpy())
+            beta, *_ = np.linalg.lstsq(D, r_, rcond=None)
+            res.append(r_ - D @ beta)
+        return float(np.corrcoef(res[0], res[1])[0, 1])
+
+    put("spearman_probe_tprgap_partial", partial_spearman(cell))
+    bbs = cell.backbone.unique()
+    rng_c = np.random.default_rng(1)
+    boot_c = []
+    for _ in range(2000):
+        pick = rng_c.choice(bbs, size=len(bbs), replace=True)
+        bc = pd.concat([cell[cell.backbone == b] for b in pick], ignore_index=True)
+        boot_c.append(spearmanr(bc.probe_auroc, bc.tpr_gap)[0])
+    lo, hi = np.nanpercentile(boot_c, [2.5, 97.5])
+    put("spearman_probe_tprgap_cluster_ci", [lo, hi], text=rng_text(lo, hi))
+    put("head_cells_share_image_sets",
+        f"the {len(cell)} cells are not independent: the {len(bbs)} backbones embed the same "
+        f"{int(h.n_labelled.max()) if 'n_labelled' in h.columns else 'CheXpert'}-or-fewer labelled images, "
+        "and the two attributes and three tasks reuse the same patients; the partial Spearman (given "
+        "attribute and task) and the bootstrap over backbones (whole backbones resampled) address this", None)
+    put("head_n_train_min", int(hf.n_train.min()), "{:d}")
+    put("head_n_train_max", int(hf.n_train.max()), "{:d}")
+    put("head_n_test_min", int(hf.n_test.min()), "{:d}")
+    put("head_n_test_max", int(hf.n_test.max()), "{:d}")
     put("head_auroc_aligned", hf.auroc_aligned.mean())
     put("head_auroc_misaligned", hf.auroc_misaligned.mean())
     put("head_ece_A1", hf.ece_A1.mean(), "{:.3f}")
@@ -532,13 +589,14 @@ def head():
     rows = []
     for (attr, task), g in hf.groupby(["attribute", "task"]):
         rows.append({"A": {"sex": "Sex", "age": "Age 60+"}[attr], "Y": task.replace("_", " ").title(),
-                     "n train": f"{g.n_train.mean():.0f}", "n test": f"{g.n_test.mean():.0f}",
+                     "n train": f"{int(g.n_train.min())}-{int(g.n_train.max())}",
+                     "n test": f"{int(g.n_test.min())}-{int(g.n_test.max())}",
                      "Probe": f2(g.probe_auroc.mean()), "TPR gap": f2(g.tpr_gap.mean()),
                      "FPR gap": f2(g.fpr_gap.mean()), "AUROC drop": f2(g.auroc_drop.mean()),
                      "Output shift": f2(g.output_shift.mean()),
                      "AUROC aligned": f2(g.auroc_aligned.mean()), "AUROC misaligned": f2(g.auroc_misaligned.mean()),
                      "ECE A=1": f2(g.ece_A1.mean(), 3), "ECE A=0": f2(g.ece_A0.mean(), 3)})
-    hdr = ["$A$", "$Y$", "$n$ train", "$n$ test", "Probe", "TPR gap", "FPR gap", "AUROC drop",
+    hdr = ["$A$", "$Y$", "$n$ train (min-max)", "$n$ test (min-max)", "Probe", "TPR gap", "FPR gap", "AUROC drop",
            "Output shift", "AUROC aligned", "AUROC misaligned", "ECE $A{=}1$", "ECE $A{=}0$"]
     write_tabular("head_reliance", pd.DataFrame(rows), "ll" + "c" * (len(hdr) - 2), escape_cells=False, header=hdr)
 
@@ -563,28 +621,49 @@ def head():
     if m is not None and not m.empty:
         put("mitig1_name", "adversarial debiasing")
         put("mitig2_name", "contrastive debiasing")
+        put("mitig_n_seeds", int(m.seed.nunique()), "{:d}")
         rows = []
+        label = {"adversarial": "Adversarial debiasing", "adversarial_control": "Same encoder, adversary weight 0",
+                 "contrastive": "Contrastive debiasing", "contrastive_control": "Same encoder, contrastive weight 0"}
+        mids = []
         for i, meth in ((1, "adversarial"), (2, "contrastive")):
             g = m[m.method == meth]
-            a0 = g[g.seed == 0]
-            put(f"mitig{i}_delta_probe_auroc", (a0.probe_auroc_after - a0.probe_auroc_before).mean())
+            c = m[m.method == f"{meth}_control"]
+            # all seeds (section 9); deltas against the raw embeddings
+            put(f"mitig{i}_delta_probe_auroc", (g.probe_auroc_after - g.probe_auroc_before).mean())
             put(f"mitig{i}_delta_task_auroc", (g.task_auroc_after - g.task_auroc_before).mean())
             put(f"mitig{i}_delta_tpr_gap", (g.tpr_gap_after - g.tpr_gap_before).mean())
-            put(f"mitig{i}_n_probe_sig_after", int((a0.probe_p_after < 0.05).sum()), "{:d}")
-            put(f"mitig{i}_n_probe_sig_before", int((a0.probe_p_before < 0.05).sum()), "{:d}")
-            for attr in ["sex", "age"]:
-                ga, a0a = g[g.attribute == attr], a0[a0.attribute == attr]
-                rows.append({"Mitigation": {"adversarial": "Adversarial debiasing", "contrastive": "Contrastive debiasing"}[meth] if attr == "sex" else "",
-                             "A": {"sex": "Sex", "age": "Age 60+"}[attr],
-                             "Probe before": f2(a0a.probe_auroc_before.mean()), "Probe after": f2(a0a.probe_auroc_after.mean()),
-                             "Sig. before": f"{int((a0a.probe_p_before < 0.05).sum())}/{len(a0a)}",
-                             "Sig. after": f"{int((a0a.probe_p_after < 0.05).sum())}/{len(a0a)}",
-                             "Task before": f2(ga.task_auroc_before.mean()), "Task after": f2(ga.task_auroc_after.mean()),
-                             "TPR gap before": f2(ga.tpr_gap_before.mean()), "TPR gap after": f2(ga.tpr_gap_after.mean())})
-        hdr = ["Mitigation", "$A$", "Probe before", "Probe after", "Sig. before", "Sig. after",
+            put(f"mitig{i}_n_probe_sig_after", int((g.probe_p_after < 0.05).sum()), "{:d}")
+            put(f"mitig{i}_n_probe_sig_before", int((g.probe_p_before < 0.05).sum()), "{:d}")
+            put(f"mitig{i}_n_audits", int(len(g)), "{:d}")
+            if not c.empty:
+                put(f"mitig{i}_control_delta_probe_auroc", (c.probe_auroc_after - c.probe_auroc_before).mean())
+                put(f"mitig{i}_control_delta_task_auroc", (c.task_auroc_after - c.task_auroc_before).mean())
+                put(f"mitig{i}_control_delta_tpr_gap", (c.tpr_gap_after - c.tpr_gap_before).mean())
+                put(f"mitig{i}_control_n_probe_sig_after", int((c.probe_p_after < 0.05).sum()), "{:d}")
+                k = ["backbone", "attribute", "task", "seed"]
+                j = g.set_index(k).join(c.set_index(k), rsuffix="_c")
+                put(f"mitig{i}_vs_control_probe_auroc", (j.probe_auroc_after - j.probe_auroc_after_c).mean())
+                put(f"mitig{i}_vs_control_task_auroc", (j.task_auroc_after - j.task_auroc_after_c).mean())
+                put(f"mitig{i}_vs_control_tpr_gap", (j.tpr_gap_after - j.tpr_gap_after_c).mean())
+            for mm_ in (meth, f"{meth}_control"):
+                gm = m[m.method == mm_]
+                for attr in ["sex", "age"]:
+                    ga = gm[gm.attribute == attr]
+                    if ga.empty:
+                        continue
+                    rows.append({"Mitigation": label[mm_] if attr == "sex" else "",
+                                 "A": {"sex": "Sex", "age": "Age 60+"}[attr],
+                                 "Probe before": f2(ga.probe_auroc_before.mean()), "Probe after": f2(ga.probe_auroc_after.mean()),
+                                 "Sig. before": f"{int((ga.probe_p_before < 0.05).sum())}/{len(ga)}",
+                                 "Sig. after": f"{int((ga.probe_p_after < 0.05).sum())}/{len(ga)}",
+                                 "Task before": f2(ga.task_auroc_before.mean()), "Task after": f2(ga.task_auroc_after.mean()),
+                                 "TPR gap before": f2(ga.tpr_gap_before.mean()), "TPR gap after": f2(ga.tpr_gap_after.mean())})
+                mids.append(len(rows))
+        hdr = ["Encoder", "$A$", "Probe before", "Probe after", "Sig. before", "Sig. after",
                "Task AUROC before", "Task AUROC after", "TPR gap before", "TPR gap after"]
         write_tabular("mitigation_before_after", pd.DataFrame(rows), "ll" + "c" * 8, escape_cells=False,
-                      header=hdr, midrules=[2])
+                      header=hdr, midrules=mids[:-1])
 
 
 # ---------------------------------------------------------------------------
@@ -732,6 +811,14 @@ def marker():
                   header=["", "Mean score", "Max $p$", "Flagged (BH)"], midrules=[len(DET)])
 
 
+def _short_error(err: str) -> str:
+    """One line for a table cell: gated repositories named as such, else the first line."""
+    if "gated repo" in err:
+        return "gated repository (no access)"
+    line = next((x.strip() for x in str(err).splitlines() if x.strip()), "")
+    return line[:60]
+
+
 def extraction():
     p = ROOT / "extraction_check" / "extraction_check.json"
     if not p.exists():
@@ -754,34 +841,56 @@ def extraction():
                        "Pooling": r["pooling"],
                        "Cosine mean": f2(r.get("cos_mean"), 3) if "cos_mean" in r else "n/a",
                        "Cosine min": f2(r.get("cos_min"), 3) if "cos_mean" in r else "n/a",
-                       "Note": "" if "cos_mean" in r else r.get("error", "")[:60]} for r in rows])
+                       "Note": "" if "cos_mean" in r else _short_error(r.get("error", ""))} for r in rows])
     write_tabular("extraction_check", t, "lllccl")
 
 
 def alignment():
-    """Mark backbones whose rows share no similarity structure with the other
-    backbones of the same dataset (run_alignment_check.py)."""
+    """Misalignment check (section 9): a backbone is excluded only when two
+    independent signs agree. (1) Its rows share no similarity structure with the
+    other backbones of the same dataset (max Spearman of the cosine structure
+    below 0.05, against about 0 for a shuffled control). (2) Its conditional sex
+    probe is at chance (AUROC below 0.6) while the other backbones of the
+    dataset are well above it (median above 0.75)."""
     a = load("alignment_check/alignment.csv")
     if a is None:
         return
+    aud = load("clinical_audit/audit_rows.csv")
+    sex_auc = {}
+    if aud is not None:
+        sx = aud[(aud.variant == "primary") & (aud.attribute == "sex") & (aud.detector == "probe")]
+        sex_auc = {(r.dataset, r.backbone): float(r.statistic) for r in sx.itertuples()}
     real = a[~a.b.str.contains("shuffled")]
     shuf = a[a.b.str.contains("shuffled")]
     rows, bad = [], []
     for ds, sub in real.groupby("dataset"):
-        for bb in sorted(set(sub.a) | set(sub.b)):
+        bbs = sorted(set(sub.a) | set(sub.b))
+        for bb in bbs:
             mx = sub[(sub.a == bb) | (sub.b == bb)].spearman.max()
             ctl = shuf[(shuf.dataset == ds) & (shuf.a == bb)].spearman.iloc[0]
-            ok = bool(mx > 0.05)
-            if not ok:
+            auc = sex_auc.get((ds, bb), float("nan"))
+            others = [sex_auc[(ds, b)] for b in bbs if b != bb and (ds, b) in sex_auc]
+            sim_bad = bool(mx < 0.05)
+            probe_bad = bool(np.isfinite(auc) and auc < 0.6 and others and np.median(others) > 0.75)
+            excluded = sim_bad and probe_bad
+            if excluded:
                 bad.append(f"{ds}:{bb}")
                 MISALIGNED.add((ds, bb))
                 BACKBONE_LABELS[bb] = BACKBONE_LABELS.get(bb, bb) + " (rows misaligned)"
             rows.append({"Dataset": {"chexpert": "CheXpert", "mimic": "MIMIC-CXR"}[ds],
                          "Backbone": BACKBONE_LABELS.get(bb, bb), "Max Spearman": f2(mx, 3),
-                         "Shuffled control": f2(ctl, 3), "Aligned": "yes" if ok else "no"})
+                         "Shuffled control": f2(ctl, 3), "Sex probe AUROC": f2(auc),
+                         "Similarity fails": "yes" if sim_bad else "no",
+                         "Probe at chance": "yes" if probe_bad else "no",
+                         "Excluded": "yes" if excluded else "no"})
             put(f"alignment_max_spearman_{ds}_{bb}", float(mx), "{:.3f}")
+    for key, bb in (("vit32_sex_auroc_mimic", "vit32_cls"), ("vit16_sex_auroc_mimic", "vit16_cls")):
+        if ("mimic", bb) in sex_auc:
+            put(key, sex_auc[("mimic", bb)])
     put("alignment_misaligned_backbones", ", ".join(bad) if bad else "none", None)
-    write_tabular("alignment_check", pd.DataFrame(rows), "llccc")
+    write_tabular("alignment_check", pd.DataFrame(rows), "llcccccc",
+                  header=["Dataset", "Backbone", "Max Spearman", "Shuffled control", "Sex probe AUROC",
+                          "Similarity fails", "Probe at chance", "Excluded"])
 
 
 def finish():
@@ -795,6 +904,9 @@ def finish():
         elif k not in out:
             out[k] = v
     path.write_text(json.dumps(out, indent=2) + "\n")
+    from export_numbers_tex import main as export_tex
+
+    export_tex(str(path), str(TAB / "numbers.tex"))
     # top-level manifest and repo copy
     lines = [f"revision results folder: {ROOT}", f"tables/figures built at commit {git_sha(False)}", ""]
     for m in sorted(ROOT.glob("*/MANIFEST.txt")):
@@ -804,6 +916,8 @@ def finish():
         print(f"numbers: {len(NUM)} keys (repo copy skipped)")
         return
     dest = REPO / "output" / "paper_tables" / "revision"
+    if dest.exists():  # replace, so files from an earlier build do not linger
+        shutil.rmtree(dest)
     for sub in ("tables", "figures"):
         (dest / sub).mkdir(parents=True, exist_ok=True)
         for f in (ROOT / sub).iterdir():

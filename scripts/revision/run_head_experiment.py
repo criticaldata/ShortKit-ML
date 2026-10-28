@@ -135,8 +135,8 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, k_mitig, threads):
     from sklearn.metrics import roc_auc_score
     from sklearn.model_selection import StratifiedGroupKFold
 
-    from shortcut_detect.audit import AuditConfig, conditional_audit
     from shortcut_detect import mitigation as mitig_mod
+    from shortcut_detect.audit import AuditConfig, conditional_audit
 
     X, meta = load_chexpert(bb)
     col = TASKS[task]
