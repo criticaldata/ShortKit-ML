@@ -7,6 +7,8 @@ imports from here so that all runs use the same cohorts and the same folder.
 
 from __future__ import annotations
 
+import functools
+
 import hashlib
 import json
 import os
@@ -161,8 +163,29 @@ CHEXPERT_JOIN_NOTE = (
     "CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror "
     "codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis "
     "labels are read from the official data/train.csv joined by image path via "
-    "race_mapping.csv; patient_id from race_mapping.csv; race from chexpert_manifest.csv."
+    "race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert "
+    "demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images "
+    "without a demographics record are missing (the shipped manifest coded them OTHER), and "
+    "Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). "
+    "Age as an attribute is the patient's age at their first study in the cohort, so it is "
+    "constant per patient."
 )
+
+
+def _code_chexpert_race(v) -> str | None:
+    if pd.isna(v):
+        return None
+    v = str(v)
+    for prefix, code in (("White", "WHITE"), ("Black", "BLACK"), ("Asian", "ASIAN"),
+                         ("Native Hawaiian", "NHPI"), ("Pacific Islander", "NHPI")):
+        if v.startswith(prefix):
+            return code
+    return "OTHER"  # Other, Unknown, Patient Refused, American Indian / Native American
+
+
+@functools.lru_cache(maxsize=1)
+def _chexpert_demo() -> pd.DataFrame:
+    return pd.read_excel(DATA / "CHEXPERT DEMO.xlsx", usecols=["PATIENT", "PRIMARY_RACE"])
 CHEXPERT_LABEL_COLS = [
     "No Finding", "Enlarged Cardiomediastinum", "Cardiomegaly", "Lung Opacity", "Lung Lesion",
     "Edema", "Consolidation", "Pneumonia", "Atelectasis", "Pneumothorax", "Pleural Effusion",
@@ -190,13 +213,29 @@ def chexpert_meta() -> pd.DataFrame:
             "age": j["Age"].to_numpy(dtype=float),
             "view": j["Frontal/Lateral"].to_numpy(),
             "ap_pa": j["AP/PA"].fillna("NA").to_numpy(),
-            "race": man["race"].to_numpy(),
+            "race_shipped": man["race"].to_numpy(),
             "age_bin": man["age_bin"].to_numpy(),
             "sex_shipped_metadata": man["sex"].to_numpy(),
         }
     )
     for c in CHEXPERT_LABEL_COLS:
         meta[c] = j[c].to_numpy(dtype=float)  # 1 positive, 0 negative, -1 uncertain, NaN blank
+    # race from the demographics file (see CHEXPERT_JOIN_NOTE)
+    pat = meta["path"].str.extract(r"(patient\d+)")[0]
+    demo = _chexpert_demo().drop_duplicates("PATIENT")
+    raw = pd.DataFrame({"PATIENT": pat}).merge(demo, on="PATIENT", how="left", validate="many_to_one")
+    meta["race_raw"] = raw["PRIMARY_RACE"].to_numpy()
+    meta["race"] = [_code_chexpert_race(v) for v in meta["race_raw"]]
+    changed = meta["race"].astype(str) != meta["race_shipped"].astype(str)
+    expected = meta["race"].isna() & (meta["race_shipped"] == "OTHER") | (
+        (meta["race"] == "NHPI") & (meta["race_shipped"] == "ASIAN"))
+    assert (changed == expected).all(), "race recoding differs from the manifest beyond the two known cases"
+    # age at the patient's first study in the cohort (patient-constant attribute)
+    study = meta["path"].str.extract(r"/study(\d+)/")[0].astype(int)
+    first = meta.assign(_s=study).sort_values(["patient_id", "_s"]).groupby("patient_id")["age"].first()
+    meta["age_first_study"] = meta["patient_id"].map(first).to_numpy(dtype=float)
+    meta["age_bin_first_study"] = pd.cut(meta["age_first_study"], [-np.inf, 40, 60, 80, np.inf], right=False,
+                                         labels=["<40", "40-60", "60-80", "80+"]).astype(str)
     # audit task (spec section 5): the existing task label, Pneumothorax positive vs rest
     meta["task_label"] = (meta["Pneumothorax"] == 1).astype(int)
     assert (meta["task_label"].to_numpy() == man["task_label"].to_numpy()).all()
@@ -337,11 +376,16 @@ def attribute_cells(
 
     allrows = np.ones(len(meta), dtype=bool)
     add("sex", "primary", meta["sex"].to_numpy(), allrows)
-    add("age", "primary", _binary_age(meta["age"]), meta["age"].notna().to_numpy())
-    race = meta["race"].astype(str).to_numpy()
-    add("race", "primary", np.where(race == "WHITE", "White", "non-White"), allrows)
+    # CheXpert: age at the first study, constant per patient (section 9)
+    age_col = "age_first_study" if "age_first_study" in meta.columns else "age"
+    bin_col = "age_bin_first_study" if "age_bin_first_study" in meta.columns else "age_bin"
+    add("age", "primary", _binary_age(meta[age_col]), meta[age_col].notna().to_numpy())
+    race_s = meta["race"]
+    race_bin = np.where(race_s.isna(), None, np.where(race_s.astype(str) == "WHITE", "White", "non-White"))
+    add("race", "primary", race_bin, allrows, "missing race excluded" if race_s.isna().any() else "")
+    race = race_s.astype(str).to_numpy()
     if sensitivity:
-        add("age", "4bin", meta["age_bin"].astype(str).to_numpy(), meta["age_bin"].notna().to_numpy())
+        add("age", "4bin", meta[bin_col].astype(str).to_numpy(), meta[bin_col].notna().to_numpy())
         for per in ("group", "stratum"):
             keep, note = _race_min_filter(race, np.nan_to_num(y_all.astype(float)).astype(int), 50, per)
             add("race", f"min50_per_{per}", race, keep, note)

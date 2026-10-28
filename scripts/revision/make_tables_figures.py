@@ -456,19 +456,23 @@ def cohorts():
     for name, m, task in (("CheXpert", mc, "Pneumothorax"), ("MIMIC-CXR", mm, "In-hospital mortality")):
         n = len(m)
         pats = m["patient_id"].nunique() if "patient_id" in m.columns else m["image_path"].str.extract(r"/p(\d+)/")[0].nunique()
-        race = m["race"].astype(str).value_counts()
+        race = m["race"].fillna("MISSING").astype(str).value_counts()
         rows.append({"Cohort": name, "Images": n, "Patients": pats,
                      "Male": f"{(m.sex == 'Male').sum()} ({100 * (m.sex == 'Male').mean():.0f}\\%)",
                      "Age 60+": f"{(m.age >= 60).sum()} ({100 * (m.age >= 60).mean():.0f}\\%)",
                      "White": race.get("WHITE", 0), "Black": race.get("BLACK", 0), "Asian": race.get("ASIAN", 0),
-                     "Other": race.get("OTHER", 0),
+                     "NHPI": race.get("NHPI", 0), "Other": race.get("OTHER", 0),
+                     "Missing": race.get("MISSING", 0),
                      "Task": task, "Y=1": f"{int(m.task_label.sum())} ({100 * m.task_label.mean():.1f}\\%)"})
     put("chexpert_pneumothorax_prevalence", 100 * mc.task_label.mean(), "{:.1f}")
     put("mimic_mortality_prevalence", 100 * mm.task_label.mean(), "{:.1f}")
     put("chexpert_n_patients", int(mc.patient_id.nunique()), "{:d}")
     put("chexpert_n_lateral", int((mc.view == "Lateral").sum()), "{:d}")
-    hdr = ["Cohort", "Images", "Patients", "Male", "Age 60+", "White", "Black", "Asian", "Other", "Task ($Y$)", "$Y{=}1$"]
-    write_tabular("cohort_demographics", pd.DataFrame(rows), "l" + "r" * 9 + "lr", escape_cells=False, header=hdr)
+    hdr = ["Cohort", "Images", "Patients", "Male", "Age 60+", "White", "Black", "Asian", "NHPI", "Other",
+           "Missing", "Task ($Y$)", "$Y{=}1$"]
+    write_tabular("cohort_demographics", pd.DataFrame(rows), "l" + "r" * 10 + "lr", escape_cells=False, header=hdr)
+    put("chexpert_n_race_missing", int(mc.race.isna().sum()), "{:d}")
+    put("chexpert_n_race_nhpi", int((mc.race == "NHPI").sum()), "{:d}")
 
 
 # ---------------------------------------------------------------------------

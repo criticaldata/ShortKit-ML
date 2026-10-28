@@ -142,7 +142,8 @@ class AuditResult:
         out = []
         for r in self.results.values():
             d = asdict(r)
-            d.update(n=self.n, n_groups=self.n_groups, fold_strata=self.fold_strata)
+            d.update(n=self.n, n_groups=self.n_groups, fold_strata=self.fold_strata,
+                     n_inconsistent_groups=self.n_inconsistent_groups, attribute_level=self.attribute_level)
             out.append(d)
         return out
 

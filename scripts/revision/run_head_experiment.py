@@ -22,7 +22,11 @@ uncertain and blank rows dropped and counted):
 3. Two embedding-level mitigations from the package (AdversarialDebiasing and
    ContrastiveDebiasing) are fitted on the confounded training embeddings,
    applied to training and test embeddings, and the audit (on the whole test
-   pool) and the head are rerun.
+   pool) and the head are rerun. Each has a control: the same encoder trained
+   identically with the debiasing term switched off (adversary_weight = 0,
+   contrastive_weight = 0), which separates the effect of passing through a
+   smaller learned encoder from the effect of the mitigation. Every
+   mitigation seed is audited.
 """
 
 from __future__ import annotations
@@ -59,7 +63,7 @@ ATTR_REMOVAL = (
 def attribute_vector(meta: pd.DataFrame, attr: str) -> np.ndarray:
     if attr == "sex":
         return (meta["sex"].to_numpy() == "Male").astype(int)
-    return (meta["age"].to_numpy(dtype=float) >= 60).astype(int)
+    return (meta["age_first_study"].to_numpy(dtype=float) >= 60).astype(int)  # constant per patient
 
 
 def ece(p: np.ndarray, y: np.ndarray, bins: int = 10) -> float:
@@ -116,7 +120,15 @@ def reliance(model, Xte, yte, ate, model_unconf, u, m):
     return out
 
 
-def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, threads):
+MITIGATIONS = {
+    "adversarial": ("AdversarialDebiasing", {}),
+    "adversarial_control": ("AdversarialDebiasing", {"adversary_weight": 0.0}),
+    "contrastive": ("ContrastiveDebiasing", {}),
+    "contrastive_control": ("ContrastiveDebiasing", {"contrastive_weight": 0.0}),
+}
+
+
+def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, k_mitig, threads):
     import torch
 
     torch.set_num_threads(threads)
@@ -124,7 +136,7 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, threads):
     from sklearn.model_selection import StratifiedGroupKFold
 
     from shortcut_detect.audit import AuditConfig, conditional_audit
-    from shortcut_detect.mitigation import AdversarialDebiasing, ContrastiveDebiasing
+    from shortcut_detect import mitigation as mitig_mod
 
     X, meta = load_chexpert(bb)
     col = TASKS[task]
@@ -142,7 +154,8 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, threads):
 
     t0 = time.time()
     aud = conditional_audit(
-        Xk, ak, yk, AuditConfig(n_permutations=k_audit, n_bootstrap=0, detectors=("probe",), seed=42),
+        Xk, ak, yk,
+        AuditConfig(n_permutations=200, n_permutations_probe=k_audit, n_bootstrap=0, detectors=("probe",), seed=42),
         groups=pk,
     ).results["probe"]
     audit = dict(probe_auroc=aud.statistic, probe_z=aud.z, probe_p=aud.p_value,
@@ -184,10 +197,13 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, threads):
                          "n_test": int(len(i_te)), "feasible": True, **rel})
 
         if s < mitig_seeds:
-            for name, cls in (("adversarial", AdversarialDebiasing), ("contrastive", ContrastiveDebiasing)):
+            cfg = AuditConfig(n_permutations=k_mitig, n_bootstrap=0, detectors=("probe",), seed=42)
+            before = conditional_audit(Xk[te_pool], ak[te_pool], yk[te_pool], cfg,
+                                       groups=pk[te_pool]).results["probe"]
+            for name, (cls_name, kw) in MITIGATIONS.items():
                 t1 = time.time()
-                mit = cls(random_state=s, device="cpu")
-                if name == "adversarial":
+                mit = getattr(mitig_mod, cls_name)(random_state=s, device="cpu", **kw)
+                if cls_name == "AdversarialDebiasing":
                     mit.fit(Xk[i_conf], ak[i_conf], yk[i_conf])
                 else:
                     mit.fit(Xk[i_conf], yk[i_conf], ak[i_conf])
@@ -196,22 +212,17 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, threads):
                 Zpool = mit.transform(Xk[te_pool])
                 h_m = head(Ztr, yk[i_conf], s)
                 pm = h_m.predict_proba(Zte)[:, 1]
-                row = {**info, "seed": s, "method": name, "n_train": int(len(i_conf)),
-                       "task_auroc_before": rel["auroc_conf"],
-                       "task_auroc_after": float(roc_auc_score(yte, pm)),
-                       "tpr_gap_before": rel["tpr_gap"],
-                       "tpr_gap_after": float((pm[(yte == 1) & (ate == 1)] >= 0.5).mean()
-                                              - (pm[(yte == 1) & (ate == 0)] >= 0.5).mean())}
-                if s == 0:
-                    cfg = AuditConfig(n_permutations=k_audit, n_bootstrap=0, detectors=("probe",), seed=42)
-                    before = conditional_audit(Xk[te_pool], ak[te_pool], yk[te_pool], cfg,
-                                               groups=pk[te_pool]).results["probe"]
-                    after = conditional_audit(Zpool, ak[te_pool], yk[te_pool], cfg,
-                                              groups=pk[te_pool]).results["probe"]
-                    row.update(probe_auroc_before=before.statistic, probe_p_before=before.p_value,
-                               probe_auroc_after=after.statistic, probe_p_after=after.p_value)
-                row["seconds"] = round(time.time() - t1, 1)
-                mit_rows.append(row)
+                after = conditional_audit(Zpool, ak[te_pool], yk[te_pool], cfg, groups=pk[te_pool]).results["probe"]
+                mit_rows.append({**info, "seed": s, "method": name, "n_train": int(len(i_conf)),
+                                 "n_test": int(len(i_te)), "n_audit_pool": int(len(te_pool)),
+                                 "task_auroc_before": rel["auroc_conf"],
+                                 "task_auroc_after": float(roc_auc_score(yte, pm)),
+                                 "tpr_gap_before": rel["tpr_gap"],
+                                 "tpr_gap_after": float((pm[(yte == 1) & (ate == 1)] >= 0.5).mean()
+                                                        - (pm[(yte == 1) & (ate == 0)] >= 0.5).mean()),
+                                 "probe_auroc_before": before.statistic, "probe_p_before": before.p_value,
+                                 "probe_auroc_after": after.statistic, "probe_p_after": after.p_value,
+                                 "seconds": round(time.time() - t1, 1)})
     print(f"{bb} {attr} {task}: {time.time() - t0:.0f}s", flush=True)
     return rel_rows, mit_rows
 
@@ -220,7 +231,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, default=10)
     ap.add_argument("--mitig-seeds", type=int, default=3)
-    ap.add_argument("--K", type=int, default=200)
+    ap.add_argument("--K", type=int, default=500)  # probe K, section 9
+    ap.add_argument("--K-mitig", type=int, default=200)
     ap.add_argument("--jobs", type=int, default=3)
     ap.add_argument("--threads", type=int, default=3)
     ap.add_argument("--backbones", nargs="+", default=CHEXPERT_BACKBONES)
@@ -231,9 +243,10 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
     man = Manifest(out, "head reliance experiment (section 7, items 1 to 3)")
     man.config = {"seeds": args.seeds, "mitigation_seeds": args.mitig_seeds, "K_audit": args.K,
+                  "K_mitigation_audits": args.K_mitig, "age": "age at the first study (patient-constant)",
                   "rho_train": RHO_TRAIN, "rho_test": 0.5, "head": "StandardScaler + LogisticRegression(C=1)",
                   "threshold": 0.5, "tasks": TASKS, "attributes": ["sex (Male=1)", "age 60+ (=1)"],
-                  "mitigations": ["AdversarialDebiasing (defaults)", "ContrastiveDebiasing (defaults)"],
+                  "mitigations": {k: f"{c}({v or 'defaults'})" for k, (c, v) in MITIGATIONS.items()},
                   "split": "patient-level StratifiedGroupKFold(2) on (A, Y)"}
     man.notes += [CHEXPERT_JOIN_NOTE, "attribute removal: " + ATTR_REMOVAL]
     man.add_data(DATA / "train.csv", DATA / "chexpert_multibackbone" / "race_mapping.csv")
@@ -242,7 +255,8 @@ def main() -> int:
     jobs = [(bb, a, t) for bb in args.backbones for a in ("sex", "age") for t in TASKS]
     t0 = time.time()
     res = Parallel(n_jobs=args.jobs)(
-        delayed(run_cell)(bb, a, t, args.seeds, args.mitig_seeds, args.K, args.threads) for bb, a, t in jobs
+        delayed(run_cell)(bb, a, t, args.seeds, args.mitig_seeds, args.K, args.K_mitig, args.threads)
+        for bb, a, t in jobs
     )
     pd.DataFrame([r for rr, _ in res for r in rr]).to_csv(out / "head_reliance.csv", index=False)
     pd.DataFrame([r for _, mm in res for r in mm]).to_csv(out / "mitigation.csv", index=False)
