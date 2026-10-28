@@ -159,3 +159,55 @@ class TestSyntheticTaskIsNotAttribute:
         runner._run_methods(X, y, g, seed=0)
         assert not np.array_equal(seen["g"], seen["y"])
         assert np.array_equal(seen["g"], g)
+
+
+class TestLabelMethodsSeeTheAttribute:
+    """Fault 5: HBAC, Frequency, GCE and SIS fitted on the task label only."""
+
+    @staticmethod
+    def _data(seed=0, n=400, d=16):
+        rng = np.random.RandomState(seed)
+        y = rng.randint(0, 2, n)
+        a = rng.randint(0, 2, n)
+        X = rng.randn(n, d)
+        X[:, 0] += 3.0 * (a - 0.5)  # attribute signal only
+        return X, y, np.where(a == 1, "M", "F")
+
+    def test_builders_target_attribute(self, monkeypatch):
+        from shortcut_detect.clustering.builder import HBACDetectorBuilder
+        from shortcut_detect.frequency.builder import FrequencyShortcutBuilder
+        from shortcut_detect.xai.sis.builder import SISDetectorBuilder
+
+        X, y, a = self._data()
+        for builder_cls in (HBACDetectorBuilder, FrequencyShortcutBuilder, SISDetectorBuilder):
+            seen = {}
+            det = builder_cls(0, {}).build()
+            orig = type(det).fit
+
+            def spy(self, *args, _orig=orig, **kw):
+                lab = kw.get("labels", args[1] if len(args) > 1 else None)
+                seen["labels"] = np.asarray(lab)
+                return _orig(self, *args, **kw)
+
+            monkeypatch.setattr(type(det), "fit", spy)
+            res = builder_cls(0, {}).run(X, y, a, None, a)
+            assert res["success"], res.get("error")
+            assert res["target"] == "attribute"
+            assert np.array_equal(seen["labels"], (a == "M").astype(int))
+            monkeypatch.undo()
+
+    def test_task_mode_keeps_old_behaviour(self):
+        from shortcut_detect.frequency.builder import FrequencyShortcutBuilder
+
+        X, y, a = self._data()
+        res = FrequencyShortcutBuilder(0, {"freq_target": "task"}).run(X, y, a, None, a)
+        assert res["target"] == "task"
+
+    def test_gce_reports_attribute_enrichment(self):
+        from shortcut_detect.gce.builder import GCEDetectorBuilder
+
+        X, y, a = self._data()
+        res = GCEDetectorBuilder(0, {}).run(X, y, a, None, a)
+        assert res["success"]
+        assert res["attribute_test"] is not None
+        assert 0.0 <= res["attribute_test"]["p_value"] <= 1.0
