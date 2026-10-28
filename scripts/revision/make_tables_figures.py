@@ -700,6 +700,54 @@ def analyses():
         put("lda_heldout_auroc_mimic_raddino_sex", auc, "{:.3f}")
 
 
+def marker():
+    mk = load("planted_marker/planted_marker.csv")
+    if mk is None:
+        return
+    put("marker_rate", 0.5, "{:.1f}")
+    put("marker_rate_head_train", 0.9, "{:.1f}")
+    put("probe_auroc_marker", mk.probe_stat.mean())
+    put("probe_p_marker", mk.probe_p.max(), "{:.3f}")
+    put("head_tprgap_marker", mk.tpr_gap.mean())
+    put("head_fprgap_marker", mk.fpr_gap.mean())
+    put("marker_n_seeds", int(len(mk)), "{:d}")
+    rows = []
+    for d in DET:
+        rows.append({"Detector": DET_LABEL[d], "Score": f"{mk[f'{d}_stat'].mean():.3f}",
+                     "max p": f"{mk[f'{d}_p'].max():.3f}",
+                     "Flagged": f"{int(mk[f'{d}_flag'].astype(str).str.lower().isin(['true', '1']).sum())}/{len(mk)}"})
+    rows.append({"Detector": "Head TPR gap", "Score": f"{mk.tpr_gap.mean():.2f}", "max p": "", "Flagged": ""})
+    rows.append({"Detector": "Head FPR gap", "Score": f"{mk.fpr_gap.mean():.2f}", "max p": "", "Flagged": ""})
+    write_tabular("planted_marker", pd.DataFrame(rows), "lccc",
+                  header=["", "Mean score", "Max $p$", "Flagged (BH)"], midrules=[len(DET)])
+
+
+def extraction():
+    p = ROOT / "extraction_check" / "extraction_check.json"
+    if not p.exists():
+        return
+    rows = json.loads(p.read_text())
+    ids = {}
+    for r in rows:
+        if "cos_mean" not in r:
+            continue
+        b = r["backbone"]
+        if b not in ids or r["cos_mean"] > ids[b]["cos_mean"]:
+            ids[b] = {"model_id": r["model_id"], "revision": r.get("revision"), "pooling": r["pooling"],
+                      "cos_mean": round(r["cos_mean"], 4), "cos_min": round(r["cos_min"], 4),
+                      "reproduced": bool(r["cos_min"] > 0.99)}
+    RAW["model_ids"] = ids
+    NUM["model_ids"] = "; ".join(
+        f"{b}: {v['model_id']} ({v['pooling']}), cosine mean {v['cos_mean']:.3f}, min {v['cos_min']:.3f}"
+        + ("" if v["reproduced"] else ", NOT reproduced") for b, v in ids.items())
+    t = pd.DataFrame([{"Backbone": BACKBONE_LABELS.get(r["backbone"], r["backbone"]), "Candidate": r["model_id"],
+                       "Pooling": r["pooling"],
+                       "Cosine mean": f2(r.get("cos_mean"), 3) if "cos_mean" in r else "n/a",
+                       "Cosine min": f2(r.get("cos_min"), 3) if "cos_mean" in r else "n/a",
+                       "Note": "" if "cos_mean" in r else r.get("error", "")[:60]} for r in rows])
+    write_tabular("extraction_check", t, "lllccl")
+
+
 def finish():
     out = {k: NUM[k] for k in sorted(NUM)}
     out["raw"] = {k: RAW[k] for k in sorted(RAW)}
@@ -738,6 +786,8 @@ def main() -> int:
     old_pipeline()
     negative_control()
     analyses()
+    marker()
+    extraction()
     finish()
     return 0
 
