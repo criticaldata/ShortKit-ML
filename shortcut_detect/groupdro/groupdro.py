@@ -437,7 +437,11 @@ class GroupDRODetector(DetectorBase):
         self._set_seed()
         device = self._device()
 
-        ds = EmbeddingGroupDataset(embeddings, labels, group_labels)
+        # Group labels may be strings (e.g. "Female", "40-60"); the dataset
+        # needs integer ids, so encode them and keep the original names.
+        group_names, group_codes = np.unique(np.asarray(group_labels), return_inverse=True)
+        self.group_names_ = group_names
+        ds = EmbeddingGroupDataset(embeddings, labels, group_codes.astype(np.int64))
         n = len(ds)
         train_idx, val_idx = self._split_indices(n)
 
