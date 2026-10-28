@@ -1,14 +1,14 @@
-revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_ccf1bb5
-tables/figures built at commit bcf7993b864682786342f8e7d8e2f271af6c1d45
+revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
+tables/figures built at commit 1d5b7afa62d8d7781494cd907b3cf0aa7b652214
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
-commit: 1e496704433f759905b184f6c11b50e6db678ba2
+commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_alignment_check.py
+command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML-revision/scripts/revision/run_alignment_check.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 05:37:18 GMT
-wall_seconds: 0.7
+written: 2026-10-28 09:47:46 GMT
+wall_seconds: 1.8
 
 config:
 {
@@ -26,20 +26,21 @@ data files (md5):
   85852a8e90d5eaf736617a4a928a168e  data/chexpert_multibackbone/medsiglip_embeddings.npy
   ce4f0dd65008a34d04ffaf0d55d1a142  data/mimic_cxr/rad_dino_embeddings.npy
   1ddaf5c90ce5334950d71746875a67e7  data/mimic_cxr/vit16_cls_embeddings.npy
-  1ab5b6b2f347bd22af0abbe360c4e88d  data/mimic_cxr/vit32_cls_embeddings.npy
+  873bae28f4a491a7ebc0eba7d21b4c2a  data/mimic_cxr/vit32_cls_embeddings_realigned.npy
   3244e16214f3e0a9ca6feda83ee9faef  data/mimic_cxr/medsiglip_embeddings.npy
+  1ab5b6b2f347bd22af0abbe360c4e88d  data/mimic_cxr/vit32_cls_embeddings.npy
 
 timings (s):
-  all: 0.704
+  all: 1.529
 
 ===== analyses =====
 run: clusters vs metadata, group-size stability, held-out LDA
-commit: b519984bc951640e83f79ccc8be3b38fe952b2ec
+commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
 command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML-revision/scripts/revision/run_analyses.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 06:05:37 GMT
-wall_seconds: 192.6
+written: 2026-10-28 09:51:00 GMT
+wall_seconds: 193.0
 
 config:
 {
@@ -62,27 +63,27 @@ data files (md5):
   3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/rad_dino_metadata.csv
   1ddaf5c90ce5334950d71746875a67e7  data/mimic_cxr/vit16_cls_embeddings.npy
   3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/vit16_cls_metadata.csv
-  1ab5b6b2f347bd22af0abbe360c4e88d  data/mimic_cxr/vit32_cls_embeddings.npy
+  873bae28f4a491a7ebc0eba7d21b4c2a  data/mimic_cxr/vit32_cls_embeddings_realigned.npy
   90dee0af29c22263028d3ec11fcd9d09  data/mimic_cxr/vit32_cls_metadata.csv
   3244e16214f3e0a9ca6feda83ee9faef  data/mimic_cxr/medsiglip_embeddings.npy
   3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/medsiglip_metadata.csv
   e23bf855c6897b5c6b7b3d751e4e562f  data/mimic_cxr/mimic-cxr-2.0.0-metadata.csv
 
 timings (s):
-  clusters: 9.139
-  group_size: 182.837
+  clusters: 9.09
+  group_size: 183.338
 
 notes:
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
 
 ===== clinical_audit =====
 run: conditional audit, clinical and CelebA
-commit: b519984bc951640e83f79ccc8be3b38fe952b2ec
+commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
-command: python scripts/revision/run_clinical_audit.py --datasets chexpert
+command: python scripts/revision/run_clinical_audit.py --datasets mimic
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 06:02:23 GMT
-wall_seconds: 1185.7
+written: 2026-10-28 09:47:43 GMT
+wall_seconds: 271.0
 
 config:
 {
@@ -97,30 +98,26 @@ config:
   "n_clusters": 8,
   "permutation": "within Y; patient-level within Y-pattern strata when grouped",
   "datasets": [
-    "chexpert"
+    "mimic"
   ]
 }
 
 data files (md5):
-  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
-  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
-  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
-  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
-  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
-  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
-  3ce55cfc0a8337bec26cb7acf9af02df  data/chexpert_multibackbone/vit_b_32_embeddings.npy
-  eb997aa0d38051c1cc231cefca177571  data/chexpert_multibackbone/dinov2_base_embeddings.npy
-  27383c64a40f071bc81830ab2db78b23  data/chexpert_multibackbone/rad_dino_embeddings.npy
-  85852a8e90d5eaf736617a4a928a168e  data/chexpert_multibackbone/medsiglip_embeddings.npy
+  ce4f0dd65008a34d04ffaf0d55d1a142  data/mimic_cxr/rad_dino_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/rad_dino_metadata.csv
+  1ddaf5c90ce5334950d71746875a67e7  data/mimic_cxr/vit16_cls_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/vit16_cls_metadata.csv
+  873bae28f4a491a7ebc0eba7d21b4c2a  data/mimic_cxr/vit32_cls_embeddings_realigned.npy
+  90dee0af29c22263028d3ec11fcd9d09  data/mimic_cxr/vit32_cls_metadata.csv
+  3244e16214f3e0a9ca6feda83ee9faef  data/mimic_cxr/medsiglip_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/medsiglip_metadata.csv
 
 timings (s):
-  all_cells: 1180.252
+  all_cells: 270.642
 
 notes:
   - Profile before choosing K (28 Oct, one cell, CheXpert ResNet-50 d=2048, sex, K=200, 6 torch threads): whole cell 40 s; probe 9.3 s, frequency_topk 7.3 s, bias_direction 4.0 s, geometric 2.3 s, hbac_nmi 0.5 s, statistical 0.2 s. K for the probe therefore set to 200, the same as the vectorised statistics. Section 9 (after verification) sets K = 500 for the probe and 5 x 5 repeated grouped CV for the observed probe statistics; the same cell then takes 76 s (probe 18.7 s, frequency_topk 19.1 s).
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
-
-note (added by hand, 28 Oct): this run covered CheXpert only (datasets above). The MIMIC-CXR and CelebA rows in audit_rows.csv were kept from the run at commit 1e49670 (2026-10-28_revision_1e49670/clinical_audit), whose code is identical for those datasets.
 
 ===== extraction_check =====
 run: re-extraction of CheXpert backbones without code (X-6)
