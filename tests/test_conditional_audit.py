@@ -182,3 +182,161 @@ def test_statistical_batched_rows_match_single_rows_when_group_sizes_vary():
     batched = _stat_statistical(ctx, rows, cfg)
     single = np.array([_stat_statistical(ctx, r[None, :], cfg)[0] for r in rows])
     np.testing.assert_allclose(batched, single)
+
+
+# ---------------------------------------------------------------------------
+# Section 9 corrections (28 Oct): permutation unit, in-fold preprocessing,
+# observed statistic independent of K, repeated CV.
+# ---------------------------------------------------------------------------
+
+
+def _grouped_toy(seed=0, n_pat=60, mixed=0):
+    rng = np.random.default_rng(seed)
+    sizes = rng.integers(1, 5, n_pat)
+    groups = np.repeat(np.arange(n_pat), sizes)
+    n = len(groups)
+    y = rng.integers(0, 2, n)
+    a_pat = (rng.random(n_pat) < 0.5).astype(int)
+    a = a_pat[groups].copy()
+    flipped = []
+    for g in np.flatnonzero(sizes >= 3)[:mixed]:  # one image of the patient gets the other value
+        i = np.flatnonzero(groups == g)[0]
+        a[i] = 1 - a[i]
+        flipped.append(g)
+    X = rng.standard_normal((n, 8)) + 0.6 * a_pat[groups][:, None]
+    return X, a, y, groups, len(flipped)
+
+
+def test_observed_statistic_does_not_depend_on_K():
+    X, a, y, groups, _ = _grouped_toy(1)
+    det = ("probe", "frequency_topk", "hbac_nmi", "geometric")
+    r1 = conditional_audit(X, a, y, AuditConfig(n_permutations=9, n_bootstrap=0, detectors=det, seed=4), groups=groups)
+    r2 = conditional_audit(X, a, y, AuditConfig(n_permutations=29, n_bootstrap=0, detectors=det, seed=4), groups=groups)
+    for d in det:
+        assert r1.results[d].statistic == pytest.approx(r2.results[d].statistic, abs=1e-9), d
+
+
+def test_probe_reports_mean_and_sd_over_repeated_cv():
+    X, a, y, groups, _ = _grouped_toy(2)
+    r = conditional_audit(X, a, y, AuditConfig(n_permutations=9, n_bootstrap=100, detectors=("probe",)), groups=groups)
+    p = r.results["probe"]
+    assert p.n_repeats == 5
+    assert np.isfinite(p.repeat_sd) and p.repeat_sd >= 0
+    assert p.ci_low <= p.statistic <= p.ci_high
+
+
+def test_probe_matches_in_fold_standardised_sklearn():
+    """Scaling is fitted on the training folds only (StandardScaler inside the fold)."""
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import roc_auc_score
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    from shortcut_detect.audit.conditional import _prepare, _stat_probe
+
+    rng = np.random.default_rng(5)
+    n = 300
+    y = rng.integers(0, 2, n)
+    a = rng.integers(0, 2, n)
+    # heavy-tailed, shifted columns so in-fold and full-data scaling differ
+    X = rng.standard_t(2, (n, 6)) * np.array([1, 5, 0.1, 20, 1, 3]) + 0.7 * a[:, None]
+    X[:40] *= 6.0
+    folds = np.tile(np.arange(n) % 5, (1, 1))
+    rng.shuffle(folds[0])
+    cfg = AuditConfig(n_permutations=1, max_iter=500)
+    ctx = _prepare(X, y, cfg, {"probe"}, rng)
+    ctx["G"] = 2
+    stat, sc, _ = _stat_probe(ctx, a[None, :], folds, cfg)
+    oof = np.zeros(n)
+    F = np.c_[X, y]
+    for f in range(5):
+        tr, te = folds[0] != f, folds[0] == f
+        m = make_pipeline(StandardScaler(), LogisticRegression(C=1.0, max_iter=5000, tol=1e-10)).fit(F[tr], a[tr])
+        oof[te] = m.decision_function(F[te])
+    assert stat[0] == pytest.approx(roc_auc_score(a, oof), abs=2e-3)
+    np.testing.assert_allclose(sc[:, 0], oof, atol=2e-3 * (1 + np.abs(oof).max()))
+
+
+def test_frequency_topk_matches_in_fold_reference():
+    """Y-centring, the ranking norm and the scaling of the selected columns use training rows only."""
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import roc_auc_score
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    from shortcut_detect.audit.conditional import _prepare, _stat_frequency
+
+    rng = np.random.default_rng(6)
+    n, d = 300, 60
+    y = rng.integers(0, 2, n)
+    a = rng.integers(0, 2, n)
+    X = rng.standard_normal((n, d)) * rng.uniform(0.2, 5, d) + rng.uniform(-3, 3, d)
+    X[:, :3] += 0.8 * a[:, None]
+    X[:30] += 4.0  # rows that move full-data means and norms
+    folds = (np.arange(n) % 5)[None, :].copy()
+    rng.shuffle(folds[0])
+    cfg = AuditConfig(n_permutations=1, max_iter=500)
+    ctx = _prepare(X, y, cfg, {"frequency_topk"}, rng)
+    ctx["G"] = 2
+    stat, sc, _ = _stat_frequency(ctx, a[None, :], folds, cfg)
+    k = int(np.ceil(cfg.top_k_fraction * d))
+    oof = np.zeros(n)
+    for f in range(5):
+        tr, te = folds[0] != f, folds[0] == f
+        Xt, yt, at = X[tr], y[tr], a[tr].astype(float)
+        Xc, tc = Xt.copy(), at.copy()
+        for v in (0, 1):
+            Xc[yt == v] -= Xc[yt == v].mean(0)
+            tc[yt == v] -= tc[yt == v].mean()
+        corr = np.abs(Xc.T @ tc) / np.linalg.norm(Xc, axis=0)
+        top = np.argsort(-corr)[:k]
+        F = np.c_[X[:, top], y]
+        m = make_pipeline(StandardScaler(), LogisticRegression(C=1.0, max_iter=5000, tol=1e-10)).fit(F[tr], a[tr])
+        oof[te] = m.decision_function(F[te])
+    assert stat[0] == pytest.approx(roc_auc_score(a, oof), abs=2e-3)
+    np.testing.assert_allclose(sc[:, 0], oof, atol=2e-3 * (1 + np.abs(oof).max()))
+
+
+def test_patient_level_attribute_is_used_in_the_observed_statistic():
+    X, a, y, groups, n_mixed = _grouped_toy(3, mixed=5)
+    assert n_mixed == 5
+    maj = a.copy()
+    for g in np.unique(groups):
+        idx = groups == g
+        vals, cnt = np.unique(a[idx], return_counts=True)
+        maj[idx] = vals[np.argmax(cnt)]
+    cfg = AuditConfig(n_permutations=9, n_bootstrap=0, seed=1)
+    r_a = conditional_audit(X, a, y, cfg, groups=groups)
+    r_m = conditional_audit(X, maj, y, cfg, groups=groups)
+    assert r_a.n_inconsistent_groups == 5 and r_m.n_inconsistent_groups == 0
+    for d in DETECTORS:
+        assert r_a.results[d].statistic == pytest.approx(r_m.results[d].statistic, abs=1e-9), d
+        assert r_a.results[d].p_value == pytest.approx(r_m.results[d].p_value), d
+
+
+def test_image_level_block_permutation_moves_whole_patient_vectors():
+    rng = np.random.default_rng(7)
+    sizes = rng.integers(1, 4, 80)
+    groups = np.repeat(np.arange(80), sizes)
+    y = rng.integers(0, 2, len(groups))
+    a = rng.integers(0, 2, len(groups))  # varies within patient
+    rows = conditional_permutations(a, y, 20, rng, groups=groups, level="image")
+    assert (rows[0] == a).all()
+
+    def key(g):
+        idx = np.flatnonzero(groups == g)
+        o = np.argsort(y[idx], kind="stable")
+        return tuple(y[idx][o]), idx[o]
+
+    vec = {}
+    for g in range(80):
+        yk, idx = key(g)
+        vec.setdefault(yk, set()).add(tuple(a[idx]))
+    moved = 0
+    for r in rows[1:]:
+        assert ((r == 1) & (y == 1)).sum() == ((a == 1) & (y == 1)).sum()
+        for g in range(80):
+            yk, idx = key(g)
+            assert tuple(r[idx]) in vec[yk]  # some patient's vector with the same Y pattern and size
+            moved += tuple(r[idx]) != tuple(a[idx])
+    assert moved > 0

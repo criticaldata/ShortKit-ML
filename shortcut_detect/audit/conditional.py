@@ -14,7 +14,7 @@ their Benjamini-Hochberg adjusted p-value is below alpha.
 Detectors
 ---------
 probe (primary)
-    L2 logistic regression predicting A from standardised [E, Y]; out-of-fold
+    L2 logistic regression predicting A from [E, Y] standardised on the training folds; out-of-fold
     AUROC (macro one-vs-rest for more than two groups), 5-fold CV stratified on
     (A, Y), falling back to A when a joint cell is smaller than the fold count.
 statistical
@@ -34,8 +34,24 @@ frequency_topk
     The probe restricted to the top-k dimensions (k = 5 percent of d) ranked on
     the training folds by partial correlation with A given Y.
 
-Bootstrap confidence intervals (bias-corrected percentile) resample images. For the two probes they
-resample the out-of-fold predictions (the fitted models are not refitted).
+Cross-validation. Preprocessing is fitted on training folds only (scaling,
+Y-centring, the top-k ranking). The observed statistic of the two probes is the
+mean over ``cv_repeats`` repetitions of the CV with their own seed, so it does
+not depend on K; each null row uses one repetition, whose larger split
+variance makes the test conservative. ``repeat_sd`` reports the SD over the
+repeats.
+
+Grouped data (``groups``, e.g. patient ids). Folds are patient-disjoint and
+bootstrap resamples are whole patients. The permutation unit matches the
+statistic: a patient-level attribute (``attribute_level='patient'``) is the
+patient's majority value in both the observed statistic and the null; an
+image-level attribute (``'image'``) is permuted by reassigning whole patients'
+attribute vectors among patients with the same Y vector.
+
+Bootstrap confidence intervals (bias-corrected percentile) resample images or
+patients. For the two probes they resample the out-of-fold predictions, pooled
+over the CV repeats; the models are not refitted, so the interval leaves out
+refitting variance (``repeat_sd`` shows the split part of it).
 For geometric, bias_direction and hbac_nmi they reweight samples. The
 statistical detector has no CI because ranks would have to be recomputed for
 every resample.
@@ -82,6 +98,13 @@ class AuditConfig:
     include_y: bool = True  # probe features [E, Y]; False gives the marginal probe E -> A
     detectors: tuple[str, ...] = DETECTORS
     chunk_problems: int = 1200  # logistic problems fitted together
+    # observed statistic of CV-based detectors: mean over repeated CV with its own seed
+    cv_repeats: int = 5
+    cv_seed: int | None = None  # None: derived from ``seed`` independently of K
+    # with groups: "patient" (attribute constant per patient, majority used in the
+    # observed statistic and the null) or "image" (block permutation of whole
+    # patients' attribute vectors)
+    attribute_level: str = "patient"
 
 
 @dataclass
@@ -99,6 +122,8 @@ class DetectorResult:
     n_permutations: int = 0
     seconds: float = 0.0
     note: str = ""
+    repeat_sd: float = float("nan")  # SD of the statistic over the CV repeats
+    n_repeats: int = 1
 
 
 @dataclass
@@ -110,6 +135,8 @@ class AuditResult:
     fold_strata: str
     config: dict[str, Any]
     results: dict[str, DetectorResult] = field(default_factory=dict)
+    n_inconsistent_groups: int = 0  # groups whose attribute varied (majority used)
+    attribute_level: str = "image"
 
     def rows(self) -> list[dict[str, Any]]:
         out = []
@@ -146,6 +173,20 @@ def _encode(a: np.ndarray) -> tuple[np.ndarray, list[str]]:
     return codes.astype(np.int64), [str(x) for x in names]
 
 
+def patient_majority(a: np.ndarray, groups: np.ndarray) -> tuple[np.ndarray, int]:
+    """Each group's most common attribute value broadcast to its rows, and the
+    number of groups whose value varied."""
+    _, ginv = np.unique(np.asarray(groups).astype(str), return_inverse=True)
+    out = np.empty_like(a)
+    n_mixed = 0
+    for g in range(ginv.max() + 1):
+        idx = ginv == g
+        vals, cnt = np.unique(a[idx], return_counts=True)
+        out[idx] = vals[np.argmax(cnt)]
+        n_mixed += int(len(vals) > 1)
+    return out, n_mixed
+
+
 def conditional_permutations(
     a: np.ndarray,
     y: np.ndarray,
@@ -153,15 +194,24 @@ def conditional_permutations(
     rng: np.random.Generator,
     mode: str = "within_y",
     groups: np.ndarray | None = None,
+    level: str = "patient",
 ) -> np.ndarray:
-    """Return a (k + 1, n) array whose row 0 is ``a`` and rows 1..k are ``a``
-    shuffled within each Y stratum (or globally when ``mode='global'``).
+    """Return a (k + 1, n) array whose row 0 is the observed attribute and rows
+    1..k are permuted copies: within each Y stratum, or globally when
+    ``mode='global'``.
 
-    With ``groups`` (patient ids) the shuffle is at patient level: each
-    patient's attribute (its most common value) is reassigned among patients
-    with the same Y pattern (all negative, all positive, or mixed). Images of
-    one patient are correlated, and an image-level shuffle then gives
+    With ``groups`` (patient ids) the permutation unit is the patient, because
+    images of one patient are correlated and an image-level shuffle gives
     anti-conservative p-values.
+
+    ``level='patient'``: the attribute is a patient property. Each patient's
+    value (its majority, which is also row 0) is reassigned among patients with
+    the same Y pattern (all negative, all positive, or mixed).
+
+    ``level='image'``: the attribute varies between a patient's images (e.g. a
+    marker). Whole attribute vectors (images ordered by Y) are reassigned among
+    patients with the same sorted Y vector, hence the same image count, so the
+    within-patient structure and the joint (A, Y) image counts are kept.
     """
     n = len(a)
     out = np.empty((k + 1, n), dtype=a.dtype)
@@ -169,6 +219,22 @@ def conditional_permutations(
     if groups is not None:
         _, ginv = np.unique(np.asarray(groups).astype(str), return_inverse=True)
         n_g = ginv.max() + 1
+        if level == "image":
+            buckets: dict[tuple, list[np.ndarray]] = {}
+            for g in range(n_g):
+                idx = np.flatnonzero(ginv == g)
+                idx = idx[np.argsort(y[idx], kind="stable")]
+                key = (len(idx),) if mode == "global" else tuple(int(v) for v in y[idx])
+                buckets.setdefault(key, []).append(idx)
+            mats = [np.stack(v) for v in buckets.values()]  # (patients, images)
+            for i in range(1, k + 1):
+                row = a.copy()
+                for mat in mats:
+                    row[mat] = a[mat[rng.permutation(len(mat))]]
+                out[i] = row
+            return out
+        if level != "patient":
+            raise ValueError("level must be 'patient' or 'image'")
         pa = np.empty(n_g, dtype=a.dtype)
         pstrat = np.empty(n_g, dtype=np.int64)
         y_hi = int(y.max())
@@ -178,6 +244,7 @@ def conditional_permutations(
             pa[g] = vals[np.argmax(cnt)]
             ys = np.unique(y[idx])
             pstrat[g] = int(ys[0]) if len(ys) == 1 else y_hi + 1
+        out[0] = pa[ginv]
         strata = [np.arange(n_g)] if mode == "global" else [np.flatnonzero(pstrat == s) for s in np.unique(pstrat)]
         for i in range(1, k + 1):
             prow = pa.copy()
@@ -256,7 +323,12 @@ def _auroc_rows(scores: np.ndarray, target: np.ndarray) -> np.ndarray:
 
 
 def _fit_logreg(
-    Z: torch.Tensor, T: torch.Tensor, M: torch.Tensor, C: float, max_iter: int
+    Z: torch.Tensor,
+    T: torch.Tensor,
+    M: torch.Tensor,
+    C: float,
+    max_iter: int,
+    S2: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Fit J independent L2 logistic regressions that share a design.
 
@@ -265,6 +337,13 @@ def _fit_logreg(
     the objective of scikit-learn's ``LogisticRegression(C=C)`` restricted to
     the rows with M_ij = 1. The intercept is not penalised. The problems are
     separable, so minimising their mean finds every problem's optimum.
+
+    ``S2`` (same shape as the weights) weights the penalty per coefficient:
+    sum_k S2_kj w_kj^2. With S2 the training rows' variance of each column this
+    is exactly a fit on columns standardised with training-row statistics
+    (StandardScaler inside the fold): standardising is an affine change of
+    each column, the unpenalised intercept absorbs the shift and the rescaled
+    coefficient carries the scale into the penalty.
     """
     batched = Z.dim() == 3
     p = Z.shape[-1]
@@ -291,7 +370,8 @@ def _fit_logreg(
         opt.zero_grad()
         f = logits()
         loss = torch.nn.functional.binary_cross_entropy_with_logits(f, T, reduction="none")
-        pen = 0.5 / C * (W * W).sum(dim=-1 if batched else 0)
+        WW = W * W if S2 is None else W * W * S2
+        pen = 0.5 / C * WW.sum(dim=-1 if batched else 0)
         obj = ((loss * M).sum(0) + pen) / n_train
         total = obj.mean()
         total.backward()
@@ -330,13 +410,19 @@ def _oof_scores(
         train = (f != fid[None, :]).astype(np.float32)
         T = torch.from_numpy(t.astype(np.float32))
         M = torch.from_numpy(train)
+        S2 = None
         if shared:
             design = Zt
+            # training-row variance of every column for every problem (in-fold scaling)
+            ntr = M.sum(0).clamp(min=1.0)
+            mu = (Zt.T @ M) / ntr
+            var = ((Zt * Zt).T @ M) / ntr - mu * mu
+            S2 = torch.where(var > 1e-12, var, torch.ones_like(var))
         else:
             design = torch.from_numpy(
                 np.ascontiguousarray(np.repeat(np.stack([Z[c] for c in cols]), n_folds, axis=0))
             )
-        lg, _ = _fit_logreg(design, T, M, C, max_iter)
+        lg, _ = _fit_logreg(design, T, M, C, max_iter, S2)
         lg = lg.numpy()
         test = 1.0 - train
         # keep each sample's logit from the model that did not see it
@@ -419,58 +505,67 @@ def _bootstrap_auc(
 
 
 def _stat_probe(ctx, a_rows, folds, cfg, features=None):
+    """Out-of-fold AUROC per row; also the out-of-fold scores and targets of
+    every row (n, P * per)."""
     tg, per = _probe_targets(a_rows, ctx["G"])
     fcols = np.repeat(folds, per, axis=0).T  # (n, P*per)
     Z = ctx["Z"] if features is None else features
     sc = _oof_scores(Z, tg, fcols, cfg.n_folds, cfg.C, cfg.max_iter, cfg.chunk_problems)
-    return _macro_auc(sc, tg, per), sc[:, :per], tg[:, :per]
+    return _macro_auc(sc, tg, per), sc, tg
 
 
 def _stat_frequency(ctx, a_rows, folds, cfg):
-    """Probe on the top-k dimensions ranked on training folds by partial
-    correlation with A given Y."""
-    X = ctx["Xc"]  # features centred within Y strata
+    """Probe on the top-k dimensions ranked by partial correlation with A given Y.
+
+    Everything is computed on the training rows of each fold: the within-Y
+    centring of the target and of the features, the feature norms of the
+    ranking, and the standardisation of the selected columns and Y."""
+    X = ctx["Zx"]
     n, d = X.shape
     k = max(1, int(math.ceil(cfg.top_k_fraction * d)))
     tg, per = _probe_targets(a_rows, ctx["G"])
     fcols = np.repeat(folds, per, axis=0).T
     J = tg.shape[1]
-    ystd = ctx["ystd"][:, None]
+    yraw = ctx["yraw"][:, None]
     out = np.zeros((n, J), dtype=np.float32)
     Xt = torch.from_numpy(X)
-    xnorm = None
+    Xs = [X[idx] for idx in ctx["strata"]]
+    X2s = [x * x for x in Xs]
     chunk_cols = max(1, cfg.chunk_problems // (cfg.n_folds * 8))
     for c0 in range(0, J, chunk_cols):
         cols = np.arange(c0, min(J, c0 + chunk_cols))
         for f in range(cfg.n_folds):
             train = (fcols[:, cols] != f).astype(np.float32)  # (n, c)
             t = tg[:, cols]
-            # centre the target within Y strata on training rows
             tc = np.zeros_like(t)
-            for idx in ctx["strata"]:
+            xn2 = np.zeros((d, len(cols)), dtype=np.float64)
+            for idx, xs, x2 in zip(ctx["strata"], Xs, X2s, strict=True):
                 m = train[idx]
-                mu = (t[idx] * m).sum(0) / np.maximum(m.sum(0), 1)
+                cnt = np.maximum(m.sum(0), 1)
+                mu = (t[idx] * m).sum(0) / cnt
                 tc[idx] = (t[idx] - mu) * m
+                s1 = (xs.T @ m).astype(np.float64)
+                xn2 += (x2.T @ m) - s1 * s1 / cnt
+            # tc sums to zero within each stratum on training rows, so the
+            # numerator needs no feature centring
             num = (Xt.T @ torch.from_numpy(tc)).numpy()  # (d, c)
-            if xnorm is None:
-                xnorm = np.sqrt((X * X).sum(0))[:, None]
-            corr = np.abs(num) / np.maximum(xnorm, 1e-12)
+            corr = np.abs(num) / np.sqrt(np.maximum(xn2, 1e-12))
             top = np.argpartition(-corr, k - 1, axis=0)[:k]  # (k, c)
-            designs = []
-            for j in range(len(cols)):
-                sel = ctx["Zx"][:, top[:, j]]
-                designs.append(np.concatenate([sel, ystd], axis=1))
-            design = torch.from_numpy(np.ascontiguousarray(np.stack(designs), dtype=np.float32))
+            design = np.stack([np.concatenate([X[:, top[:, j]], yraw], axis=1) for j in range(len(cols))])
+            w = train.T[:, :, None]  # (c, n, 1)
+            ntr = np.maximum(w.sum(1, keepdims=True), 1)
+            mu = (design * w).sum(1, keepdims=True) / ntr
+            sd = np.sqrt(np.maximum(((design - mu) ** 2 * w).sum(1, keepdims=True) / ntr, 0))
+            design = (design - mu) / np.where(sd > 1e-6, sd, 1.0)
             lg, _ = _fit_logreg(
-                design,
+                torch.from_numpy(np.ascontiguousarray(design, dtype=np.float32)),
                 torch.from_numpy(t.astype(np.float32)),
                 torch.from_numpy(train),
                 cfg.C,
                 cfg.max_iter,
             )
-            lg = lg.numpy()
-            out[:, cols] += lg * (1.0 - train)
-    return _macro_auc(out, tg, per), out[:, :per], tg[:, :per]
+            out[:, cols] += lg.numpy() * (1.0 - train)
+    return _macro_auc(out, tg, per), out, tg
 
 
 def _onehot(a_rows: np.ndarray, G: int) -> np.ndarray:
@@ -619,21 +714,20 @@ def _prepare(E: np.ndarray, Y: np.ndarray, cfg: AuditConfig, needs: set[str], rn
     Zx = ((X - mu) / sd).astype(np.float32)
     yv = Y.astype(np.float32)
     ystd = ((yv - yv.mean()) / (yv.std() if yv.std() > 0 else 1.0)).astype(np.float32)
+    # Zx is a fixed per-column affine change of E. The CV-based detectors undo it:
+    # the probe standardises inside each fold through its penalty weights and
+    # frequency_topk ranks and standardises on training rows only.
     ctx: dict[str, Any] = {
         "X": X,
         "Zx": Zx,
         "ystd": ystd,
+        "yraw": yv,
         "Z": np.concatenate([Zx, ystd[:, None]], axis=1) if cfg.include_y else Zx,
         "d": d,
         "strata": [np.flatnonzero(Y == v) for v in np.unique(Y)],
     }
     if "statistical" in needs:
         ctx["ranks"] = [rankdata(X[idx], axis=0).astype(np.float32) for idx in ctx["strata"]]
-    if "frequency_topk" in needs:
-        Xc = Zx.copy()
-        for idx in ctx["strata"]:
-            Xc[idx] -= Xc[idx].mean(0)
-        ctx["Xc"] = Xc
     if "hbac_nmi" in needs:
         from sklearn.cluster import KMeans
 
@@ -661,7 +755,11 @@ def conditional_audit(
     ``conditional_permutations``).
     """
     cfg = config or AuditConfig()
-    rng = np.random.default_rng(cfg.seed)
+    # independent streams, so the observed statistic does not depend on K
+    perm_ss, null_fold_ss, boot_ss, km_ss, cv_ss = np.random.SeedSequence(cfg.seed).spawn(5)
+    perm_rng, null_fold_rng = np.random.default_rng(perm_ss), np.random.default_rng(null_fold_ss)
+    boot_rng, km_rng = np.random.default_rng(boot_ss), np.random.default_rng(km_ss)
+    cv_rng = np.random.default_rng(cv_ss if cfg.cv_seed is None else cfg.cv_seed)
     E = np.asarray(E)
     Y = np.asarray(Y).astype(np.int64)
     a, names = _encode(A)
@@ -670,21 +768,35 @@ def conditional_audit(
         raise ValueError("the attribute needs at least two groups")
     if E.shape[0] != len(a) or len(a) != len(Y):
         raise ValueError("E, A and Y must have the same number of rows")
-
-    needs = set(cfg.detectors)
-    ctx = _prepare(E, Y, cfg, needs, rng)
-    ctx["G"] = G
-    K = cfg.n_permutations
-    Kp = cfg.n_permutations_probe or K
-    a_rows = conditional_permutations(a, Y, max(K, Kp), rng, cfg.permutation, groups)
     groups_idx = None
+    n_mixed = 0
+    level = "image"
     if groups is not None:
         groups = np.asarray(groups)
         if len(groups) != len(a):
             raise ValueError("groups must have one entry per row")
+        level = cfg.attribute_level
+        if level == "patient":
+            a, n_mixed = patient_majority(a, groups)
+            if len(np.unique(a)) < 2:
+                raise ValueError("the patient-level attribute needs at least two groups")
         _, ginv = np.unique(groups.astype(str), return_inverse=True)
         groups_idx = [np.flatnonzero(ginv == g) for g in range(ginv.max() + 1)]
-    folds, fold_strata = _fold_ids(a_rows, Y, cfg.n_folds, rng, groups)
+
+    needs = set(cfg.detectors)
+    ctx = _prepare(E, Y, cfg, needs, km_rng)
+    ctx["G"] = G
+    K = cfg.n_permutations
+    Kp = cfg.n_permutations_probe or K
+    k_max = max(K, Kp) if "probe" in needs else K
+    a_rows = conditional_permutations(a, Y, k_max, perm_rng, cfg.permutation, groups, level)
+    R = max(1, int(cfg.cv_repeats))
+    cv_needed = bool(needs & {"probe", "frequency_topk"})
+    if cv_needed:
+        obs_folds, fold_strata = _fold_ids(np.repeat(a[None, :], R, axis=0), Y, cfg.n_folds, cv_rng, groups)
+        null_folds, _ = _fold_ids(a_rows[1:], Y, cfg.n_folds, null_fold_rng, groups)
+    else:
+        fold_strata = "none"
     sizes = {}
     for yv in np.unique(Y):
         for g, nm in enumerate(names):
@@ -697,29 +809,45 @@ def conditional_audit(
         group_sizes=sizes,
         fold_strata=fold_strata,
         config=asdict(cfg),
+        n_inconsistent_groups=n_mixed,
+        attribute_level=level,
     )
     B = cfg.n_bootstrap
     for det in cfg.detectors:
         t0 = time.time()
-        k_used = Kp if det in {"probe", "frequency_topk"} else K
-        rows = a_rows[: k_used + 1]
         ci = (float("nan"), float("nan"))
-        if det == "probe":
-            stats, sc, tg = _stat_probe(ctx, rows, folds[: k_used + 1], cfg)
+        rep_sd, n_rep, note = float("nan"), 1, ""
+        if det in {"probe", "frequency_topk"}:
+            # observed: mean over R repeats of grouped CV; null: one repeat each (conservative)
+            k_used = Kp if det == "probe" else K
+            fn_cv = _stat_probe if det == "probe" else _stat_frequency
+            # observed repeats are fitted in their own batch: the batched optimiser
+            # stops on the mean objective, so sharing a batch with the null rows
+            # would make the observed value depend on K
+            reps, sc, tg = fn_cv(ctx, np.repeat(a[None, :], R, axis=0), obs_folds, cfg)
+            null_stats, _, _ = fn_cv(ctx, a_rows[1 : k_used + 1], null_folds[:k_used], cfg)
+            reps = np.asarray(reps, dtype=float)
+            stats = np.r_[reps.mean(), null_stats]
+            n_rep = R
+            rep_sd = float(reps.std(ddof=1)) if R > 1 else float("nan")
             if B:
-                ci = bc_interval(_bootstrap_auc(sc, tg, B, rng, groups_idx), float(stats[0]))
-        elif det == "frequency_topk":
-            stats, sc, tg = _stat_frequency(ctx, rows, folds[: k_used + 1], cfg)
-            if B:
-                ci = bc_interval(_bootstrap_auc(sc, tg, B, rng, groups_idx), float(stats[0]))
+                per = sc.shape[1] // R
+                b_r = int(math.ceil(B / R))
+                boots = [
+                    _bootstrap_auc(sc[:, r * per : (r + 1) * per], tg[:, r * per : (r + 1) * per], b_r, boot_rng, groups_idx)
+                    for r in range(R)
+                ]
+                ci = bc_interval(np.concatenate(boots), float(stats[0]))
+                note = "CI: resampling of out-of-fold predictions pooled over CV repeats, no refit; see repeat_sd"
         elif det == "statistical":
-            stats = _stat_statistical(ctx, rows, cfg)
+            stats = _stat_statistical(ctx, a_rows[: K + 1], cfg)
         else:
             fn = {
                 "geometric": _stat_geometric,
                 "bias_direction": _stat_bias_direction,
                 "hbac_nmi": _stat_hbac_nmi,
             }[det]
+            rows = a_rows[: K + 1]
             stats = fn(ctx, rows, cfg)
             if B:
                 oh0 = _onehot(a[None, :], G)
@@ -728,9 +856,9 @@ def conditional_audit(
                 for s in range(0, B, step):
                     m = min(step, B - s)
                     if groups_idx is None:
-                        w = rng.multinomial(len(a), np.full(len(a), 1.0 / len(a)), size=m)
+                        w = boot_rng.multinomial(len(a), np.full(len(a), 1.0 / len(a)), size=m)
                     else:
-                        gw = rng.multinomial(
+                        gw = boot_rng.multinomial(
                             len(groups_idx), np.full(len(groups_idx), 1.0 / len(groups_idx)), size=m
                         )
                         w = gw[:, ginv]
@@ -751,6 +879,9 @@ def conditional_audit(
             ci_high=float(ci[1]),
             n_permutations=int(len(null)),
             seconds=round(time.time() - t0, 3),
+            note=note,
+            repeat_sd=rep_sd,
+            n_repeats=n_rep,
         )
     if res.results:
         names_d = list(res.results)
