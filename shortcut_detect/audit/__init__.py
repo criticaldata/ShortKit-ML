@@ -9,6 +9,7 @@ from .conditional import (
     benjamini_hochberg,
     conditional_audit,
     conditional_permutations,
+    patient_majority,
 )
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     "benjamini_hochberg",
     "conditional_audit",
     "conditional_permutations",
+    "patient_majority",
 ]
