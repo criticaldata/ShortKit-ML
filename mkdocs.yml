@@ -158,6 +158,9 @@ nav:
       - Basic Usage: examples/basic.md
       - Real Data (CheXpert): examples/real-data.md
       - Advanced Analysis: examples/advanced.md
+  - Reproducing the Paper:
+      - Paper Results: reproducibility.md
+      - Benchmark Methods: benchmark_methods.md
   - MCP Server: mcp-server.md
   - Contributing: contributing.md
 
