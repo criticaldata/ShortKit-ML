@@ -336,7 +336,7 @@ pytest tests/ -v
 pytest --cov=shortcut_detect --cov-report=html
 ```
 
-**638 tests passing** across all detection and mitigation methods.
+The test suite covers all detection and mitigation methods.
 
 ## Contributing
 
@@ -385,7 +385,7 @@ examples/             # Notebooks and benchmark configs
 app.py                # Gradio dashboard
 Dockerfile            # Reproducible environment
 scripts/              # Paper reproduction scripts
-tests/                # Test suite (475+ tests)
+tests/                # Test suite
 ```
 
 ## Documentation

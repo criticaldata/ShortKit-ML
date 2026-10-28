@@ -4,6 +4,7 @@ import warnings
 from typing import Any
 
 import numpy as np
+import pandas as pd
 
 from ...base_builder import BaseDetector
 from .src.detector import GenerativeCVEDetector
@@ -55,6 +56,17 @@ class GenerativeCVEDetectorBuilder(BaseDetector):
     ) -> dict[str, Any]:
         # prefer explicit spurious/protected labels when provided
         spurious = protected_labels if protected_labels is not None else group_labels
+        # The CVAE needs integer attribute codes; string groups (e.g. 'WHITE') break int()
+        spurious, uniques = pd.factorize(np.asarray(spurious, dtype=object), sort=True)
+        # The CVAE flips a binary attribute by design; with 3+ groups use largest group vs rest
+        binarization_note = None
+        if len(uniques) > 2:
+            largest = int(np.bincount(spurious[spurious >= 0]).argmax())
+            spurious = (spurious != largest).astype(int)
+            binarization_note = (
+                f"Spurious attribute had {len(uniques)} groups; binarised as "
+                f"'{uniques[largest]}' (0) vs rest (1) because the CVAE needs a binary attribute."
+            )
         # If a probe_classifier is provided at run-time, inject into kwargs
         probe_classifier = kwargs.get("probe_classifier")
         if probe_classifier is not None:
@@ -62,15 +74,19 @@ class GenerativeCVEDetectorBuilder(BaseDetector):
         detector = self.build()
         try:
             detector.fit(embeddings, spurious, labels)
+            summary_lines = [
+                f"Samples: {embeddings.shape[0]}",
+                "Generative counterfactuals produced",
+            ]
+            if binarization_note:
+                summary_lines.append(binarization_note)
             return {
                 "success": True,
                 "detector": detector,
                 "report": detector.results_,
+                "binarization_note": binarization_note,
                 "summary_title": "Generative CVAE (embedding counterfactuals)",
-                "summary_lines": [
-                    f"Samples: {embeddings.shape[0]}",
-                    "Generative counterfactuals produced",
-                ],
+                "summary_lines": summary_lines,
                 "risk_indicators": [],
             }
         except Exception as exc:

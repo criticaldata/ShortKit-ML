@@ -14,7 +14,7 @@ Ross, A. S., Hughes, M. C., & Doshi-Velez, F. (2017). *Right for the Right Reaso
 
 ## Requirements
 
-- PyTorch (already a dependency of shortcut-detect).
+- PyTorch (already a dependency of shortkit-ml).
 - Model must be differentiable end-to-end.
 - Shortcut regions must be identified (e.g., via GradCAM, expert annotation).
 

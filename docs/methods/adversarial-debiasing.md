@@ -14,7 +14,7 @@ Zhang, B. H., Lemoine, B., & Mitchell, M. (2018). *Mitigating Unwanted Biases wi
 
 ## Requirements
 
-- PyTorch (already a dependency of shortcut-detect).
+- PyTorch (already a dependency of shortkit-ml).
 - NumPy.
 
 ## Basic Usage

@@ -14,7 +14,7 @@ Zhang, R., Sharma, A., Li, J., Chen, S., Wang, Y., & Ré, C. (2022). *Correct-N-
 
 ## Requirements
 
-- PyTorch (already a dependency of shortcut-detect).
+- PyTorch (already a dependency of shortkit-ml).
 - NumPy.
 - At least 2 task classes and 2 groups (each task must have samples in at least 2 groups).
 

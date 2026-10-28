@@ -13,7 +13,7 @@ This guide covers different installation options for ShortKit-ML.
 ### From PyPI (Recommended)
 
 ```bash
-pip install shortcut-detect
+pip install shortkit-ml
 ```
 
 ### From Source
@@ -33,7 +33,7 @@ The library has several optional dependency groups for different use cases:
 Core functionality with all detection methods:
 
 ```bash
-pip install shortcut-detect
+pip install shortkit-ml
 ```
 
 ### With Dashboard
@@ -41,7 +41,7 @@ pip install shortcut-detect
 For the interactive Gradio web interface:
 
 ```bash
-pip install "shortcut-detect[dashboard]"
+pip install "shortkit-ml[dashboard]"
 ```
 
 ### With Jupyter Support
@@ -49,7 +49,7 @@ pip install "shortcut-detect[dashboard]"
 For running examples in Jupyter notebooks:
 
 ```bash
-pip install "shortcut-detect[jupyter]"
+pip install "shortkit-ml[jupyter]"
 ```
 
 ### With Reporting
@@ -57,7 +57,7 @@ pip install "shortcut-detect[jupyter]"
 For PDF/HTML report generation:
 
 ```bash
-pip install "shortcut-detect[reporting]"
+pip install "shortkit-ml[reporting]"
 ```
 
 ### With Hugging Face
@@ -65,7 +65,7 @@ pip install "shortcut-detect[reporting]"
 For embedding generation from HuggingFace models:
 
 ```bash
-pip install "shortcut-detect[hf]"
+pip install "shortkit-ml[hf]"
 ```
 
 ### With VAE
@@ -73,7 +73,7 @@ pip install "shortcut-detect[hf]"
 VAE shortcut detection requires `torch` and `torchvision`; both are core dependencies and included in the default install. To explicitly install VAE support:
 
 ```bash
-pip install "shortcut-detect[vae]"
+pip install "shortkit-ml[vae]"
 ```
 
 ### Full Installation
@@ -81,7 +81,7 @@ pip install "shortcut-detect[vae]"
 Install everything (recommended for development):
 
 ```bash
-pip install "shortcut-detect[all]"
+pip install "shortkit-ml[all]"
 ```
 
 ## Using uv (Faster)
@@ -120,7 +120,7 @@ To use the library in Jupyter notebooks:
 
 ```bash
 # Install Jupyter support
-pip install "shortcut-detect[jupyter]"
+pip install "shortkit-ml[jupyter]"
 
 # Register the kernel
 python -m ipykernel install --user --name=shortcut_detect --display-name="Python (Shortcut_Detect)"

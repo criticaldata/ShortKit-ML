@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 from datetime import datetime
+from html import escape as html_escape
 from pathlib import Path
 
 import gradio as gr
@@ -343,6 +344,7 @@ def load_custom_csv(csv_file, is_raw_data=False):
                 "Each row must have text, task_label, and group_label."
             )
 
+        extra_labels = None
         if "spurious_label" in df.columns:
             extra_labels = {"spurious": df["spurious_label"].values}
 
@@ -437,6 +439,15 @@ def _build_ssa_splits(
     train_u = np.sort(indices[n_labeled:])
 
     return {"train_l": train_l, "train_u": train_u}
+
+
+def _add_ssa_spurious(extra_labels, group_labels):
+    """SSA needs extra_labels['spurious'] as integer codes; derive it from group labels."""
+    if group_labels is None:
+        return extra_labels
+    extra = dict(extra_labels) if extra_labels else {}
+    extra.setdefault("spurious", pd.factorize(np.asarray(group_labels, dtype=object))[0])
+    return extra
 
 
 def _load_torch_model(model_file) -> torch.nn.Module:
@@ -1429,8 +1440,9 @@ def run_last_layer_retraining_analysis(
             )
 
         embeddings = df[embedding_cols].values.astype(np.float64)
-        task_labels = df["task_label"].values
-        group_labels = df[group_col].values
+        task_labels = df["task_label"].values.astype(int)
+        # Paper protocol: balance on attribute x label groups (2*A + Y)
+        group_labels = pd.factorize(df[group_col])[0] * 2 + task_labels
 
         dfr = LastLayerRetraining(
             C=float(dfr_C),
@@ -1453,7 +1465,7 @@ def run_last_layer_retraining_analysis(
         summary_html = f"""
         <div style="background-color:#e8f4fd;border:1px solid #bee3f8;border-radius:5px;padding:12px;color:#0c4a6e;">
             <strong>Last Layer Retraining (M06 DFR) complete.</strong><br/>
-            Samples: {n_samples} | Balanced subset: {dfr._n_balanced} | Groups: {dfr._n_groups}<br/>
+            Samples: {n_samples} | Balanced subset: {dfr._n_balanced} | Groups: {dfr._n_groups} (attribute x label: '{group_col}' x task_label)<br/>
             Prediction accuracy: {accuracy:.2%}<br/>
             Kirichenko et al. 2023 – retrain last layer on group-balanced subset.<br/>
             Download the CSV below.
@@ -1579,7 +1591,7 @@ def run_explanation_regularization_analysis(
         <div style="background-color:#e8f4fd;border:1px solid #bee3f8;border-radius:5px;padding:12px;color:#0c4a6e;">
             <strong>Explanation Regularization (M05 RRR) complete.</strong><br/>
             Samples: {n_images} | Epochs: {rrr_epochs}<br/>
-            Final CE loss: {last_h.get('ce_loss', 0):.4f} | Penalty: {last_h.get('penalty', 0):.4f}<br/>
+            Final CE loss: {last_h.get('ce_loss', 0):.4f} | Penalty: {last_h.get('penalty', 0):.3e}<br/>
             Ross et al. 2017 – Right for Right Reasons. Download the fine-tuned model below.
         </div>
         """
@@ -1802,7 +1814,8 @@ def run_detection(
                 load_sample_data(use_real_embeddings=bool(use_real_chexpert_embeddings))
             )
             n, d = embeddings.shape[0], embeddings.shape[1]
-            emb_type = "real" if use_real_chexpert_embeddings else "synthetic"
+            # load_sample_data returns metadata_df=None only when real embeddings loaded
+            emb_type = "real" if metadata_df is None else "synthetic"
             dataset_name = f"CheXpert Sample ({n} samples, {d}-dim embeddings, {emb_type})"
 
             splits = None
@@ -1810,6 +1823,7 @@ def run_detection(
                 splits = _build_ssa_splits(
                     len(task_labels), float(ssa_labeled_fraction), seed=int(ssa_seed)
                 )
+                extra_labels = _add_ssa_spurious(extra_labels, group_labels)
 
             # Fit detector with embeddings
             detector.fit(
@@ -1849,6 +1863,7 @@ def run_detection(
                     splits = _build_ssa_splits(
                         len(task_labels), float(ssa_labeled_fraction), seed=int(ssa_seed)
                     )
+                    extra_labels = _add_ssa_spurious(extra_labels, group_labels)
 
                 # Fit detector with raw inputs and embedding source
                 detector.fit(
@@ -1876,6 +1891,7 @@ def run_detection(
                     splits = _build_ssa_splits(
                         len(task_labels), float(ssa_labeled_fraction), seed=int(ssa_seed)
                     )
+                    extra_labels = _add_ssa_spurious(extra_labels, group_labels)
 
                 # Fit detector with embeddings
                 detector.fit(
@@ -1978,6 +1994,30 @@ def run_detection(
             <p style="color: rgba(21, 87, 36, 1); margin-bottom: 5px;"><strong style="color: rgba(21, 87, 36, 1);">Dataset:</strong> {dataset_name}</p>
             <p style="color: rgba(21, 87, 36, 1); margin-bottom: 5px;"><strong style="color: rgba(21, 87, 36, 1);">Methods:</strong> {', '.join(methods)}</p>
             <p style="color: rgba(21, 87, 36, 1); margin-bottom: 0;"><strong style="color: rgba(21, 87, 36, 1);">Reports saved to:</strong> {output_dir}</p>
+        </div>
+        """
+
+        # Show methods that failed or were skipped instead of dropping them silently
+        failed = []
+        for m in detector.methods:
+            res = detector.results_.get(m)
+            if not res:
+                failed.append((m, "no result returned"))
+            elif not res.get("success"):
+                err = res.get("error")
+                if not err and "by_attribute" in res:
+                    err = "; ".join(
+                        f"{a}: {r.get('error', 'failed')}" for a, r in res["by_attribute"].items()
+                    )
+                failed.append((m, err or "unknown error"))
+        if failed:
+            items = "".join(
+                f"<li><strong>{m}</strong>: {html_escape(str(err))}</li>" for m, err in failed
+            )
+            info_html += f"""
+        <div style="background-color: #fff4e6; border: 1px solid #f5c26b; border-radius: 5px; padding: 15px; margin-bottom: 20px; color: #92400e;">
+            <h3 style="color: #92400e; margin-top: 0;">⚠️ {len(failed)} method(s) did not run</h3>
+            <ul style="color: #92400e; margin-bottom: 0;">{items}</ul>
         </div>
         """
 
@@ -2126,6 +2166,7 @@ def run_comparison(
                 splits = _build_ssa_splits(
                     n_samples, float(ssa_labeled_fraction), seed=int(ssa_seed)
                 )
+                extra_labels = _add_ssa_spurious(extra_labels, group_labels)
 
         # Run comparison
         runner = ModelComparisonRunner(
@@ -2154,12 +2195,20 @@ def run_comparison(
         with open(html_path) as f:
             html_content = f.read()
 
+        sample_note = ""
+        if data_source == "Sample Data (CheXpert - Lightweight)":
+            sample_note = (
+                '<p style="color: rgba(21, 87, 36, 1);"><strong>Note:</strong> sample mode has one '
+                "embedding set, so it compares the base embeddings against two copies with "
+                "Gaussian noise added (sd 0.05 and 0.08).</p>"
+            )
+
         info_html = f"""
         <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
             <h3 style="color: rgba(21, 87, 36, 1); margin-top: 0;">✅ Model Comparison Complete!</h3>
             <p style="color: rgba(21, 87, 36, 1);"><strong>Models:</strong> {', '.join(result.model_ids)}</p>
             <p style="color: rgba(21, 87, 36, 1);"><strong>Methods:</strong> {', '.join(methods)}</p>
-            <p style="color: rgba(21, 87, 36, 1);">Reports saved to: {output_dir}</p>
+            <p style="color: rgba(21, 87, 36, 1);">Reports saved to: {output_dir}</p>{sample_note}
         </div>
         """
         results_html = info_html + html_content
@@ -2215,7 +2264,7 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
                     - 📊 Sample data from CheXpert medical imaging dataset
                     - 📁 Custom embeddings upload (CSV format)
                     - 📝 Raw text data with HuggingFace embedding models
-                    - 🧬 HBAC, Probe, Statistical, Geometric, Fairness, and Robustness methods
+                    - 🧬 HBAC, Probe, Statistical, Geometric, Fairness, GroupDRO, GCE, SIS, SSA, Causal Effect, Frequency, and Generative CVAE methods
                     """
                     )
 
@@ -2338,7 +2387,7 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
                         - **Early-Epoch Clustering (SPARE):** Cluster early-epoch representations to surface shortcut bias signals
                         - **GCE:** Generalized Cross Entropy bias detector — flags high-loss samples as minority/bias-conflicting
                         - **SIS:** Sufficient Input Subsets — finds minimal embedding dimensions for prediction (Carter et al. 2019)
-                        - **SSA:** Spectral Shift Analysis (semi-supervised; placeholder)
+                        - **SSA:** Spread Spurious Attribute (semi-supervised): pseudo-labels the spurious attribute from a small labeled split, then runs GroupDRO on the inferred groups
                         - **Causal Effect:** Identifies spurious attributes via causal effect estimation; requires attr_* columns in CSV
                         - **Frequency:** Embedding-space frequency detector -- flags classes whose signal concentrates in few dimensions
                         - **Generative CVAE:** Conditional VAE counterfactual detector -- flips spurious attribute in embedding space and measures probe prediction shift
@@ -2373,8 +2422,8 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
                         gr.Markdown(
                             """
                         SSA requires labeled/unlabeled splits. The dashboard will automatically
-                        create splits using the fraction below. **SSA is currently a placeholder**
-                        in the library, so results are informational only.
+                        create splits using the fraction below and uses the group label as the
+                        spurious attribute for the labeled split.
                         """
                         )
                         ssa_labeled_fraction = gr.Slider(
@@ -2545,7 +2594,7 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
                             precision=0,
                         )
 
-                    gr.Markdown("### 4️⃣ Statistical Correction (Optional)")
+                    gr.Markdown("### 5️⃣ Statistical Correction (Optional)")
 
                     with gr.Accordion("📊 Multiple Testing Correction", open=False):
                         gr.Markdown(
@@ -3486,7 +3535,8 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
         # Prepare downloads
         pdf_file = pdf_path if pdf_path and os.path.exists(pdf_path) else None
 
-        if pdf_file is None:
+        # run_detection returns csv_dir only on success; show the notice only when the PDF step failed
+        if pdf_file is None and csv_dir:
             pdf_notice = (
                 "<p style='color:#92400e; background:#fff4e6; padding:10px; border-radius:6px; margin-bottom:12px;'>"
                 "PDF report not generated. Install weasyprint for PDF export: <code>pip install weasyprint</code></p>"
@@ -3785,7 +3835,7 @@ if __name__ == "__main__":
     print("  • HuggingFace embedding generation from raw text")
     print("  • PDF and CSV exports")
     print("  • Detection methods: HBAC, Probe, Statistical, Geometric, Equalized Odds, GroupDRO,")
-    print("    Demographic Parity, Bias Direction PCA, Causal Effect, SSA (placeholder)")
+    print("    Demographic Parity, Bias Direction PCA, Causal Effect, SSA (Spread Spurious Attribute)")
     print(
         "  • Optional: CAV (include in report), VAE, Shortcut Masking M01, Background Randomization M02, Adversarial Debiasing M04, Explanation Regularization M05, Last Layer Retraining M06, Contrastive Debiasing M07 (Advanced Analysis)"
     )

@@ -87,7 +87,7 @@ dashboard = [
     "gradio>=5.0.0",  # Interactive web interface
 ]
 hf = [
-    "transformers>=4.39.0",
+    "transformers>=4.39.0,<5",
 ]
 vae = [
     "torch>=2.2.0,<2.3.0",
@@ -121,7 +121,7 @@ all = [
     "ruff>=0.1.0",
     "torch>=2.2.0,<2.3.0",
     "torchvision>=0.17.0,<0.18.0",
-    "transformers>=4.39.0",
+    "transformers>=4.39.0,<5",
     "weasyprint>=60.0",
 ]
 

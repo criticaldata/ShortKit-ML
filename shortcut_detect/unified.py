@@ -112,7 +112,7 @@ class ShortcutDetector:
         seed: int = 42,
         condition_name: str = "indicator_count",
         condition_kwargs: dict[str, Any] | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Initialize unified shortcut detector.
