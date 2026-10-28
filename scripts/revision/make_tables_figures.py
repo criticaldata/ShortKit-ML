@@ -157,7 +157,12 @@ def synthetic():
     null = df[(df.delta == 0) & (df.variant == "linear")]  # the three variants coincide at delta 0
     alt = df[df.delta > 0]
 
-    # null FPR table
+    # null FPR table, plus the large check at rho 0.9 (run_null_check.py) when present
+    big = load("synthetic/null_check_rho09.csv")
+    if big is not None:
+        big["reject"] = big["p_value"] < 0.05
+        put("n_nullcheck_datasets", int(big.seed.nunique()), "{:d}")
+    put("n_null_datasets_per_rho", int(null[(null.detector == "probe") & (null.rho == 0.9)].shape[0]), "{:d}")
     rows = []
     for d in DET + ["probe_unconditional"]:
         sub = null[null.detector == d]
@@ -166,6 +171,11 @@ def synthetic():
             r[f"rho={rho}"] = f2(sub[sub.rho == rho].reject.mean())
         r["All"] = f2(sub.reject.mean())
         r["BH flag"] = f2(sub.flag.mean())
+        if big is not None:
+            b = big[big.detector == d]
+            r["Large check"] = f2(b.reject.mean()) if len(b) else "--"
+            if len(b) and d in DET_KEY:
+                put(f"fpr_nullcheck_{DET_KEY[d]}", b.reject.mean())
         rows.append(r)
         if d in DET_KEY:
             put(f"fpr_null_{DET_KEY[d]}", sub.reject.mean())
@@ -178,6 +188,8 @@ def synthetic():
     RAW["n_null_datasets"] = int(null[null.detector == "probe"].shape[0])
     t = pd.DataFrame(rows)
     hdr = ["Detector"] + [f"$\\rho={r}$" for r in sorted(df.rho.unique())] + ["All", "BH flag"]
+    if big is not None:
+        hdr.append("$\\rho=0.9$, large")
     write_tabular("synthetic_null_fpr", t, "l" + "c" * (len(hdr) - 1), header=hdr, midrules=[len(DET)])
 
     # sensitivity / specificity table (BH flags), pooled over rho, n, d
