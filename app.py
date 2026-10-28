@@ -3748,7 +3748,7 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
     ---
     <div style="text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
         <h4>📖 About Shortcut Detection</h4>
-        <p>This dashboard uses the <a href="https://github.com/Kqp1227/Shortcut_Detect" target="_blank">ShortKit-ML</a> to identify shortcuts and biases in ML embedding spaces.</p>
+        <p>This dashboard uses the <a href="https://github.com/criticaldata/ShortKit-ML" target="_blank">ShortKit-ML</a> to identify shortcuts and biases in ML embedding spaces.</p>
         <p><strong>Built with:</strong> Python • Gradio • PyTorch • Scikit-learn</p>
     </div>
     """
