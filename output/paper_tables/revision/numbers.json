@@ -33,7 +33,7 @@
   "cluster_top_variable_chexpert": "AP/PA",
   "cluster_top_variable_mimic": "view (AP/PA)",
   "cluster_view_nmi_chexpert": "0.359",
-  "code_commit": "173e53b",
+  "code_commit": "59bea75",
   "effective_n_detectors": "1.4",
   "effective_n_detectors_linear_d0": "3.9",
   "effective_n_detectors_linear_d02": "2.6",
@@ -237,6 +237,7 @@
   "synthetic_attr_dims": "4",
   "synthetic_task_dims": "4",
   "synthetic_task_shift": "1.0",
+  "umap_mimic_n_shown": "1,420",
   "varshift_param": "equal means; attribute dimensions have standard deviation 1 + delta for A = 1 and 1 for A = 0",
   "vit16_sex_auroc_mimic": "0.93",
   "vit32_sex_auroc_mimic": "0.94",
@@ -280,7 +281,7 @@
     "cluster_top_variable_chexpert": "AP/PA",
     "cluster_top_variable_mimic": "view (AP/PA)",
     "cluster_view_nmi_chexpert": 0.35938094732809567,
-    "code_commit": "173e53b",
+    "code_commit": "59bea75",
     "effective_n_detectors": 1.4209270959095892,
     "effective_n_detectors_linear_d0": 3.866129768044395,
     "effective_n_detectors_linear_d02": 2.564584443078982,
@@ -567,7 +568,8 @@
     "n_nullcheck_datasets": 500,
     "alignment_max_spearman_mimic_vit32_cls_stored": 0.0056194264577098,
     "vit32_stored_sex_auroc_mimic": 0.4996974651904889,
-    "mimic_n_race_missing": 71
+    "mimic_n_race_missing": 71,
+    "umap_mimic_n_shown": 1420
   },
   "model_ids_extraction_check": {
     "vit_b_32": {
