@@ -161,3 +161,24 @@ def test_grouped_folds_are_patient_disjoint():
         AuditConfig(n_permutations=9, n_bootstrap=50, detectors=("probe",)), groups=groups,
     )
     assert res.fold_strata.endswith("grouped")
+
+
+def test_statistical_batched_rows_match_single_rows_when_group_sizes_vary():
+    """Patient-level permutations change the group counts inside each Y stratum,
+    so every permutation row must use its own counts."""
+    from shortcut_detect.audit.conditional import _prepare, _stat_statistical
+
+    rng = np.random.default_rng(3)
+    n, d = 240, 6
+    groups = rng.integers(0, 40, n)
+    y = rng.integers(0, 2, n)
+    a = (rng.random(40) < 0.5).astype(int)[groups]
+    X = rng.standard_normal((n, d)) + 0.8 * a[:, None]
+    rows = conditional_permutations(a, y, 5, rng, groups=groups)
+    assert len({tuple(np.bincount(r[y == 0], minlength=2)) for r in rows}) > 1
+    cfg = AuditConfig()
+    ctx = _prepare(X, y, cfg, {"statistical"}, rng)
+    ctx["G"] = 2
+    batched = _stat_statistical(ctx, rows, cfg)
+    single = np.array([_stat_statistical(ctx, r[None, :], cfg)[0] for r in rows])
+    np.testing.assert_allclose(batched, single)

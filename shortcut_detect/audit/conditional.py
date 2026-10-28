@@ -486,12 +486,13 @@ def _stat_statistical(ctx, a_rows, cfg):
     for idx, R in zip(ctx["strata"], ctx["ranks"], strict=True):
         Ns = len(idx)
         oh = _onehot(a_rows[:, idx], G)  # (P, Ns, G)
-        ng = oh[0].sum(0)  # counts are permutation invariant within the stratum
-        present = ng > 0
+        # per-row counts: patient-level permutations change group sizes within a stratum
+        ng = oh.sum(1)  # (P, G)
+        present = (ng > 0).all(0)
         if present.sum() < 2:
             continue
         rs = np.einsum("png,nd->pgd", oh, R)  # rank sums
-        h = (rs[:, present, :] ** 2 / ng[present][None, :, None]).sum(1)
+        h = (rs[:, present, :] ** 2 / ng[:, present][:, :, None]).sum(1)
         H += 12.0 / (Ns * (Ns + 1)) * h - 3.0 * (Ns + 1)
         df += int(present.sum()) - 1
     if df == 0:
