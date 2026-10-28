@@ -97,7 +97,7 @@ def run_attribute_benchmark(
                 result = {"success": False, "error": str(exc)}
 
             elapsed = time.time() - t0
-            flag = int(method_flag(method, result))
+            flag = int(method_flag(method, result, attribute="group"))
             flagged_methods += flag
             risk = str(result.get("risk_value") or result.get("risk_level") or "unknown")
 
