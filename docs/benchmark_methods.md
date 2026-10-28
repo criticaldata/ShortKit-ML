@@ -118,21 +118,11 @@ python -m shortcut_detect.benchmark.paper_runner --config examples/paper_benchma
 - **Seed**: All runs use `seed=42`
 - **Data**: Pre-extracted embeddings on HuggingFace (no GPU needed)
 - **Determinism**: NumPy/scikit-learn random states fixed per method
-- **CI**: 604+ tests pass on Python 3.10/3.11 (GitHub Actions)
+- **CI**: the test suite runs on Python 3.10, 3.11 and 3.12 (GitHub Actions)
 
-## Key Results Pattern (from 13-method runs)
+## Results
 
-The 13-method benchmarks revealed a clear **method paradigm hierarchy**:
-
-| Category | Methods | Detection Rate | Notes |
-|----------|---------|----------------|-------|
-| **Always detect** | HBAC, Frequency, BiasDir PCA, SIS | 90-100% | Embedding-level structure |
-| **Usually detect** | DP, Intersectional, EO, Probe (sex only) | 50-80% | Prediction-dependent |
-| **Domain-specific** | GCE | CelebA: 100%, Clinical: 0% | Interesting divergence |
-| **Conservative** | Statistical, Geometric | 0% | Only flag strong/linear effects |
-| **Inactive in embedding-only** | GroupDRO, SSA | 0% | Need training splits/spurious labels |
-
-This pattern persists across all datasets, backbones, and attributes, which supports the paper's thesis that different methods detect different **aspects** of demographic encoding, and multi-method convergence is essential.
+The 13-method detection-rate summary from the first submission is superseded. The revised paper reports a conditional audit (per-detector permutation tests with BH correction) instead; its tables and figures are built by the pipeline in [Paper Results](reproducibility.md#revised-paper-cmpb-revision-2026) and written to `output/paper_tables/revision/`.
 
 ## File Locations
 

@@ -107,7 +107,7 @@ python app.py
 ## Installation
 
 ```bash
-pip install shortcut-detect
+pip install shortkit-ml
 ```
 
 Or install from source:

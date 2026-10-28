@@ -6,6 +6,8 @@
 --check C           probe with C in {0.1, 1, 10} on the 7 stored backbones
                     (C = 1 reruns the main setting as a reproduction check)
 --check frontal     probe on frontal images only (train.csv Frontal/Lateral)
+--check labelled    probe on images with a definite Pneumothorax label (0 or 1),
+                    dropping uncertain (-1) and blank labels as the head experiment does
 
 Primary cells only (sex, age 60+, White vs non-White), task Pneumothorax,
 the same seed, K_probe, CV repeats and patient-level permutation as
@@ -47,7 +49,7 @@ PROVENANCE = {
     "rad_dino": ("rad_dino__microsoft_rad-dino__pooler_output.npy", "microsoft/rad-dino pooler_output"),
     "vit_b_32": ("vit_b_32__vit_b_32__class.npy", "torchvision vit_b_32 class token"),
 }
-OUT = {"provenance": "provenance_sensitivity", "C": "probe_C_sensitivity", "frontal": "frontal_only"}
+OUT = {"provenance": "provenance_sensitivity", "C": "probe_C_sensitivity", "frontal": "frontal_only", "labelled": "labelled_only"}
 BH_NOTE = (
     "Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of "
     "clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. "
@@ -134,8 +136,14 @@ def main() -> int:
             if args.check == "frontal":
                 keep = (meta["view"] == "Frontal").to_numpy()
                 X, meta = X[keep], meta[keep].reset_index(drop=True)
+            if args.check == "labelled":
+                keep = meta["Pneumothorax"].isin([0, 1]).to_numpy()
+                X, meta = X[keep], meta[keep].reset_index(drop=True)
             cs = attribute_cells("chexpert", bb, X, meta, sensitivity=False)
             jobs += [(c, C) for c in cs for C in (args.C if args.check == "C" else [1.0])]
+        if args.check == "labelled":
+            man.notes.append("Labelled = train.csv Pneumothorax in {0, 1}; uncertain (-1) and blank "
+                             "labels dropped, as in run_head_experiment.py.")
         if args.check == "frontal":
             man.notes.append("Frontal = train.csv Frontal/Lateral == 'Frontal'. Age attribute stays the "
                              "age at the patient's first study in the full 2,000-image cohort.")

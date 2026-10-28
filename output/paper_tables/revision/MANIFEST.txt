@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit 11878485e3134117ca71e2fbf4a0d8ae68f13f6b
+tables/figures built at commit 9cb3981309bb085375e58767f9f6caaa5d378d0e
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -240,6 +240,55 @@ notes:
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
 
 note (added by hand, 28 Oct): this run covered MIMIC-CXR only. CheXpert rows come from the run at ccf1bb5 and CelebA rows from 1e49670 (see RERUN_NOTE.txt).
+
+===== dfr_control =====
+run: DFR size and penalty controls for the head experiment
+commit: 9cb3981309bb085375e58767f9f6caaa5d378d0e
+working tree has uncommitted changes: True
+command: python scripts/revision/run_dfr_control.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 18:02:24 GMT
+wall_seconds: 118.1
+
+config:
+{
+  "mitigation_seeds": 3,
+  "rho_train": 0.9,
+  "rho_test": 0.5,
+  "threshold": 0.5,
+  "tasks": {
+    "pneumothorax": "Pneumothorax",
+    "pleural_effusion": "Pleural Effusion",
+    "cardiomegaly": "Cardiomegaly"
+  },
+  "attributes": [
+    "sex (Male=1)",
+    "age 60+ (=1)"
+  ],
+  "split": "as run_head_experiment.py (patient-level StratifiedGroupKFold(2) on (A, Y), same seeds)",
+  "conf / dfr_l2 / random_l2 head": "run_head_experiment.head: StandardScaler + LogisticRegression(C=1, L2, lbfgs)",
+  "dfr / random_dfr_head head": "LastLayerRetraining defaults: StandardScaler + LogisticRegression(C=1, L1, liblinear, class_weight=balanced)",
+  "dfr groups": "2A + Y on the confounded training set",
+  "random subset": "uniform draw without replacement from the confounded training set, size = DFR subset, seed 20000 + 100 * s"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 79.029
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - dfr_l2 uses the exact DFR subset (reconstructed from LastLayerRetraining's RNG calls; checked by refitting).
 
 ===== extraction_check =====
 run: re-extraction of CheXpert backbones without code (X-6)
@@ -675,6 +724,55 @@ notes:
   - tpr_gap_logistic_rerun: logistic head refitted on the same draw; it should equal tpr_gap in the logistic results for the same (cell, seed), which confirms pairing.
   - pairing check against the logistic run: 0 mismatches over 420 rows
   - MLP fits not converged at max_iter: 0 of 420 seeds
+
+===== labelled_only =====
+run: CheXpert probe sensitivity: labelled
+commit: 9cb3981309bb085375e58767f9f6caaa5d378d0e
+working tree has uncommitted changes: True
+command: python scripts/revision/run_probe_sensitivity.py --check labelled
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 17:34:46 GMT
+wall_seconds: 754.9
+
+config:
+{
+  "check": "labelled",
+  "K_probe": 500,
+  "n_bootstrap": 2000,
+  "seed": 42,
+  "alpha": 0.05,
+  "n_folds": 5,
+  "cv_repeats": 5,
+  "detectors": [
+    "probe"
+  ],
+  "C": [
+    1.0
+  ],
+  "permutation": "within Y; patient-level within Y-pattern strata",
+  "cells": "primary: sex, age 60+ (first study), White vs non-White; task Pneumothorax"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
+  ae9612cb260ebef03b51a75c3b311e76  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 732.122
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. decision_bound: 'sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate'. For the C check, bh_with_main_secondaries recomputes BH with the probe p from this run and the five secondary p-values from the main audit (frequency_topk also uses C, so approximate).
+  - Labelled = train.csv Pneumothorax in {0, 1}; uncertain (-1) and blank labels dropped, as in run_head_experiment.py.
 
 ===== negative_control =====
 run: patient-level fake attribute negative control

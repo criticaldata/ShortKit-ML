@@ -214,6 +214,8 @@ class ReportBuilder:
                 self._generate_gce_section_html(),
                 self._generate_causal_effect_section_html(),
                 self._generate_vae_section_html(),
+                self._generate_ssa_section_html(),
+                self._generate_generative_cvae_section_html(),
                 self._generate_recommendations_html(),
                 self._generate_footer_html(),
                 "  </div>",
@@ -782,7 +784,7 @@ class ReportBuilder:
             html += "<ul>"
             for detail in details:
                 if detail.strip():
-                    html += f"<li>{detail.strip('•').strip()}</li>"
+                    html += f"<li>{detail.strip().lstrip('•').strip()}</li>"
             html += "</ul>"
         html += "</div>"
 
@@ -1224,8 +1226,8 @@ class ReportBuilder:
                 ]
             )
             for group, metrics in report.group_metrics.items():
-                tpr = "nan" if np.isnan(metrics["tpr"]) else f"{metrics['tpr']:.3f}"
-                fpr = "nan" if np.isnan(metrics["fpr"]) else f"{metrics['fpr']:.3f}"
+                tpr = "Unknown" if np.isnan(metrics["tpr"]) else f"{metrics['tpr']:.3f}"
+                fpr = "Unknown" if np.isnan(metrics["fpr"]) else f"{metrics['fpr']:.3f}"
                 lines.append(
                     f"<tr><td>{group}</td><td>{tpr}</td><td>{fpr}</td><td>{metrics['support']:.0f}</td></tr>"
                 )
@@ -1324,7 +1326,7 @@ class ReportBuilder:
             )
             for group, metrics in report.group_rates.items():
                 rate = (
-                    "nan"
+                    "Unknown"
                     if np.isnan(metrics["positive_rate"])
                     else f"{metrics['positive_rate']:.3f}"
                 )
@@ -1519,6 +1521,79 @@ class ReportBuilder:
                 f"<td>{row.get('n_samples_a0', 0)}</td>"
                 f"<td>{row.get('n_samples_a1', 0)}</td></tr>"
             )
+        html.append("</table>")
+        html.append("</div>")
+        return "\n".join(html)
+
+    def _generate_ssa_section_html(self) -> str:
+        """Generate SSA (Spread Spurious Attribute) section for HTML."""
+        if "ssa" not in self.results or not self.results["ssa"].get("success"):
+            return ""
+
+        result = self.results["ssa"]
+        report = result.get("report", {})
+        gdro = report.get("groupdro_report", {})
+        final = gdro.get("final", {})
+        n_groups = gdro.get("n_groups", 0)
+        risk = self._risk_payload("ssa")
+        risk_color = self._risk_color(risk["risk_value"])
+
+        html = [
+            "<div class='section'>",
+            "<h2>🧪 SSA (Spread Spurious Attribute)</h2>",
+            f"<p><strong>Risk:</strong> <span style='color: {risk_color}; font-weight: 600;'>{risk['risk_label']}</span></p>",
+            f"<p><strong>Reason:</strong> {risk['risk_reason']}</p>",
+        ]
+        html.extend(f"<p>{line}</p>" for line in result.get("summary_lines", []))
+        pseudo = report.get("pseudo_attr_hat")
+        if pseudo is not None and len(pseudo) > 0:
+            values, counts = np.unique(np.asarray(pseudo), return_counts=True)
+            dist = ", ".join(f"{v}: {c}" for v, c in zip(values, counts, strict=False))
+            html.append(f"<p><strong>Pseudo-labelled attribute (unlabeled split):</strong> {dist}</p>")
+        if isinstance(n_groups, int) and n_groups > 0:
+            html.append("<h3>GroupDRO on inferred groups (label x pseudo-attribute)</h3>")
+            html.append("<table>")
+            html.append("<tr><th>Group</th><th>Accuracy</th><th>Avg Loss</th><th>Count</th></tr>")
+            for i in range(n_groups):
+                acc_i = final.get(f"avg_acc_group:{i}", float("nan"))
+                loss_i = final.get(f"avg_loss_group:{i}", float("nan"))
+                cnt_i = final.get(f"processed_data_count_group:{i}", float("nan"))
+                html.append(
+                    f"<tr><td><code>{i}</code></td><td>{acc_i:.2%}</td>"
+                    f"<td>{loss_i:.4f}</td><td>{cnt_i:.0f}</td></tr>"
+                )
+            html.append("</table>")
+        html.append("</div>")
+        return "\n".join(html)
+
+    def _generate_generative_cvae_section_html(self) -> str:
+        """Generate Generative CVAE section for HTML."""
+        if "generative_cvae" not in self.results or not self.results["generative_cvae"].get(
+            "success"
+        ):
+            return ""
+
+        result = self.results["generative_cvae"]
+        report = result.get("report", {}) or {}
+        metrics = report.get("metrics", {}) or {}
+        risk = self._risk_payload("generative_cvae")
+        risk_color = self._risk_color(risk["risk_value"])
+
+        html = [
+            "<div class='section'>",
+            "<h2>🧬 Generative CVAE (Embedding Counterfactuals)</h2>",
+            f"<p><strong>Risk:</strong> <span style='color: {risk_color}; font-weight: 600;'>{risk['risk_label']}</span></p>",
+            f"<p><strong>Reason:</strong> {risk['risk_reason']}</p>",
+        ]
+        if result.get("binarization_note"):
+            html.append(f"<p><strong>Note:</strong> {result['binarization_note']}</p>")
+        html.append("<table>")
+        html.append("<tr><th>Metric</th><th>Value</th></tr>")
+        for key, val in metrics.items():
+            if isinstance(val, (int, float, np.integer, np.floating)) and not isinstance(val, bool):
+                html.append(f"<tr><td>{key}</td><td>{float(val):.4f}</td></tr>")
+            elif isinstance(val, (str, bool)):
+                html.append(f"<tr><td>{key}</td><td>{val}</td></tr>")
         html.append("</table>")
         html.append("</div>")
         return "\n".join(html)

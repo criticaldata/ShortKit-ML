@@ -17,6 +17,10 @@ sys.path.insert(0, str(project_root))
 from app import load_custom_csv, load_sample_data  # noqa: E402
 
 
+@pytest.mark.skipif(
+    not (project_root / "data" / "train.csv").exists(),
+    reason="CheXpert train.csv not available",
+)
 def test_load_sample_data():
     """Verify dashboard sample data loads with correct shapes and columns."""
     embeddings, task_labels, group_labels, extra_labels, attributes, metadata_df = (

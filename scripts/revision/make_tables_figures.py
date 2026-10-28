@@ -390,6 +390,7 @@ def clinical():
         put(f"n_cells_excluded_misaligned_{ds}",
             int(((prim.dataset == ds) & (prim.detector == "probe") & ~ok).sum()), "{:d}")
         put(f"n_cells_probe_sig_{ds}", int(pp.flag.sum()), "{:d}")
+        put(f"n_cells_probe_raw_sig_{ds}", int((pp.p_value < 0.05).sum()), "{:d}")
         put(f"n_cells_primary_{ds}", int(len(pp)), "{:d}")
         sx = pp[pp.attribute == "sex"].statistic
         put(f"probe_auroc_sex_min_{ds}", sx.min())
@@ -941,8 +942,10 @@ def sensitivity():
     old = sel(old).set_index(["backbone", "attribute"]) if old is not None else None
     fr = load("frontal_only/probe_rows.csv")
     fr = fr.set_index(["backbone", "attribute"]) if fr is not None else None
+    lb = load("labelled_only/probe_rows.csv")
+    lb = lb.set_index(["backbone", "attribute"]) if lb is not None else None
     cs = load("probe_C_sensitivity/probe_rows.csv")
-    rows, diffs = [], {"stored": [], "frontal": [], "C": []}
+    rows, diffs = [], {"stored": [], "frontal": [], "labelled": [], "C": []}
     for (bb, attr), r in main.iterrows():
         row = {"Encoder": BACKBONE_LABELS.get(bb, bb), "$A$": attr.capitalize(), "Main": cell(r.statistic, r.flag)}
         if old is not None and bb in CHEXPERT_PUBLIC and (bb, attr) in old.index:
@@ -956,6 +959,12 @@ def sensitivity():
             # no secondary detectors here: p <= 0.05/6 always passes BH across six, p >= 0.05 never does
             row["Frontal only"] = cell(f.auroc, f.p <= 0.05 / 6) + ("+" if 0.05 / 6 < f.p < 0.05 else "")
             diffs["frontal"].append(abs(f.auroc - r.statistic))
+        if lb is not None and (bb, attr) in lb.index:
+            f = lb.loc[(bb, attr)]
+            row["Labelled only"] = cell(f.auroc, f.p <= 0.05 / 6) + ("+" if 0.05 / 6 < f.p < 0.05 else "")
+            diffs["labelled"].append(abs(f.auroc - r.statistic))
+        elif lb is not None:
+            row["Labelled only"] = "n/a"
         for C in (0.1, 10.0):
             c = cs[(cs.backbone == bb) & (cs.attribute == attr) & (cs.C == C)] if cs is not None else []
             if len(c):
@@ -967,8 +976,8 @@ def sensitivity():
         rows.append(row)
     enc = list(dict.fromkeys(r["Encoder"] for r in rows))
     rows.sort(key=lambda r: (enc.index(r["Encoder"]), ["Sex", "Age", "Race"].index(r["$A$"])))
-    write_tabular("sensitivity_probe", pd.DataFrame(rows), "llccccc", escape_cells=False,
-                  header=["Encoder", "$A$", "Main", "Stored array", "Frontal only", "$C=0.1$", "$C=10$"])
+    cols = ["Encoder", "$A$", "Main", "Stored array", "Frontal only"] + (["Labelled only"] if lb is not None else []) + ["$C=0.1$", "$C=10$"]
+    write_tabular("sensitivity_probe", pd.DataFrame(rows)[cols], "ll" + "c" * (len(cols) - 2), escape_cells=False, header=cols)
     for k, v in diffs.items():
         if v:
             put(f"sens_max_absdiff_{k}", max(v))
@@ -976,6 +985,11 @@ def sensitivity():
         put("frontal_n_images", int(fr.n_images.max()), "{:d}")
         put("frontal_n_sig", int((fr.p <= 0.05 / 6).sum()), "{:d}")
         put("frontal_n_cells", int(len(fr)), "{:d}")
+    if lb is not None:
+        put("labelled_n_images", int(lb.n_images.max()), "{:d}")
+        put("labelled_n_sig", int((lb.p <= 0.05 / 6).sum()), "{:d}")
+        put("labelled_n_cells", int(len(lb)), "{:d}")
+        put("labelled_n_raw_sig", int((lb.p < 0.05).sum()), "{:d}")
     if cs is not None and "decision_changes" in cs:
         x = cs[cs.C != 1.0]
         put("probe_C_n_cells", int(len(x)), "{:d}")
@@ -989,6 +1003,12 @@ def sensitivity():
         put("mlp_spearman_within_sex", g.loc["rho probe vs MLP TPR gap, within sex"].value)
         put("mlp_spearman_within_age", g.loc["rho probe vs MLP TPR gap, within age"].value)
         put("mlp_vs_logistic_gap_spearman", g.loc["rho MLP TPR gap vs logistic TPR gap"].value)
+    dc = load("dfr_control/dfr_control_summary.csv")
+    if dc is not None:
+        g = dc.set_index("method")
+        for meth in ["dfr", "dfr_l2", "random_dfr_head", "random_l2"]:
+            put(f"dfrctl_{meth}_task_auroc", g.loc[meth, "task_auroc_mean"])
+            put(f"dfrctl_{meth}_tpr_gap", g.loc[meth, "tpr_gap_mean"])
 
 
 def extraction():

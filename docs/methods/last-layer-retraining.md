@@ -14,7 +14,7 @@ Kirichenko, P., Izmailov, P., & Wilson, A. G. (2023). *Last Layer Re-Training is
 
 ## Requirements
 
-- scikit-learn (already a dependency of shortcut-detect).
+- scikit-learn (already a dependency of shortkit-ml).
 - NumPy.
 
 ## Basic Usage

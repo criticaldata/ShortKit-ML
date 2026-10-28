@@ -163,6 +163,7 @@ nav:
       - Benchmark Methods: benchmark_methods.md
   - MCP Server: mcp-server.md
   - Contributing: contributing.md
+  - Dashboard E2E Tests: testing/playwright-e2e.md
 
 extra:
   social:

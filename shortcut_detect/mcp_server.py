@@ -816,7 +816,7 @@ def list_methods() -> str:
         "demographic_parity": "Fairness: checks equal positive prediction rates across groups.",
         "intersectional": "Intersectional fairness across all combinations of protected attributes.",
         "frequency": "Detects shortcuts concentrated in a few embedding dimensions (frequency domain).",
-        "ssa": "Sufficiency Score Analysis — measures how much protected attributes explain predictions.",
+        "ssa": "Spread Spurious Attribute: pseudo-labels the spurious attribute from a small labeled split, then runs GroupDRO on the inferred groups.",
         "vae": "VAE latent space analysis — flags entangled shortcut dimensions.",
         "cav": "Concept Activation Vectors — tests whether a concept is linearly encoded.",
         "sis": "Sufficient Input Subsets — finds minimal feature subsets that determine predictions.",

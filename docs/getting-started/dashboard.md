@@ -6,7 +6,7 @@ ShortKit-ML includes an interactive Gradio web interface for visual exploration 
 
 ```bash
 # Ensure dashboard dependencies are installed
-pip install "shortcut-detect[dashboard]"
+pip install "shortkit-ml[dashboard]"
 
 # Launch the dashboard
 python app.py

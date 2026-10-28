@@ -155,10 +155,10 @@ class GCEDetector:
         """
         Args:
             q: GCE parameter in (0, 1]. q≈0.7 downweights easy samples and
-               emphasizes hard/minority ones. Smaller q is more robust but
-               harder to optimize.
+                emphasizes hard/minority ones. Smaller q is more robust but
+                harder to optimize.
             loss_percentile_threshold: Samples with loss >= this percentile
-               (0–100) are labeled as minority/bias-conflicting. Default 90.
+                (0–100) are labeled as minority/bias-conflicting. Default 90.
             max_iter: Maximum iterations for training the linear classifier.
             random_state: Random seed for reproducibility.
         """

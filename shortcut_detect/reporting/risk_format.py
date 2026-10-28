@@ -306,6 +306,25 @@ def build_method_risk(method: str, result: dict[str, Any]) -> dict[str, str]:
             f"out of {_fmt_num(latent_dim)}, max predictiveness {_fmt_num(max_pred)}."
         )
 
+    elif method == "ssa":
+        report = result.get("report") or {}
+        final = (report.get("groupdro_report") or {}).get("final", {})
+        avg_acc = final.get("avg_acc")
+        worst_acc = final.get("worst_group_acc")
+
+        shortcut = result.get("shortcut_detected")
+        if shortcut is None:
+            level = "unknown"
+        elif shortcut:
+            level = "high"
+        else:
+            level = "low"
+
+        reason = (
+            f"Worst-group accuracy {_fmt_num(worst_acc)} vs average {_fmt_num(avg_acc)} "
+            "on inferred (label x pseudo-attribute) groups."
+        )
+
     level = normalize_risk_level(level)
     return {
         "risk_value": level,
