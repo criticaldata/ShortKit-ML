@@ -9,7 +9,8 @@ Kirichenko, P., Izmailov, P., & Wilson, A. G. (2023). *Last Layer Re-Training is
 ## What It Does
 
 - **Input:** Embeddings, task labels (target to predict), and group/protected labels.
-- **Training:** Build a group-balanced subset (equal samples per group), then fit a LogisticRegression classifier on this subset. StandardScaler preprocesses embeddings.
+- **Training:** Build a group-balanced subset (equal samples per group), then fit a LogisticRegression classifier on this subset. StandardScaler preprocesses embeddings. The class balances over whatever `group_labels` it is given; the paper's protocol, and the dashboard, pass attribute x task label groups (`2 * A + Y`), so the subset is balanced over the attribute x label cells (four when A is binary) and holds the smallest cell's size times the number of cells.
+- **In the paper:** at the package defaults (L1 penalty, `C=1`, balanced class weights) DFR was the only mitigation that lowered the confounded head's TPR gap on CheXpert, from 0.18 to 0.01 on average, while task AUROC fell from 0.73 to 0.65. The embedding is unchanged, so the audit score is unchanged by construction.
 - **Output:** Trained classifier that predicts task labels. Output CSV includes original data plus `dfr_prediction` column.
 
 ## Requirements

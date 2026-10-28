@@ -20,7 +20,7 @@ Workshop on Spurious Correlations, Invariance and Stability.
 
 - `images`: `np.ndarray` or `torch.Tensor` `(N, C, H, W)` or `(N, H, W, C)`
 - `labels`: `np.ndarray` `(N,)` class labels
-- `img_size`: `int` — image height/width (assume square)
+- `img_size`: `int`, image height/width (assume square)
 
 **Or** provide DataLoaders instead:
 

@@ -6,6 +6,9 @@ This guide demonstrates shortcut detection on real-world medical imaging data.
 
 [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) is a large chest X-ray dataset with demographic information. We use pre-computed embeddings from a trained model.
 
+!!! note "Illustrative code and output"
+    The CSV path and the printed numbers on this page illustrate the interactive API; they are not results from the paper. The paper's CheXpert arrays (seven backbones over the first 2,000 images of the official `train.csv`, 477 patients) are on the gated Hugging Face dataset described in [Reproducing the Paper](../reproducibility.md#revised-paper-cmpb-revision-2026), and its audit is `shortcut_detect.audit.conditional_audit`.
+
 ### Loading CheXpert Embeddings
 
 ```python
@@ -275,8 +278,8 @@ Full notebooks available:
 jupyter lab examples/02_real_data/
 ```
 
-- `medical_imaging_demo.ipynb` - CheXpert validation (234 samples)
-- `embeddings_analysis.ipynb` - Full analysis (2000 samples)
+- `medical_imaging_demo.ipynb` - CheXpert demo
+- `embeddings_analysis.ipynb` - Full analysis
 
 ---
 
