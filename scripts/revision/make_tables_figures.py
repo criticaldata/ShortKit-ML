@@ -411,13 +411,14 @@ def clinical():
 
     # continuous score heatmap (z against the null), primary cells
     _apply_pub_style()
-    fig, axes = plt.subplots(1, 2, figsize=(11, 8.5), gridspec_kw={"width_ratios": [1, 1]})
+    fig, axes = plt.subplots(1, 2, figsize=(13, 8.5), gridspec_kw={"width_ratios": [1, 1], "wspace": 0.6})
     for ax, ds in zip(axes, ["chexpert", "mimic"], strict=True):
         sub = prim[(prim.dataset == ds) & prim.detector.isin(DET)]
         labels, Z, F, S = [], [], [], []
         for (bb, attr), g in sub.groupby(["backbone", "attribute"], sort=False):
             g = g.set_index("detector").reindex(DET)
-            labels.append(f"{BACKBONE_LABELS[bb]} | {attr}")
+            lab = BACKBONE_LABELS[bb].replace(" (rows misaligned)", " (misaligned)")
+            labels.append(f"{lab} | {attr}")
             Z.append(g.z.to_numpy(float))
             F.append(g.flag.to_numpy(bool))
             S.append(g.statistic.to_numpy(float))
