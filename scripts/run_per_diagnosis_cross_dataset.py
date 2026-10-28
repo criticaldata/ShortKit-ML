@@ -84,7 +84,7 @@ def run_detection(
         except Exception as exc:
             result = {"success": False, "error": str(exc)}
         elapsed = time.time() - t0
-        flag = method_flag(method, result)
+        flag = method_flag(method, result, attribute="group")
         rows.append(
             {
                 "method": method,

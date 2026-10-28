@@ -8,6 +8,12 @@
 #   smoke   - Quick sanity check (~2-5 min). Minimal grid, 2 seeds.
 #   default - Moderate run (~15-30 min). Reduced grid, 3+ seeds.
 #   full    - Complete paper reproduction (~2-4 hours). Full grid, 10 seeds.
+#   revision - CMPB revision: old 13-method clinical rerun with the fixed flag
+#             reader, conditional audit on CheXpert (7 backbones), MIMIC-CXR (4)
+#             and CelebA, negative control, conditional synthetic benchmark,
+#             head experiment, analyses, LaTeX tables and figures. Writes to
+#             ~/Documents/shortkit-ml-results/2026-10-28_revision_<sha>/ unless
+#             SHORTKIT_REVISION_DIR is set (several hours on a 12-core laptop).
 #
 # The script is idempotent: re-running it creates a new timestamped output
 # directory, leaving previous results untouched.
@@ -15,6 +21,11 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROFILE="${1:-default}"
+
+if [ "${PROFILE}" = "revision" ]; then
+    shift || true
+    exec "${REPO_ROOT}/scripts/revision/run_all.sh" "$@"
+fi
 TIMESTAMP="$(date +%Y%m%dT%H%M%S)"
 OUTPUT_DIR="${REPO_ROOT}/output/paper_benchmark_${PROFILE}_${TIMESTAMP}"
 
@@ -24,7 +35,7 @@ OUTPUT_DIR="${REPO_ROOT}/output/paper_benchmark_${PROFILE}_${TIMESTAMP}"
 case "${PROFILE}" in
     smoke|default|full) ;;
     *)
-        echo "ERROR: Unknown profile '${PROFILE}'. Choose: smoke, default, full" >&2
+        echo "ERROR: Unknown profile '${PROFILE}'. Choose: smoke, default, full, revision" >&2
         exit 1
         ;;
 esac

@@ -4,7 +4,7 @@ from typing import Any
 
 import numpy as np
 
-from ..base_builder import BaseDetector
+from ..base_builder import BaseDetector, resolve_target
 from .detector import FrequencyDetector
 
 
@@ -42,7 +42,10 @@ class FrequencyShortcutBuilder(BaseDetector):
     ) -> dict[str, Any]:
         detector = self.build()
         try:
-            detector.fit(embeddings=embeddings, labels=labels)
+            target, target_kind = resolve_target(
+                labels, group_labels, self.kwargs.get("freq_target", "attribute")
+            )
+            detector.fit(embeddings=embeddings, labels=target)
             report = detector.get_report()
             shortcut_detected = report.get("shortcut_detected", False)
             risk = report.get("risk_level", "unknown").upper()
@@ -59,6 +62,7 @@ class FrequencyShortcutBuilder(BaseDetector):
             return {
                 "detector": detector,
                 "report": report,
+                "target": target_kind,
                 "summary_title": "Embedding Frequency Shortcut (embedding-only)",
                 "summary_lines": summary_lines,
                 "risk_indicators": risk_indicators,

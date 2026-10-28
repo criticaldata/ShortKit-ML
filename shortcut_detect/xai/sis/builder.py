@@ -5,7 +5,7 @@ from typing import Any
 
 import numpy as np
 
-from ...base_builder import BaseDetector
+from ...base_builder import BaseDetector, resolve_target
 from .src.detector import SISDetector
 
 
@@ -32,7 +32,10 @@ class SISDetectorBuilder(BaseDetector):
         print("Running SIS (Sufficient Input Subsets) detection...")
         detector = self.build()
         try:
-            detector.fit(embeddings, labels, group_labels=group_labels)
+            target, target_kind = resolve_target(
+                labels, group_labels, self.kwargs.get("sis_target", "attribute")
+            )
+            detector.fit(embeddings, target, group_labels=group_labels)
             report_full = detector.get_report()
             metrics = report_full.get("metrics", {})
             mean_sis = metrics.get("mean_sis_size")
@@ -65,6 +68,7 @@ class SISDetectorBuilder(BaseDetector):
                 "metrics": metrics,
                 "risk_level": report_full.get("risk_level"),
                 "shortcut_detected": shortcut,
+                "target": target_kind,
                 "summary_title": "SIS (Sufficient Input Subsets)",
                 "summary_lines": summary_lines,
                 "risk_indicators": risk_indicators,
