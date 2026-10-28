@@ -1,5 +1,5 @@
 {
-  "K_probe": "200",
+  "K_probe": "500",
   "K_secondary": "200",
   "alignment_max_spearman_chexpert_densenet121": "0.780",
   "alignment_max_spearman_chexpert_dinov2_base": "0.692",
@@ -32,7 +32,7 @@
   "cluster_top_variable_chexpert": "AP/PA",
   "cluster_top_variable_mimic": "view (AP/PA)",
   "cluster_view_nmi_chexpert": "0.359",
-  "code_commit": "1e49670",
+  "code_commit": "d89d568",
   "effective_n_detectors": "1.4",
   "effective_n_detectors_linear_d0": "3.9",
   "effective_n_detectors_linear_d02": "2.6",
@@ -233,7 +233,7 @@
   "xor_delta_reported": "2.0",
   "xor_param": "pairs of attribute dimensions are shifted by (u1, u2) times delta/2, with u1 a random sign and u2 = u1 for A = 1 and u2 = -u1 for A = 0; both groups have zero mean in every dimension and, given the partner component, differ by delta standard deviations",
   "raw": {
-    "K_probe": 200,
+    "K_probe": 500,
     "K_secondary": 200,
     "alignment_max_spearman_chexpert_densenet121": 0.7797578896553666,
     "alignment_max_spearman_chexpert_dinov2_base": 0.6920847933705021,
@@ -269,7 +269,7 @@
     "cluster_top_variable_chexpert": "AP/PA",
     "cluster_top_variable_mimic": "view (AP/PA)",
     "cluster_view_nmi_chexpert": 0.35938094732809567,
-    "code_commit": "1e49670",
+    "code_commit": "d89d568",
     "effective_n_detectors": 1.4209270959095892,
     "effective_n_detectors_linear_d0": 3.866129768044395,
     "effective_n_detectors_linear_d02": 2.564584443078982,
