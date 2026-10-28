@@ -48,7 +48,7 @@ This repository includes the **complete original label/metadata files** for CheX
 
 These are the same files distributed by Stanford (CheXpert) and PhysioNet (MIMIC-CXR). No rows have been filtered or removed.
 
-None of these files are in this GitHub repository. Get them from the gated Hugging Face dataset above, which checks your licence before granting access, or from the original sources: CheXpert from the [Stanford AIMI shared datasets](https://stanfordaimi.azurewebsites.net/datasets/8cbd9ed4-2eb9-4565-affc-111cf4f7ebe2) under the Stanford research use agreement, and MIMIC-CXR from [PhysioNet](https://physionet.org/content/mimic-cxr/) after credentialing. Place `train.csv` in `data/`.
+None of these files are in this GitHub repository. Get them from the gated Hugging Face dataset above, which checks your licence before granting access, or from the original sources: CheXpert from the [official CheXpert page](https://stanfordmlgroup.github.io/competitions/chexpert/) under the Stanford research use agreement, and MIMIC-CXR from [PhysioNet](https://physionet.org/content/mimic-cxr/) after credentialing. Place `train.csv` in `data/`.
 
 ## Embedding Subsets (for benchmark reproduction)
 
