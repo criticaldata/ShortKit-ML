@@ -1,0 +1,65 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the preprint below."
+title: "ShortKit-ML: A Unified Multi-Perspective Framework for Detecting Shortcut Learning in Medical Imaging Embeddings"
+type: software
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/criticaldata/ShortKit-ML"
+authors:
+  - family-names: Cajas
+    given-names: Sebastian
+    email: sebasmos@mit.edu
+  - family-names: Marzullo
+    given-names: Aldo
+  - family-names: Kapadia
+    given-names: Sahil
+  - family-names: Santos
+    given-names: Filipe
+  - family-names: Ocampo Osorio
+    given-names: Felipe
+  - family-names: Kong
+    given-names: Qingpeng
+  - family-names: Quarta
+    given-names: Alessandro
+  - family-names: Kuo
+    given-names: Po-Chih
+  - family-names: Patel
+    given-names: Milit
+  - family-names: Rojas Sillery
+    given-names: Raul Ignacio
+  - family-names: Celi
+    given-names: Leo Anthony
+identifiers:
+  - type: doi
+    value: 10.64898/2026.04.29.26352053
+    description: medRxiv preprint
+preferred-citation:
+  type: article
+  title: "ShortKit-ML: A Unified Multi-Perspective Framework for Detecting Shortcut Learning in Medical Imaging Embeddings"
+  journal: medRxiv
+  year: 2026
+  doi: 10.64898/2026.04.29.26352053
+  url: "https://www.medrxiv.org/content/10.64898/2026.04.29.26352053v1"
+  authors:
+    - family-names: Cajas
+      given-names: Sebastian
+    - family-names: Marzullo
+      given-names: Aldo
+    - family-names: Kapadia
+      given-names: Sahil
+    - family-names: Santos
+      given-names: Filipe
+    - family-names: Ocampo Osorio
+      given-names: Felipe
+    - family-names: Kong
+      given-names: Qingpeng
+    - family-names: Quarta
+      given-names: Alessandro
+    - family-names: Kuo
+      given-names: Po-Chih
+    - family-names: Patel
+      given-names: Milit
+    - family-names: Rojas Sillery
+      given-names: Raul Ignacio
+    - family-names: Celi
+      given-names: Leo Anthony

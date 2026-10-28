@@ -2385,8 +2385,8 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
                         - **Multi-Attribute:** When your CSV has group_label + attr_race, attr_gender, etc., fairness methods run per attribute
                         - **Bias Direction PCA:** Prototype PCA bias direction gaps
                         - **Early-Epoch Clustering (SPARE):** Cluster early-epoch representations to surface shortcut bias signals
-                        - **GCE:** Generalized Cross Entropy bias detector — flags high-loss samples as minority/bias-conflicting
-                        - **SIS:** Sufficient Input Subsets — finds minimal embedding dimensions for prediction (Carter et al. 2019)
+                        - **GCE:** Generalized Cross Entropy bias detector, flags high-loss samples as minority/bias-conflicting
+                        - **SIS:** Sufficient Input Subsets, finds minimal embedding dimensions for prediction (Carter et al. 2019)
                         - **SSA:** Spread Spurious Attribute (semi-supervised): pseudo-labels the spurious attribute from a small labeled split, then runs GroupDRO on the inferred groups
                         - **Causal Effect:** Identifies spurious attributes via causal effect estimation; requires attr_* columns in CSV
                         - **Frequency:** Embedding-space frequency detector -- flags classes whose signal concentrates in few dimensions

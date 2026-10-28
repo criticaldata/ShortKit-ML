@@ -1,15 +1,19 @@
 [project]
 name = "shortkit-ml"
 version = "0.1.0"
-description = "ShortKIT-ML: A toolkit for detecting shortcuts and biases in embedding spaces"
+description = "ShortKit-ML: A toolkit for detecting shortcuts and biases in embedding spaces"
 authors = [
     {name = "Sebastian Cajas"},
     {name = "Aldo Marzullo"},
     {name = "Sahil Kapadia"},
-    {name = "Qingpeng Kong"},
     {name = "Filipe Santos"},
+    {name = "Felipe Ocampo Osorio"},
+    {name = "Qingpeng Kong"},
     {name = "Alessandro Quarta"},
-    {name = "Leo Celi"},
+    {name = "Po-Chih Kuo"},
+    {name = "Milit Patel"},
+    {name = "Raul Ignacio Rojas Sillery"},
+    {name = "Leo Anthony Celi"},
 ]
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10,<3.13"

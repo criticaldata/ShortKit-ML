@@ -99,11 +99,14 @@ class ShortcutDetector:
     5. Equalized odds gap analysis (fairness-based)
 
     Example:
+        >>> import numpy as np
+        >>> rng = np.random.default_rng(0)
+        >>> embeddings, labels, groups = rng.normal(size=(200, 16)), rng.integers(0, 2, 200), rng.integers(0, 2, 200)
         >>> detector = ShortcutDetector(
         ...     methods=['hbac', 'probe', 'statistical', 'geometric', 'equalized_odds']
         ... )
-        >>> results = detector.fit(embeddings, labels, group_labels=groups)
-        >>> print(detector.summary())
+        >>> results = detector.fit(embeddings, labels, group_labels=groups)  # doctest: +SKIP
+        >>> print(detector.summary())  # doctest: +SKIP
     """
 
     def __init__(

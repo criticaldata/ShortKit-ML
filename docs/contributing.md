@@ -125,7 +125,7 @@ pytest tests/ --cov=shortcut_detect --cov-report=html
 pytest tests/test_probes.py -v
 
 # Run specific test
-pytest tests/test_probes.py::test_sklearn_probe -v
+pytest tests/test_probes.py::TestSKLearnProbe::test_sklearn_probe_basic_shortcut_detected -v
 ```
 
 ### Writing Tests
@@ -369,14 +369,21 @@ from .my_method import MyMethodDetector
 
 #### 5. Integrate with ShortcutDetector
 
-Register your builder in `shortcut_detect/unified.py` so users can
-request it by name:
+Builders are registered through a plugin module that `ShortcutDetector`
+imports lazily by method name. Add a `plugin.py` next to your detector and
+list it in `_METHOD_PLUGIN_MODULES` in `shortcut_detect/discovery.py`:
 
 ```python
-# In _run_method():
-if method == "my_method":
-    builder = MyMethodBuilder(seed=self.seed, kwargs=self.my_method_params)
-    return builder.run(embeddings, labels, group_labels, ...)
+# shortcut_detect/my_method/plugin.py
+from ..unified import DetectorFactory
+from .builder import MyMethodBuilder
+
+DetectorFactory.register("my_method", MyMethodBuilder)
+```
+
+```python
+# shortcut_detect/discovery.py  (add to _METHOD_PLUGIN_MODULES)
+"my_method": "shortcut_detect.my_method.plugin",
 ```
 
 #### 6. Add tests

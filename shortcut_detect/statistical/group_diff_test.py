@@ -190,11 +190,15 @@ class FeatureGroupDiffTest(DetectorBase):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from scipy.stats import mannwhitneyu
+        >>> rng = np.random.default_rng(0)
+        >>> embeddings, labels = rng.normal(size=(200, 16)), rng.integers(0, 2, 200)
         >>> test = FeatureGroupDiffTest(test=mannwhitneyu)
-        >>> test.fit(embeddings, labels)
-        >>> results = test.apply_correction(method='fdr_bh', alpha=0.05)
-        >>> print(f"Significant dimensions: {results['significant_features']}")
+        >>> _ = test.fit(embeddings, labels)
+        >>> results = test.apply_correction(method='fdr_bh', alpha=0.05, verbose=False)
+        >>> print(f"Significant dimensions: {results['significant_features']}")  # doctest: +ELLIPSIS
+        Significant dimensions: ...
         """
         from statsmodels.stats.multitest import multipletests
 
