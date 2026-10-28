@@ -23,7 +23,7 @@
 \expandafter\def\csname num@celeba_probe_auroc_makeup\endcsname{0.99}
 \expandafter\def\csname num@chexpert_n_lateral\endcsname{423}
 \expandafter\def\csname num@chexpert_n_patients\endcsname{477}
-\expandafter\def\csname num@chexpert_n_race_missing\endcsname{17}
+\expandafter\def\csname num@chexpert_n_race_missing\endcsname{217}
 \expandafter\def\csname num@chexpert_n_race_nhpi\endcsname{24}
 \expandafter\def\csname num@chexpert_pneumothorax_prevalence\endcsname{10.9}
 \expandafter\def\csname num@clinical_seed\endcsname{42}
@@ -32,7 +32,7 @@
 \expandafter\def\csname num@cluster_top_variable_chexpert\endcsname{AP/PA}
 \expandafter\def\csname num@cluster_top_variable_mimic\endcsname{view (AP/PA)}
 \expandafter\def\csname num@cluster_view_nmi_chexpert\endcsname{0.359}
-\expandafter\def\csname num@code_commit\endcsname{d89d568}
+\expandafter\def\csname num@code_commit\endcsname{b519984}
 \expandafter\def\csname num@effective_n_detectors\endcsname{1.4}
 \expandafter\def\csname num@effective_n_detectors_linear_d0\endcsname{3.9}
 \expandafter\def\csname num@effective_n_detectors_linear_d02\endcsname{2.6}
@@ -83,12 +83,18 @@
 \expandafter\def\csname num@fpr_null_statistical_rho07\endcsname{0.07}
 \expandafter\def\csname num@fpr_null_statistical_rho09\endcsname{0.12}
 \expandafter\def\csname num@fpr_null_unconditional_probe_rho09\endcsname{0.95}
+\expandafter\def\csname num@fpr_nullcheck_biasdir\endcsname{0.06}
+\expandafter\def\csname num@fpr_nullcheck_frequency\endcsname{0.04}
+\expandafter\def\csname num@fpr_nullcheck_geometric\endcsname{0.05}
+\expandafter\def\csname num@fpr_nullcheck_hbac\endcsname{0.07}
+\expandafter\def\csname num@fpr_nullcheck_probe\endcsname{0.03}
+\expandafter\def\csname num@fpr_nullcheck_statistical\endcsname{0.03}
 \expandafter\def\csname num@freq_topk\endcsname{5}
-\expandafter\def\csname num@groupsize_auroc_sd_m25_chexpert\endcsname{0.08}
+\expandafter\def\csname num@groupsize_auroc_sd_m25_chexpert\endcsname{0.14}
 \expandafter\def\csname num@groupsize_auroc_sd_m25_mimic\endcsname{0.10}
-\expandafter\def\csname num@groupsize_reject_rate_m25_chexpert\endcsname{0.00}
+\expandafter\def\csname num@groupsize_reject_rate_m25_chexpert\endcsname{0.10}
 \expandafter\def\csname num@groupsize_reject_rate_m25_mimic\endcsname{0.70}
-\expandafter\def\csname num@groupsize_reject_rate_m400_chexpert\endcsname{0.20}
+\expandafter\def\csname num@groupsize_reject_rate_m400_chexpert\endcsname{1.00}
 \expandafter\def\csname num@groupsize_reject_rate_m400_mimic\endcsname{1.00}
 \expandafter\def\csname num@hbac_k\endcsname{8}
 \expandafter\def\csname num@head_auroc_aligned\endcsname{0.82}
@@ -150,13 +156,15 @@
 \expandafter\def\csname num@n_cells_primary_mimic\endcsname{9}
 \expandafter\def\csname num@n_cells_probe_sig_age_chexpert\endcsname{7}
 \expandafter\def\csname num@n_cells_probe_sig_age_mimic\endcsname{3}
-\expandafter\def\csname num@n_cells_probe_sig_chexpert\endcsname{18}
+\expandafter\def\csname num@n_cells_probe_sig_chexpert\endcsname{20}
 \expandafter\def\csname num@n_cells_probe_sig_mimic\endcsname{9}
-\expandafter\def\csname num@n_cells_probe_sig_race_chexpert\endcsname{4}
+\expandafter\def\csname num@n_cells_probe_sig_race_chexpert\endcsname{6}
 \expandafter\def\csname num@n_cells_probe_sig_race_mimic\endcsname{3}
 \expandafter\def\csname num@n_head_cells\endcsname{42}
 \expandafter\def\csname num@n_head_cells_infeasible\endcsname{0}
-\expandafter\def\csname num@n_secondary_flags_chexpert\endcsname{62}
+\expandafter\def\csname num@n_null_datasets_per_rho\endcsname{40}
+\expandafter\def\csname num@n_nullcheck_datasets\endcsname{500}
+\expandafter\def\csname num@n_secondary_flags_chexpert\endcsname{70}
 \expandafter\def\csname num@n_secondary_flags_mimic\endcsname{45}
 \expandafter\def\csname num@negctl_fpr_image_biasdir\endcsname{1.00}
 \expandafter\def\csname num@negctl_fpr_image_frequency\endcsname{1.00}
@@ -185,7 +193,7 @@
 \expandafter\def\csname num@probe_auroc_ci_mimic_raddino_sex\endcsname{1.00 to 1.00}
 \expandafter\def\csname num@probe_auroc_marker\endcsname{1.00}
 \expandafter\def\csname num@probe_auroc_mimic_raddino_sex\endcsname{1.00}
-\expandafter\def\csname num@probe_auroc_race_range_chexpert\endcsname{0.52 to 0.59}
+\expandafter\def\csname num@probe_auroc_race_range_chexpert\endcsname{0.53 to 0.62}
 \expandafter\def\csname num@probe_auroc_race_range_mimic\endcsname{0.69 to 0.75}
 \expandafter\def\csname num@probe_auroc_sex_grouped_vs_plain_chexpert_densenet121\endcsname{0.884 grouped vs 0.926 plain}
 \expandafter\def\csname num@probe_auroc_sex_grouped_vs_plain_chexpert_dinov2base\endcsname{0.916 grouped vs 0.940 plain}
@@ -200,7 +208,7 @@
 \expandafter\def\csname num@probe_auroc_sex_min_mimic\endcsname{0.93}
 \expandafter\def\csname num@probe_p_marker\endcsname{0.005}
 \expandafter\def\csname num@probe_repeat_sd_max_celeba\endcsname{0.001}
-\expandafter\def\csname num@probe_repeat_sd_max_chexpert\endcsname{0.019}
+\expandafter\def\csname num@probe_repeat_sd_max_chexpert\endcsname{0.021}
 \expandafter\def\csname num@probe_repeat_sd_max_mimic\endcsname{0.011}
 \expandafter\def\csname num@sens_hbac_var\endcsname{0.01}
 \expandafter\def\csname num@sens_hbac_xor\endcsname{0.01}
