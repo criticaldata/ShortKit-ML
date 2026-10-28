@@ -8,11 +8,12 @@
 \expandafter\def\csname num@alignment_max_spearman_chexpert_resnet50\endcsname{0.780}
 \expandafter\def\csname num@alignment_max_spearman_chexpert_vit_b_16\endcsname{0.753}
 \expandafter\def\csname num@alignment_max_spearman_chexpert_vit_b_32\endcsname{0.615}
-\expandafter\def\csname num@alignment_max_spearman_mimic_medsiglip\endcsname{0.387}
+\expandafter\def\csname num@alignment_max_spearman_mimic_medsiglip\endcsname{0.414}
 \expandafter\def\csname num@alignment_max_spearman_mimic_rad_dino\endcsname{0.387}
-\expandafter\def\csname num@alignment_max_spearman_mimic_vit16_cls\endcsname{0.361}
-\expandafter\def\csname num@alignment_max_spearman_mimic_vit32_cls\endcsname{0.006}
-\expandafter\def\csname num@alignment_misaligned_backbones\endcsname{mimic:vit32\_cls}
+\expandafter\def\csname num@alignment_max_spearman_mimic_vit16_cls\endcsname{0.499}
+\expandafter\def\csname num@alignment_max_spearman_mimic_vit32_cls\endcsname{0.499}
+\expandafter\def\csname num@alignment_max_spearman_mimic_vit32_cls_stored\endcsname{0.006}
+\expandafter\def\csname num@alignment_misaligned_backbones\endcsname{mimic:vit32\_cls\_stored}
 \expandafter\def\csname num@alpha\endcsname{0.05}
 \expandafter\def\csname num@attr_removal_method\endcsname{unit direction u = difference of A-group means after centring each Y stratum, estimated on the training pool in raw embedding space; test embeddings x are replaced by x - ((x - m) . u) u with m the training-pool mean, and the confounded head is reapplied}
 \expandafter\def\csname num@best_detector_xor\endcsname{BiasDir}
@@ -32,7 +33,7 @@
 \expandafter\def\csname num@cluster_top_variable_chexpert\endcsname{AP/PA}
 \expandafter\def\csname num@cluster_top_variable_mimic\endcsname{view (AP/PA)}
 \expandafter\def\csname num@cluster_view_nmi_chexpert\endcsname{0.359}
-\expandafter\def\csname num@code_commit\endcsname{bcf7993}
+\expandafter\def\csname num@code_commit\endcsname{1d5b7af}
 \expandafter\def\csname num@effective_n_detectors\endcsname{1.4}
 \expandafter\def\csname num@effective_n_detectors_linear_d0\endcsname{3.9}
 \expandafter\def\csname num@effective_n_detectors_linear_d02\endcsname{2.6}
@@ -91,9 +92,9 @@
 \expandafter\def\csname num@fpr_nullcheck_statistical\endcsname{0.03}
 \expandafter\def\csname num@freq_topk\endcsname{5}
 \expandafter\def\csname num@groupsize_auroc_sd_m25_chexpert\endcsname{0.14}
-\expandafter\def\csname num@groupsize_auroc_sd_m25_mimic\endcsname{0.10}
+\expandafter\def\csname num@groupsize_auroc_sd_m25_mimic\endcsname{0.05}
 \expandafter\def\csname num@groupsize_reject_rate_m25_chexpert\endcsname{0.10}
-\expandafter\def\csname num@groupsize_reject_rate_m25_mimic\endcsname{0.70}
+\expandafter\def\csname num@groupsize_reject_rate_m25_mimic\endcsname{0.80}
 \expandafter\def\csname num@groupsize_reject_rate_m400_chexpert\endcsname{1.00}
 \expandafter\def\csname num@groupsize_reject_rate_m400_mimic\endcsname{1.00}
 \expandafter\def\csname num@hbac_k\endcsname{8}
@@ -151,21 +152,21 @@
 \expandafter\def\csname num@model_ids\endcsname{vit\_b\_32: vit\_b\_32 (class token (heads = Identity)), cosine mean 0.744, min 0.408, NOT reproduced; dinov2\_base: facebook/dinov2-base (pooler\_output), cosine mean 0.968, min 0.857, NOT reproduced; rad\_dino: microsoft/rad-dino (pooler\_output), cosine mean 0.896, min 0.483, NOT reproduced; medsiglip: google/siglip-so400m-patch14-384 (vision pooler\_output), cosine mean 0.018, min -0.053, NOT reproduced}
 \expandafter\def\csname num@n_bootstrap\endcsname{2000}
 \expandafter\def\csname num@n_cells_excluded_misaligned_chexpert\endcsname{0}
-\expandafter\def\csname num@n_cells_excluded_misaligned_mimic\endcsname{3}
+\expandafter\def\csname num@n_cells_excluded_misaligned_mimic\endcsname{0}
 \expandafter\def\csname num@n_cells_primary_chexpert\endcsname{21}
-\expandafter\def\csname num@n_cells_primary_mimic\endcsname{9}
+\expandafter\def\csname num@n_cells_primary_mimic\endcsname{12}
 \expandafter\def\csname num@n_cells_probe_sig_age_chexpert\endcsname{7}
-\expandafter\def\csname num@n_cells_probe_sig_age_mimic\endcsname{3}
+\expandafter\def\csname num@n_cells_probe_sig_age_mimic\endcsname{4}
 \expandafter\def\csname num@n_cells_probe_sig_chexpert\endcsname{20}
-\expandafter\def\csname num@n_cells_probe_sig_mimic\endcsname{9}
+\expandafter\def\csname num@n_cells_probe_sig_mimic\endcsname{12}
 \expandafter\def\csname num@n_cells_probe_sig_race_chexpert\endcsname{6}
-\expandafter\def\csname num@n_cells_probe_sig_race_mimic\endcsname{3}
+\expandafter\def\csname num@n_cells_probe_sig_race_mimic\endcsname{4}
 \expandafter\def\csname num@n_head_cells\endcsname{42}
 \expandafter\def\csname num@n_head_cells_infeasible\endcsname{0}
 \expandafter\def\csname num@n_null_datasets_per_rho\endcsname{40}
 \expandafter\def\csname num@n_nullcheck_datasets\endcsname{500}
 \expandafter\def\csname num@n_secondary_flags_chexpert\endcsname{70}
-\expandafter\def\csname num@n_secondary_flags_mimic\endcsname{45}
+\expandafter\def\csname num@n_secondary_flags_mimic\endcsname{60}
 \expandafter\def\csname num@negctl_fpr_image_biasdir\endcsname{1.00}
 \expandafter\def\csname num@negctl_fpr_image_frequency\endcsname{1.00}
 \expandafter\def\csname num@negctl_fpr_image_geometric\endcsname{1.00}
@@ -194,7 +195,7 @@
 \expandafter\def\csname num@probe_auroc_marker\endcsname{1.00}
 \expandafter\def\csname num@probe_auroc_mimic_raddino_sex\endcsname{1.00}
 \expandafter\def\csname num@probe_auroc_race_range_chexpert\endcsname{0.53 to 0.62}
-\expandafter\def\csname num@probe_auroc_race_range_mimic\endcsname{0.69 to 0.75}
+\expandafter\def\csname num@probe_auroc_race_range_mimic\endcsname{0.66 to 0.76}
 \expandafter\def\csname num@probe_auroc_sex_grouped_vs_plain_chexpert_densenet121\endcsname{0.884 grouped vs 0.926 plain}
 \expandafter\def\csname num@probe_auroc_sex_grouped_vs_plain_chexpert_dinov2base\endcsname{0.916 grouped vs 0.940 plain}
 \expandafter\def\csname num@probe_auroc_sex_grouped_vs_plain_chexpert_medsiglip\endcsname{0.679 grouped vs 0.713 plain}
@@ -209,7 +210,7 @@
 \expandafter\def\csname num@probe_p_marker\endcsname{0.005}
 \expandafter\def\csname num@probe_repeat_sd_max_celeba\endcsname{0.001}
 \expandafter\def\csname num@probe_repeat_sd_max_chexpert\endcsname{0.021}
-\expandafter\def\csname num@probe_repeat_sd_max_mimic\endcsname{0.011}
+\expandafter\def\csname num@probe_repeat_sd_max_mimic\endcsname{0.013}
 \expandafter\def\csname num@sens_hbac_var\endcsname{0.01}
 \expandafter\def\csname num@sens_hbac_xor\endcsname{0.01}
 \expandafter\def\csname num@sens_probe_delta02_linear\endcsname{0.07}
@@ -237,6 +238,7 @@
 \expandafter\def\csname num@synthetic_task_shift\endcsname{1.0}
 \expandafter\def\csname num@varshift_param\endcsname{equal means; attribute dimensions have standard deviation 1 + delta for A = 1 and 1 for A = 0}
 \expandafter\def\csname num@vit16_sex_auroc_mimic\endcsname{0.93}
-\expandafter\def\csname num@vit32_sex_auroc_mimic\endcsname{0.51}
+\expandafter\def\csname num@vit32_sex_auroc_mimic\endcsname{0.94}
+\expandafter\def\csname num@vit32_stored_sex_auroc_mimic\endcsname{0.50}
 \expandafter\def\csname num@xor_delta_reported\endcsname{2.0}
 \expandafter\def\csname num@xor_param\endcsname{pairs of attribute dimensions are shifted by (u1, u2) times delta/2, with u1 a random sign and u2 = u1 for A = 1 and u2 = -u1 for A = 0; both groups have zero mean in every dimension and, given the partner component, differ by delta standard deviations}
