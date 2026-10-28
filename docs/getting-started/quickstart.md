@@ -6,36 +6,47 @@ Get started with shortcut detection in under 5 minutes.
 
 ### Step 1: Prepare Your Data
 
-You need two arrays:
+The audit used in the paper needs four arrays:
 
-- **Embeddings**: `(n_samples, embedding_dim)` - your model's representations
-- **Group labels**: `(n_samples,)` - protected attribute labels (e.g., race, sex, age group)
+- **Embeddings** `E`: `(n_samples, embedding_dim)` - your frozen model's representations
+- **Attribute** `A`: `(n_samples,)` - the sensitive attribute (e.g., sex, race, age group)
+- **Task label** `Y`: `(n_samples,)` - the binary task label the audit conditions on
+- **Patient ids** `groups`: `(n_samples,)` - optional; needed whenever one patient has several images
 
 ```python
 import numpy as np
 
-# Example: Load pre-computed embeddings
-embeddings = np.load("embeddings.npy")  # Shape: (1000, 512)
-group_labels = np.load("groups.npy")    # Shape: (1000,) with values like 0, 1, 2
-
-print(f"Embeddings: {embeddings.shape}")
-print(f"Groups: {np.unique(group_labels)}")
+E = np.load("embeddings.npy")          # Shape: (1000, 512)
+A = np.load("attribute.npy")           # Shape: (1000,), e.g. 0/1 or strings
+Y = np.load("task_labels.npy")         # Shape: (1000,), 0/1
+patient_ids = np.load("patients.npy")  # Shape: (1000,)
 ```
 
-### Step 2: Run Detection
+### Step 2: Run the Conditional Audit
+
+```python
+from shortcut_detect.audit import AuditConfig, conditional_audit
+
+cfg = AuditConfig(n_permutations=200, n_permutations_probe=500, seed=42)
+result = conditional_audit(E, A, Y, config=cfg, groups=patient_ids)
+
+probe = result.results["probe"]  # the primary test
+print(f"Conditional probe AUROC: {probe.statistic:.3f} "
+      f"(95% CI {probe.ci_low:.3f} to {probe.ci_high:.3f}), "
+      f"permutation p = {probe.p_value:.3f}, BH q = {probe.p_bh:.3f}")
+print(f"Detectors flagged (descriptive): {result.n_flagged} of {len(result.results)}")
+```
+
+The probe predicts `A` from `[E, Y]`; its score is the out-of-fold AUROC and its p-value comes from shuffling `A` within strata of `Y`, between patients when `groups` is given. The five secondary detectors (`statistical`, `geometric`, `bias_direction`, `hbac_nmi`, `frequency_topk`) share that null and are reported as diagnostics. A flagged probe means the attribute is recoverable from the embedding given the task; whether a classifier uses it is a separate question. See the [Audit API](../api/audit.md).
+
+!!! note "Legacy interactive detector"
+    `ShortcutDetector(methods=[...]).fit(embeddings, group_labels)` still works and drives the dashboard, the MCP server and the reports below. It compares each method against fixed thresholds (the risk levels at the end of this page) and does not condition on the task label; none of those thresholds decides anything in the paper.
 
 ```python
 from shortcut_detect import ShortcutDetector
 
-# Create detector with all methods
-detector = ShortcutDetector(
-    methods=['hbac', 'probe', 'statistical', 'geometric']
-)
-
-# Fit the detector
-detector.fit(embeddings, group_labels)
-
-# Get summary
+detector = ShortcutDetector(methods=['hbac', 'probe', 'statistical', 'geometric'])
+detector.fit(E, A)
 print(detector.summary())
 ```
 

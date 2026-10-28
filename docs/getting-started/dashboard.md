@@ -114,25 +114,21 @@ Export your analysis:
 
 ### Method Parameters
 
+These are the controls exposed in the Detection tab's accordions; HBAC, Probe, Statistical and Geometric run with their package defaults and have no dashboard controls.
+
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| HBAC max iterations | 3 | Maximum clustering depth |
-| HBAC min cluster size | 0.05 | Minimum cluster size as fraction |
-| Probe model | Logistic Regression | Classifier for probe-based detection |
-| Statistical test | Mann-Whitney U | Non-parametric test for group differences |
-| Significance level | 0.05 | Alpha for statistical tests |
+| Significance level (alpha) | 0.05 | Alpha for the statistical test (0.01 to 0.10) |
+| Correction method | `fdr_bh` | Multiple testing correction: `fdr_bh`, `bonferroni`, `holm`, `fdr_by` |
+| SSA labeled fraction | 0.2 | Portion of samples treated as labeled for SSA (plus a split seed, 42) |
+| Frequency top percent / TPR / FPR | 0.05 / 0.5 / 0.15 | Dimension share kept and per-class flagging thresholds; probe evaluation on `train` |
+| Early-epoch clustering min cluster ratio | 0.10 | SPARE minimum cluster ratio |
+| GCE q / loss percentile / max iterations | 0.7 / 90 / 500 | Generalized cross-entropy settings |
 | Causal effect spurious threshold | 0.1 | Attributes with \|effect\| below this are flagged |
-| CAV quality threshold | 0.7 | Minimum concept quality (AUC) |
-| VAE latent dim | 10 | VAE latent dimension (Advanced Analysis) |
+| CAV concept quality threshold | 0.7 | Minimum concept AUC (Detection tab bundle and Advanced Analysis) |
+| VAE latent dimension | 10 | Advanced Analysis |
 
-### Visualization Settings
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| Dimensionality reduction | t-SNE | Method for 2D projection |
-| Perplexity (t-SNE) | 30 | t-SNE perplexity parameter |
-| n_neighbors (UMAP) | 15 | UMAP neighborhood size |
-| Color palette | Categorical | Color scheme for groups |
+Projections in the report (PCA, t-SNE, 3D) use fixed settings; there are no visualization controls in the dashboard.
 
 ## Screenshot
 
