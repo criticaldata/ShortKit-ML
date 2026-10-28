@@ -54,12 +54,46 @@ TRAINING_METHODS: frozenset[str] = frozenset({"groupdro", "gce", "ssa"})
 # ── Detection flag ───────────────────────────────────────────────────────
 
 
-def method_flag(method: str, result: dict[str, Any]) -> bool:
-    """Determine whether *method* flagged a shortcut in *result*.
+def _report_risk(report: Any) -> str:
+    """Read ``risk_level`` from a report that may be a dict or a dataclass."""
+    if isinstance(report, dict):
+        return str(report.get("risk_level", "low")).lower()
+    if report is not None and hasattr(report, "risk_level"):
+        return str(report.risk_level).lower()
+    return "low"
 
-    This is the single canonical implementation.  All benchmark modules
-    and scripts should delegate to this function.
+
+def _select_results(result: dict[str, Any], attribute: str | None) -> list[dict[str, Any]]:
+    """Return the per-attribute sub-results that a flag should be read from.
+
+    Multi-attribute runs nest each attribute's result under ``by_attribute``.
+    When ``attribute`` is given only that sub-result is used (the tested
+    attribute is passed as ``group_labels`` and is stored under ``"group"``).
+    Without ``attribute`` every sub-result is returned, which keeps the
+    historical "any attribute" reading available for backward compatibility.
     """
+    by_attr = result.get("by_attribute")
+    if not isinstance(by_attr, dict):
+        return [result]
+    if attribute is not None:
+        sub = by_attr.get(attribute)
+        return [sub] if isinstance(sub, dict) else []
+    return [v for v in by_attr.values() if isinstance(v, dict)]
+
+
+def method_evaluated(method: str, result: dict[str, Any], attribute: str | None = None) -> bool:
+    """Return True when *method* actually ran successfully for *attribute*.
+
+    A failed run must be reported as not evaluated (n/a) and left out of an
+    agreement denominator, never counted as "no shortcut".
+    """
+    if not isinstance(result, dict) or not result.get("success", False):
+        return False
+    subs = _select_results(result, attribute)
+    return any(bool(s.get("success", False)) for s in subs)
+
+
+def _flag_single(method: str, result: dict[str, Any]) -> bool:
     if not result.get("success", False):
         return False
 
@@ -71,7 +105,7 @@ def method_flag(method: str, result: dict[str, Any]) -> bool:
         return bool(result.get("report", {}).get("has_shortcut", {}).get("exists", False))
 
     if method == "statistical":
-        sig = result.get("significant_features", {})
+        sig = result.get("significant_features", {}) or {}
         return any(v is not None and len(v) > 0 for v in sig.values())
 
     if method == "geometric":
@@ -100,11 +134,8 @@ def method_flag(method: str, result: dict[str, Any]) -> bool:
         return False
 
     if method == "gce":
-        report = result.get("report", {})
-        if isinstance(report, dict):
-            risk = str(report.get("risk_level", "low")).lower()
-            return risk in {"moderate", "high"}
-        return False
+        # GCE stores a GCEReport dataclass, not a dict
+        return _report_risk(result.get("report")) in {"moderate", "high"}
 
     if method == "ssa":
         return bool(result.get("shortcut_detected", False))
@@ -127,6 +158,30 @@ def method_flag(method: str, result: dict[str, Any]) -> bool:
         return False
 
     return False
+
+
+def method_flag(method: str, result: dict[str, Any], attribute: str | None = None) -> bool:
+    """Determine whether *method* flagged a shortcut in *result*.
+
+    This is the single canonical implementation.  All benchmark modules
+    and scripts should delegate to this function.
+
+    Parameters
+    ----------
+    method:
+        Method key, e.g. ``"statistical"``.
+    result:
+        The entry of ``ShortcutDetector.results_`` for that method.  Results of
+        multi-attribute runs are nested under ``by_attribute``.
+    attribute:
+        Which attribute of a multi-attribute run to read.  Benchmark runners
+        that pass the tested attribute as ``group_labels`` should use
+        ``"group"``.  When omitted, the method counts as flagged if any
+        attribute flagged (historical behaviour).
+    """
+    if not isinstance(result, dict) or not result.get("success", False):
+        return False
+    return any(_flag_single(method, sub) for sub in _select_results(result, attribute))
 
 
 # ── Convergence bucket ───────────────────────────────────────────────────
