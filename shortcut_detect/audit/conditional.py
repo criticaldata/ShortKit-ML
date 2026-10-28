@@ -147,13 +147,44 @@ def _encode(a: np.ndarray) -> tuple[np.ndarray, list[str]]:
 
 
 def conditional_permutations(
-    a: np.ndarray, y: np.ndarray, k: int, rng: np.random.Generator, mode: str = "within_y"
+    a: np.ndarray,
+    y: np.ndarray,
+    k: int,
+    rng: np.random.Generator,
+    mode: str = "within_y",
+    groups: np.ndarray | None = None,
 ) -> np.ndarray:
     """Return a (k + 1, n) array whose row 0 is ``a`` and rows 1..k are ``a``
-    shuffled within each Y stratum (or globally when ``mode='global'``)."""
+    shuffled within each Y stratum (or globally when ``mode='global'``).
+
+    With ``groups`` (patient ids) the shuffle is at patient level: each
+    patient's attribute (its most common value) is reassigned among patients
+    with the same Y pattern (all negative, all positive, or mixed). Images of
+    one patient are correlated, and an image-level shuffle then gives
+    anti-conservative p-values.
+    """
     n = len(a)
     out = np.empty((k + 1, n), dtype=a.dtype)
     out[0] = a
+    if groups is not None:
+        _, ginv = np.unique(np.asarray(groups).astype(str), return_inverse=True)
+        n_g = ginv.max() + 1
+        pa = np.empty(n_g, dtype=a.dtype)
+        pstrat = np.empty(n_g, dtype=np.int64)
+        y_hi = int(y.max())
+        for g in range(n_g):
+            idx = ginv == g
+            vals, cnt = np.unique(a[idx], return_counts=True)
+            pa[g] = vals[np.argmax(cnt)]
+            ys = np.unique(y[idx])
+            pstrat[g] = int(ys[0]) if len(ys) == 1 else y_hi + 1
+        strata = [np.arange(n_g)] if mode == "global" else [np.flatnonzero(pstrat == s) for s in np.unique(pstrat)]
+        for i in range(1, k + 1):
+            prow = pa.copy()
+            for idx in strata:
+                prow[idx] = pa[idx][rng.permutation(len(idx))]
+            out[i] = prow[ginv]
+        return out
     strata = [np.arange(n)] if mode == "global" else [np.flatnonzero(y == v) for v in np.unique(y)]
     for i in range(1, k + 1):
         row = a.copy()
@@ -624,9 +655,9 @@ def conditional_audit(
     """Run the attribute-aware audit on one (embedding, attribute, task) cell.
 
     ``groups`` (e.g. patient ids) makes every cross-validation split
-    patient-disjoint and every bootstrap resample whole patients. The
-    permutation stays at image level within Y strata (section 2 of the
-    revision decisions).
+    patient-disjoint, every bootstrap resample whole patients, and the
+    permutation patient-level within Y-pattern strata (see
+    ``conditional_permutations``).
     """
     cfg = config or AuditConfig()
     rng = np.random.default_rng(cfg.seed)
@@ -644,7 +675,7 @@ def conditional_audit(
     ctx["G"] = G
     K = cfg.n_permutations
     Kp = cfg.n_permutations_probe or K
-    a_rows = conditional_permutations(a, Y, max(K, Kp), rng, cfg.permutation)
+    a_rows = conditional_permutations(a, Y, max(K, Kp), rng, cfg.permutation, groups)
     groups_idx = None
     if groups is not None:
         groups = np.asarray(groups)
