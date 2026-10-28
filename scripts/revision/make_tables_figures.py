@@ -534,6 +534,7 @@ def cohorts():
     write_tabular("cohort_demographics", pd.DataFrame(rows), "l" + "r" * 10 + "lr", escape_cells=False, header=hdr)
     put("chexpert_n_race_missing", int(mc.race.isna().sum()), "{:d}")
     put("chexpert_n_race_nhpi", int((mc.race == "NHPI").sum()), "{:d}")
+    put("mimic_n_race_missing", int(mm.race.isna().sum()), "{:d}")
 
 
 # ---------------------------------------------------------------------------
