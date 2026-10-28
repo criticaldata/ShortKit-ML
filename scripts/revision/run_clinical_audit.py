@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 import time
 from pathlib import Path
@@ -25,8 +24,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
     CHEXPERT_BACKBONES,
     CHEXPERT_JOIN_NOTE,
-    MIMIC_BACKBONES,
     DATA,
+    MIMIC_BACKBONES,
     Manifest,
     attribute_cells,
     celeba_cells,

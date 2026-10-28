@@ -18,9 +18,8 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import BACKBONE_LABELS, REPO, git_sha, results_root, to_jsonable  # noqa: E402
-
 import matplotlib  # noqa: E402
+from common import BACKBONE_LABELS, REPO, git_sha, results_root, to_jsonable  # noqa: E402
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
