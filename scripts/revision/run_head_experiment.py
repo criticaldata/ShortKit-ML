@@ -28,7 +28,6 @@ uncertain and blank rows dropped and counted):
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 import time
 from pathlib import Path
@@ -158,7 +157,7 @@ def run_cell(bb, attr, task, seeds, mitig_seeds, k_audit, threads):
         cells_tr = {(a, y): tr_pool[(ak[tr_pool] == a) & (yk[tr_pool] == y)] for a in (0, 1) for y in (0, 1)}
         cells_te = {(a, y): te_pool[(ak[te_pool] == a) & (yk[te_pool] == y)] for a in (0, 1) for y in (0, 1)}
         conf = {(1, 1): RHO_TRAIN / 2, (0, 0): RHO_TRAIN / 2, (1, 0): (1 - RHO_TRAIN) / 2, (0, 1): (1 - RHO_TRAIN) / 2}
-        bal = {c: 0.25 for c in conf}
+        bal = dict.fromkeys(conf, 0.25)
         n_conf = min(len(cells_tr[c]) / f for c, f in conf.items())
         n_bal = min(len(cells_tr[c]) / f for c, f in bal.items())
         N = int(np.floor(min(n_conf, n_bal)))

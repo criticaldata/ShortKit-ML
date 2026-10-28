@@ -103,7 +103,7 @@ def correction_null(n_reps: int = 200) -> pd.DataFrame:
 
     rows = []
     for d in [16, 32, 64, 128, 256, 512]:
-        hits = {k: 0 for k in ["uncorrected", "bonferroni", "holm", "fdr_bh", "fdr_by"]}
+        hits = dict.fromkeys(["uncorrected", "bonferroni", "holm", "fdr_bh", "fdr_by"], 0)
         for rep in range(n_reps):
             ds = generate_conditional_synthetic(
                 n_samples=1000, embedding_dim=d, delta=0.0, rho=0.7, seed=50_000 + rep,
