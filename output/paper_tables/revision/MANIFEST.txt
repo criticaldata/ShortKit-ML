@@ -1,7 +1,39 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit b90ae3d72d5ddbf5ac5a2917fac17ae937fcb980
+tables/figures built at commit 11878485e3134117ca71e2fbf4a0d8ae68f13f6b
 
 ===== alignment_check =====
+run: row alignment across backbones (cosine-structure Spearman)
+commit: 6498fce96fdc36cb0fad04dff372ff035e35a8b8
+working tree has uncommitted changes: True
+command: python scripts/revision/run_alignment_check.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 15:59:35 GMT
+wall_seconds: 23.7
+
+config:
+{
+  "n_rows": 400,
+  "shuffle_seed": 0
+}
+
+data files (md5):
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+  ce4f0dd65008a34d04ffaf0d55d1a142  data/mimic_cxr/rad_dino_embeddings.npy
+  1ddaf5c90ce5334950d71746875a67e7  data/mimic_cxr/vit16_cls_embeddings.npy
+  873bae28f4a491a7ebc0eba7d21b4c2a  data/mimic_cxr/vit32_cls_embeddings_realigned.npy
+  3244e16214f3e0a9ca6feda83ee9faef  data/mimic_cxr/medsiglip_embeddings.npy
+  1ab5b6b2f347bd22af0abbe360c4e88d  data/mimic_cxr/vit32_cls_embeddings.npy
+
+timings (s):
+  all: 23.522
+
+===== alignment_check_stored_arrays =====
 run: row alignment across backbones (cosine-structure Spearman)
 commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
@@ -34,6 +66,49 @@ timings (s):
   all: 1.529
 
 ===== analyses =====
+run: clusters vs metadata, group-size stability, held-out LDA
+commit: 6498fce96fdc36cb0fad04dff372ff035e35a8b8
+working tree has uncommitted changes: True
+command: python scripts/revision/run_analyses.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 15:59:09 GMT
+wall_seconds: 299.1
+
+config:
+{
+  "k_clusters": 8,
+  "group_size_reps": 10,
+  "K": 200,
+  "group_size_backbone": "rad_dino",
+  "lda": "StandardScaler + shrinkage LDA, 5-fold"
+}
+
+data files (md5):
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+  ce4f0dd65008a34d04ffaf0d55d1a142  data/mimic_cxr/rad_dino_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/rad_dino_metadata.csv
+  1ddaf5c90ce5334950d71746875a67e7  data/mimic_cxr/vit16_cls_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/vit16_cls_metadata.csv
+  873bae28f4a491a7ebc0eba7d21b4c2a  data/mimic_cxr/vit32_cls_embeddings_realigned.npy
+  90dee0af29c22263028d3ec11fcd9d09  data/mimic_cxr/vit32_cls_metadata.csv
+  3244e16214f3e0a9ca6feda83ee9faef  data/mimic_cxr/medsiglip_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/medsiglip_metadata.csv
+  e23bf855c6897b5c6b7b3d751e4e562f  data/mimic_cxr/mimic-cxr-2.0.0-metadata.csv
+
+timings (s):
+  clusters: 91.059
+  group_size: 206.48
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+
+===== analyses_stored_arrays =====
 run: clusters vs metadata, group-size stability, held-out LDA
 commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
@@ -77,6 +152,51 @@ notes:
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
 
 ===== clinical_audit =====
+run: conditional audit, clinical and CelebA
+commit: 8728cb33ccc7481d59385a4bf94f6fc069b9bb51
+working tree has uncommitted changes: True
+command: python scripts/revision/run_clinical_audit.py --datasets chexpert
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 15:54:08 GMT
+wall_seconds: 975.4
+
+config:
+{
+  "K": 200,
+  "K_probe": 500,
+  "n_bootstrap": 2000,
+  "seed": 42,
+  "alpha": 0.05,
+  "C": 1.0,
+  "n_folds": 5,
+  "top_k_fraction": 0.05,
+  "n_clusters": 8,
+  "permutation": "within Y; patient-level within Y-pattern strata when grouped",
+  "datasets": [
+    "chexpert"
+  ]
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 969.799
+
+notes:
+  - Profile before choosing K (28 Oct, one cell, CheXpert ResNet-50 d=2048, sex, K=200, 6 torch threads): whole cell 40 s; probe 9.3 s, frequency_topk 7.3 s, bias_direction 4.0 s, geometric 2.3 s, hbac_nmi 0.5 s, statistical 0.2 s. K for the probe therefore set to 200, the same as the vectorised statistics. Section 9 (after verification) sets K = 500 for the probe and 5 x 5 repeated grouped CV for the observed probe statistics; the same cell then takes 76 s (probe 18.7 s, frequency_topk 19.1 s).
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+
+===== clinical_audit_stored_arrays =====
 run: conditional audit, clinical and CelebA
 commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
@@ -213,7 +333,118 @@ timings (s):
 
 note: copied unchanged from /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/extraction_check (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
 
+notes (added 28 Oct 15:30):
+  - medsiglip google/medsiglip-448 extracted after access was granted (sebasmos env, Python 3.10.16, torch 2.10.0, transformers 4.57.3, CPU, OMP_NUM_THREADS=4; log logs/extract_medsiglip_cpu.log)
+  - vit_b_16 control rerun in the same env: cosine 1.000
+
+===== frontal_only =====
+run: CheXpert probe sensitivity: frontal
+commit: fe32da7c88d7281e5b1a50e7a9cd05f9f9c5b129
+working tree has uncommitted changes: True
+command: python scripts/revision/run_probe_sensitivity.py --check frontal
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 16:32:03 GMT
+wall_seconds: 354.9
+
+config:
+{
+  "check": "frontal",
+  "K_probe": 500,
+  "n_bootstrap": 2000,
+  "seed": 42,
+  "alpha": 0.05,
+  "n_folds": 5,
+  "cv_repeats": 5,
+  "detectors": [
+    "probe"
+  ],
+  "C": [
+    1.0
+  ],
+  "permutation": "within Y; patient-level within Y-pattern strata",
+  "cells": "primary: sex, age 60+ (first study), White vs non-White; task Pneumothorax"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
+  ae9612cb260ebef03b51a75c3b311e76  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 348.521
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. decision_bound: 'sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate'. For the C check, bh_with_main_secondaries recomputes BH with the probe p from this run and the five secondary p-values from the main audit (frequency_topk also uses C, so approximate).
+  - Frontal = train.csv Frontal/Lateral == 'Frontal'. Age attribute stays the age at the patient's first study in the full 2,000-image cohort.
+
 ===== head_experiment =====
+run: head reliance experiment (section 7, items 1 to 3)
+commit: 6498fce96fdc36cb0fad04dff372ff035e35a8b8
+working tree has uncommitted changes: True
+command: python scripts/revision/run_head_experiment.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 16:26:06 GMT
+wall_seconds: 1916.8
+
+config:
+{
+  "seeds": 10,
+  "mitigation_seeds": 3,
+  "K_audit": 500,
+  "K_mitigation_audits": 200,
+  "age": "age at the first study (patient-constant)",
+  "rho_train": 0.9,
+  "rho_test": 0.5,
+  "head": "StandardScaler + LogisticRegression(C=1)",
+  "threshold": 0.5,
+  "tasks": {
+    "pneumothorax": "Pneumothorax",
+    "pleural_effusion": "Pleural Effusion",
+    "cardiomegaly": "Cardiomegaly"
+  },
+  "attributes": [
+    "sex (Male=1)",
+    "age 60+ (=1)"
+  ],
+  "mitigations": {
+    "adversarial": "AdversarialDebiasing(defaults)",
+    "adversarial_control": "AdversarialDebiasing({'adversary_weight': 0.0})",
+    "contrastive": "ContrastiveDebiasing(defaults)",
+    "contrastive_control": "ContrastiveDebiasing({'contrastive_weight': 0.0})"
+  },
+  "masking": "ShortcutMasker zero, top 5% of dims by A-direction loading; control random dims",
+  "dfr": "LastLayerRetraining defaults (L1, C = 1, balanced classes) on a subset of the confounded training set balanced over the four (A, Y) groups",
+  "split": "patient-level StratifiedGroupKFold(2) on (A, Y)"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 1916.607
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - attribute removal: Unit direction u = difference of A-group means after centring each Y stratum, estimated on the whole training pool (raw embedding space); test embeddings are replaced by x - ((x - m) . u) u, with m the training-pool mean, and the confounded head is reapplied.
+
+===== head_experiment_before_dfr_fix =====
 run: head reliance experiment (section 7, items 1 to 3)
 commit: 91b5bb94425706b55b7e5379c925c1837baaea40
 working tree has uncommitted changes: False
@@ -327,7 +558,150 @@ notes:
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record are missing (the shipped manifest coded them OTHER), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
   - attribute removal: Unit direction u = difference of A-group means after centring each Y stratum, estimated on the whole training pool (raw embedding space); test embeddings are replaced by x - ((x - m) . u) u, with m the training-pool mean, and the confounded head is reapplied.
 
+===== head_experiment_stored_arrays =====
+run: head reliance experiment (section 7, items 1 to 3)
+commit: 91b5bb94425706b55b7e5379c925c1837baaea40
+working tree has uncommitted changes: False
+command: python scripts/revision/run_head_experiment.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 12:42:37 GMT
+wall_seconds: 1944.5
+
+config:
+{
+  "seeds": 10,
+  "mitigation_seeds": 3,
+  "K_audit": 500,
+  "K_mitigation_audits": 200,
+  "age": "age at the first study (patient-constant)",
+  "rho_train": 0.9,
+  "rho_test": 0.5,
+  "head": "StandardScaler + LogisticRegression(C=1)",
+  "threshold": 0.5,
+  "tasks": {
+    "pneumothorax": "Pneumothorax",
+    "pleural_effusion": "Pleural Effusion",
+    "cardiomegaly": "Cardiomegaly"
+  },
+  "attributes": [
+    "sex (Male=1)",
+    "age 60+ (=1)"
+  ],
+  "mitigations": {
+    "adversarial": "AdversarialDebiasing(defaults)",
+    "adversarial_control": "AdversarialDebiasing({'adversary_weight': 0.0})",
+    "contrastive": "ContrastiveDebiasing(defaults)",
+    "contrastive_control": "ContrastiveDebiasing({'contrastive_weight': 0.0})"
+  },
+  "masking": "ShortcutMasker zero, top 5% of dims by A-direction loading; control random dims",
+  "dfr": "LastLayerRetraining defaults (L1, C = 1, balanced classes) on a group-balanced subset",
+  "split": "patient-level StratifiedGroupKFold(2) on (A, Y)"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  3ce55cfc0a8337bec26cb7acf9af02df  data/chexpert_multibackbone/vit_b_32_embeddings.npy
+  eb997aa0d38051c1cc231cefca177571  data/chexpert_multibackbone/dinov2_base_embeddings.npy
+  27383c64a40f071bc81830ab2db78b23  data/chexpert_multibackbone/rad_dino_embeddings.npy
+  85852a8e90d5eaf736617a4a928a168e  data/chexpert_multibackbone/medsiglip_embeddings.npy
+
+timings (s):
+  all_cells: 1944.297
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - attribute removal: Unit direction u = difference of A-group means after centring each Y stratum, estimated on the whole training pool (raw embedding space); test embeddings are replaced by x - ((x - m) . u) u, with m the training-pool mean, and the confounded head is reapplied.
+
+===== head_mlp =====
+run: head reliance with an MLP head (reliance part only)
+commit: 6498fce96fdc36cb0fad04dff372ff035e35a8b8
+working tree has uncommitted changes: True
+command: python scripts/revision/run_head_mlp.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 16:27:14 GMT
+wall_seconds: 65.7
+
+config:
+{
+  "seeds": 10,
+  "rho_train": 0.9,
+  "rho_test": 0.5,
+  "threshold": 0.5,
+  "head": "StandardScaler + MLPClassifier({'hidden_layer_sizes': (256,), 'alpha': 0.001, 'early_stopping': False}, max_iter=500, random_state=seed)",
+  "splits": "identical to run_head_experiment.py (same seeds, split and subsampling code)",
+  "probe_values_from": "head_experiment/head_reliance.csv",
+  "tasks": {
+    "pneumothorax": "Pneumothorax",
+    "pleural_effusion": "Pleural Effusion",
+    "cardiomegaly": "Cardiomegaly"
+  },
+  "attributes": [
+    "sex",
+    "age"
+  ],
+  "backbones": [
+    "resnet50",
+    "densenet121",
+    "vit_b_16",
+    "vit_b_32",
+    "dinov2_base",
+    "rad_dino",
+    "medsiglip"
+  ],
+  "bootstrap": "2000 over cells (seed 0); 2000 over whole backbones (seed 1)"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  01ac25bee3d022a2393a61e462d294f8  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/head_experiment/head_reliance.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 63.22
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - tpr_gap_logistic_rerun: logistic head refitted on the same draw; it should equal tpr_gap in the logistic results for the same (cell, seed), which confirms pairing.
+  - pairing check against the logistic run: 0 mismatches over 420 rows
+  - MLP fits not converged at max_iter: 0 of 420 seeds
+
 ===== negative_control =====
+run: patient-level fake attribute negative control
+commit: 8728cb33ccc7481d59385a4bf94f6fc069b9bb51
+working tree has uncommitted changes: True
+command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML/scripts/revision/run_negative_control.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 14:50:18 GMT
+wall_seconds: 2712.8
+
+config:
+{
+  "draws": 30,
+  "K": 200,
+  "backbone": "rad_dino",
+  "threads": 4
+}
+
+data files (md5):
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+
+timings (s):
+  all: 2706.928
+
+===== negative_control_stored_arrays =====
 run: patient-level fake attribute negative control
 commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
@@ -454,6 +828,138 @@ timings (s):
 
 notes:
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record are missing (the shipped manifest coded them OTHER), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+
+===== pretraining_overlap =====
+run: Audited images in the RAD-DINO pretraining set
+commit: c62f68e4a2f3c896aaf3918cd1b843aafb543140
+working tree has uncommitted changes: True
+command: python scripts/revision/run_pretraining_overlap.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 12:55:49 GMT
+wall_seconds: 8.9
+
+config:
+{
+  "repo": "microsoft/rad-dino",
+  "file": "training_images.csv",
+  "revision": "110cbc18d5133582e320b43d53bf5c44e410c936"
+}
+
+data files (md5):
+  ce4f0dd65008a34d04ffaf0d55d1a142  data/mimic_cxr/rad_dino_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/rad_dino_metadata.csv
+
+timings (s):
+  all: 8.68
+
+===== probe_C_sensitivity =====
+run: CheXpert probe sensitivity: C
+commit: 11878485e3134117ca71e2fbf4a0d8ae68f13f6b
+working tree has uncommitted changes: True
+command: python scripts/revision/run_probe_sensitivity.py --check C
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 16:40:10 GMT
+wall_seconds: 842.6
+
+config:
+{
+  "check": "C",
+  "K_probe": 500,
+  "n_bootstrap": 2000,
+  "seed": 42,
+  "alpha": 0.05,
+  "n_folds": 5,
+  "cv_repeats": 5,
+  "detectors": [
+    "probe"
+  ],
+  "C": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "permutation": "within Y; patient-level within Y-pattern strata",
+  "cells": "primary: sex, age 60+ (first study), White vs non-White; task Pneumothorax"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
+  ae9612cb260ebef03b51a75c3b311e76  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+
+timings (s):
+  all_cells: 835.247
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. decision_bound: 'sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate'. For the C check, bh_with_main_secondaries recomputes BH with the probe p from this run and the five secondary p-values from the main audit (frequency_topk also uses C, so approximate).
+
+===== provenance_sensitivity =====
+run: CheXpert probe sensitivity: provenance
+commit: c62f68e4a2f3c896aaf3918cd1b843aafb543140
+working tree has uncommitted changes: True
+command: python scripts/revision/run_probe_sensitivity.py --check provenance
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-28 12:57:45 GMT
+wall_seconds: 118.0
+
+config:
+{
+  "check": "provenance",
+  "K_probe": 500,
+  "n_bootstrap": 2000,
+  "seed": 42,
+  "alpha": 0.05,
+  "n_folds": 5,
+  "cv_repeats": 5,
+  "detectors": [
+    "probe"
+  ],
+  "C": [
+    1.0
+  ],
+  "permutation": "within Y; patient-level within Y-pattern strata",
+  "cells": "primary: sex, age 60+ (first study), White vs non-White; task Pneumothorax",
+  "arrays": {
+    "dinov2_base": [
+      "dinov2_base__facebook_dinov2-base__pooler_output.npy",
+      "facebook/dinov2-base pooler_output"
+    ],
+    "rad_dino": [
+      "rad_dino__microsoft_rad-dino__pooler_output.npy",
+      "microsoft/rad-dino pooler_output"
+    ],
+    "vit_b_32": [
+      "vit_b_32__vit_b_32__class.npy",
+      "torchvision vit_b_32 class token"
+    ]
+  }
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
+  f437ef5d935ca6585bb05241479b1a20  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  11de00f5ea683f9fd76cb78bcfb2d977  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/rad_dino__microsoft_rad-dino__pooler_output.npy
+  ba8c873ea226869dfc52a658dd198014  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/vit_b_32__vit_b_32__class.npy
+
+timings (s):
+  all_cells: 115.051
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. decision_bound: 'sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate'. For the C check, bh_with_main_secondaries recomputes BH with the probe p from this run and the five secondary p-values from the main audit (frequency_topk also uses C, so approximate).
+  - Row order: extract_missing_chexpert_backbones.py embeds the images in _cache/images.pkl order and compares row by row with the stored array (cosine in extraction_check.json); no reordering, so rows match chexpert_meta().
 
 ===== synthetic =====
 run: conditional synthetic benchmark

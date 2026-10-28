@@ -965,6 +965,8 @@ def sensitivity():
             else:
                 row[f"$C={C:g}$"] = "n/a"
         rows.append(row)
+    enc = list(dict.fromkeys(r["Encoder"] for r in rows))
+    rows.sort(key=lambda r: (enc.index(r["Encoder"]), ["Sex", "Age", "Race"].index(r["$A$"])))
     write_tabular("sensitivity_probe", pd.DataFrame(rows), "llccccc", escape_cells=False,
                   header=["Encoder", "$A$", "Main", "Stored array", "Frontal only", "$C=0.1$", "$C=10$"])
     for k, v in diffs.items():
