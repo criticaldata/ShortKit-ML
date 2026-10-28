@@ -92,6 +92,21 @@ After a successful run, the timestamped output directory contains:
 
 The CheXpert real-data benchmark requires access to the CheXpert dataset. Set `chexpert.enabled: true` and provide `chexpert.manifest_path` in the config. See `scripts/extract_chexpert_embeddings.py` for embedding extraction.
 
+## Revised paper (CMPB revision, 2026)
+
+Every table, figure and number of the revised paper comes from one pipeline:
+
+```bash
+./scripts/reproduce_paper.sh revision          # all stages
+scripts/revision/run_all.sh head mlp tables    # selected stages
+```
+
+Stages, in order: `old clinical negctl synthetic nullcheck head mlp analyses umap marker extraction alignment overlap sensitivity tables`. Results go to `~/Documents/shortkit-ml-results/2026-10-28_revision_<commit>/` unless `SHORTKIT_REVISION_DIR` is set; each stage writes a `MANIFEST.txt` with the commit, data hashes and settings. `tables` writes the LaTeX tables, figures and `numbers.tex` to `output/paper_tables/revision/`.
+
+The embeddings come from the gated dataset [MITCriticalData/ShortKit-ML-data](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data). To get access, click **Request access** on the dataset page, then email your PhysioNet username and proof of current MIMIC-CXR access (never your password) to sebasmos@mit.edu. Requests are approved by hand.
+
+For CheXpert the pipeline reads ResNet-50, DenseNet-121 and ViT-B/16 from `data/chexpert_multibackbone/`, and ViT-B/32, DINOv2, RAD-DINO and MedSigLIP-448 from `data/chexpert_multibackbone/public/`. The `extraction` stage regenerates the `public/` arrays from the CheXpert images with pinned public checkpoints (it needs torch 2.6 or later with `transformers`, set through `EXTRACT_PYTHON`, and accepted terms for `google/medsiglip-448`).
+
 ## Troubleshooting
 
 - **Import errors**: Make sure the package is installed with `pip install -e ".[dev]"`.
