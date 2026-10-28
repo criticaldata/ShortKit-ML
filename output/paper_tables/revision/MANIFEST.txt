@@ -1,14 +1,14 @@
-revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a
-tables/figures built at commit 6215e7586763d15e8d12982f5c68f2f0fceba1a4
+revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_1e49670
+tables/figures built at commit 1e496704433f759905b184f6c11b50e6db678ba2
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
-commit: 5c8b1264b4461da335832e4a3512dac8be10800d
+commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML-revision/scripts/revision/run_alignment_check.py
+command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_alignment_check.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 03:13:54 GMT
-wall_seconds: 1.5
+written: 2026-10-28 05:37:18 GMT
+wall_seconds: 0.7
 
 config:
 {
@@ -30,16 +30,16 @@ data files (md5):
   3244e16214f3e0a9ca6feda83ee9faef  data/mimic_cxr/medsiglip_embeddings.npy
 
 timings (s):
-  all: 1.356
+  all: 0.704
 
 ===== analyses =====
 run: clusters vs metadata, group-size stability, held-out LDA
-commit: 12aeb2ae5f392ad9cafc3f7b9e25b7c77707684d
+commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_12aeb2a/scripts/revision/run_analyses.py
+command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_analyses.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 03:02:13 GMT
-wall_seconds: 193.5
+written: 2026-10-28 05:26:15 GMT
+wall_seconds: 195.5
 
 config:
 {
@@ -69,25 +69,25 @@ data files (md5):
   e23bf855c6897b5c6b7b3d751e4e562f  data/mimic_cxr/mimic-cxr-2.0.0-metadata.csv
 
 timings (s):
-  clusters: 8.276
-  group_size: 184.709
+  clusters: 9.228
+  group_size: 185.723
 
 notes:
-  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv; race from chexpert_manifest.csv.
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record are missing (the shipped manifest coded them OTHER), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
 
 ===== clinical_audit =====
 run: conditional audit, clinical and CelebA
-commit: 12aeb2ae5f392ad9cafc3f7b9e25b7c77707684d
+commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_12aeb2a/scripts/revision/run_clinical_audit.py
+command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_clinical_audit.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 02:46:39 GMT
-wall_seconds: 1009.7
+written: 2026-10-28 04:56:11 GMT
+wall_seconds: 3281.4
 
 config:
 {
   "K": 200,
-  "K_probe": 200,
+  "K_probe": 500,
   "n_bootstrap": 2000,
   "seed": 42,
   "alpha": 0.05,
@@ -127,11 +127,11 @@ data files (md5):
   32bd1bd63d3c78cd57e08160ec5ed1e2  data/celeba_real/celeba/identity_CelebA.txt
 
 timings (s):
-  all_cells: 1003.965
+  all_cells: 3274.975
 
 notes:
-  - Profile before choosing K (28 Oct, one cell, CheXpert ResNet-50 d=2048, sex, K=200, 6 torch threads): whole cell 40 s; probe 9.3 s, frequency_topk 7.3 s, bias_direction 4.0 s, geometric 2.3 s, hbac_nmi 0.5 s, statistical 0.2 s. K for the probe therefore set to 200, the same as the vectorised statistics.
-  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv; race from chexpert_manifest.csv.
+  - Profile before choosing K (28 Oct, one cell, CheXpert ResNet-50 d=2048, sex, K=200, 6 torch threads): whole cell 40 s; probe 9.3 s, frequency_topk 7.3 s, bias_direction 4.0 s, geometric 2.3 s, hbac_nmi 0.5 s, statistical 0.2 s. K for the probe therefore set to 200, the same as the vectorised statistics. Section 9 (after verification) sets K = 500 for the probe and 5 x 5 repeated grouped CV for the observed probe statistics; the same cell then takes 76 s (probe 18.7 s, frequency_topk 19.1 s).
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record are missing (the shipped manifest coded them OTHER), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
 
 ===== extraction_check =====
 run: re-extraction of CheXpert backbones without code (X-6)
@@ -223,20 +223,24 @@ data files (md5):
 
 timings (s):
 
+note: copied unchanged from /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/extraction_check (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
+
 ===== head_experiment =====
 run: head reliance experiment (section 7, items 1 to 3)
-commit: 12aeb2ae5f392ad9cafc3f7b9e25b7c77707684d
+commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_12aeb2a/scripts/revision/run_head_experiment.py
+command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_head_experiment.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 02:58:58 GMT
-wall_seconds: 737.0
+written: 2026-10-28 05:22:58 GMT
+wall_seconds: 1606.3
 
 config:
 {
   "seeds": 10,
   "mitigation_seeds": 3,
-  "K_audit": 200,
+  "K_audit": 500,
+  "K_mitigation_audits": 200,
+  "age": "age at the first study (patient-constant)",
   "rho_train": 0.9,
   "rho_test": 0.5,
   "head": "StandardScaler + LogisticRegression(C=1)",
@@ -250,10 +254,12 @@ config:
     "sex (Male=1)",
     "age 60+ (=1)"
   ],
-  "mitigations": [
-    "AdversarialDebiasing (defaults)",
-    "ContrastiveDebiasing (defaults)"
-  ],
+  "mitigations": {
+    "adversarial": "AdversarialDebiasing(defaults)",
+    "adversarial_control": "AdversarialDebiasing({'adversary_weight': 0.0})",
+    "contrastive": "ContrastiveDebiasing(defaults)",
+    "contrastive_control": "ContrastiveDebiasing({'contrastive_weight': 0.0})"
+  },
   "split": "patient-level StratifiedGroupKFold(2) on (A, Y)"
 }
 
@@ -269,20 +275,20 @@ data files (md5):
   85852a8e90d5eaf736617a4a928a168e  data/chexpert_multibackbone/medsiglip_embeddings.npy
 
 timings (s):
-  all_cells: 736.971
+  all_cells: 1606.184
 
 notes:
-  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv; race from chexpert_manifest.csv.
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record are missing (the shipped manifest coded them OTHER), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
   - attribute removal: Unit direction u = difference of A-group means after centring each Y stratum, estimated on the whole training pool (raw embedding space); test embeddings are replaced by x - ((x - m) . u) u, with m the training-pool mean, and the confounded head is reapplied.
 
 ===== negative_control =====
 run: patient-level fake attribute negative control
-commit: 12aeb2ae5f392ad9cafc3f7b9e25b7c77707684d
+commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_12aeb2a/scripts/revision/run_negative_control.py
+command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_negative_control.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 02:59:10 GMT
-wall_seconds: 747.3
+written: 2026-10-28 05:09:43 GMT
+wall_seconds: 809.1
 
 config:
 {
@@ -298,7 +304,7 @@ data files (md5):
   41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
 
 timings (s):
-  all: 746.791
+  all: 806.156
 
 ===== old_pipeline_fixed_flag =====
 run: old 13-method pipeline, fixed method_flag
@@ -370,14 +376,16 @@ notes:
 
 note added after the run (28 Oct 2026): this rerun used the shipped CheXpert metadata, whose sex column is inverted (HF mirror codes 0 = Male). Sex is binary, so detection flags are unaffected; it reproduces the committed CSVs cell for cell (CheXpert 273/273, MIMIC 156/156).
 
+note: copied unchanged from /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/old_pipeline_fixed_flag (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
+
 ===== planted_marker =====
 run: planted marker (section 7 item 4)
-commit: 12aeb2ae5f392ad9cafc3f7b9e25b7c77707684d
+commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_12aeb2a/scripts/revision/run_planted_marker.py
+command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_planted_marker.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 03:13:42 GMT
-wall_seconds: 686.8
+written: 2026-10-28 05:37:16 GMT
+wall_seconds: 658.2
 
 config:
 {
@@ -387,27 +395,28 @@ config:
   "marker": "white square, side 8% of min(w,h), top-left at (0.3w, 0.3h)",
   "K": 200,
   "seeds": 10,
-  "task": "Pneumothorax (task_label)"
+  "task": "Pneumothorax (task_label)",
+  "permutation": "image-level attribute: whole patients' marker vectors reassigned among patients with the same Y vector"
 }
 
 data files (md5):
   db543dcc66482419b8aa4672690e7845  data/chexpert_multibackbone/_cache/images.pkl
 
 timings (s):
-  embedding: 429.475
-  all: 686.156
+  embedding: 400.782
+  all: 655.341
 
 notes:
-  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv; race from chexpert_manifest.csv.
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record are missing (the shipped manifest coded them OTHER), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
 
 ===== synthetic =====
 run: conditional synthetic benchmark
-commit: 76dee72f835d88eadd93cb09591c96b16252ecbb
+commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
 command: python scripts/revision/run_synthetic.py --jobs 3
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
-written: 2026-10-28 02:28:35 GMT
-wall_seconds: 1485.5
+written: 2026-10-28 04:30:48 GMT
+wall_seconds: 1755.0
 
 config:
 {
@@ -448,10 +457,8 @@ config:
 data files (md5):
 
 timings (s):
-  audit_grid: 1246.989
-  statistical_correction: 238.243
+  audit_grid: 1559.861
+  statistical_correction: 194.945
 
 notes:
-  - mean seconds per dataset by (n, d): {(200, 128): 0.79, (200, 512): 0.96, (1000, 128): 1.33, (1000, 512): 3.64}
-
-note: run at 76dee72, before the statistical-detector fix (12aeb2a). Synthetic data are ungrouped, so within-Y image permutation keeps group counts fixed and that bug cannot change these results.
+  - mean seconds per dataset by (n, d): {(200, 128): 1.18, (200, 512): 1.55, (1000, 128): 1.66, (1000, 512): 4.09}

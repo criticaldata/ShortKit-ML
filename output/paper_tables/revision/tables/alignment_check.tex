@@ -1,17 +1,17 @@
-\begin{tabular}{llccc}
+\begin{tabular}{llcccccc}
 \toprule
-Dataset & Backbone & Max Spearman & Shuffled control & Aligned \\
+Dataset & Backbone & Max Spearman & Shuffled control & Sex probe AUROC & Similarity fails & Probe at chance & Excluded \\
 \midrule
-CheXpert & DenseNet-121 & 0.780 & -0.001 & yes \\
-CheXpert & DINOv2 & 0.692 & 0.006 & yes \\
-CheXpert & MedSigLIP & 0.242 & -0.003 & yes \\
-CheXpert & RAD-DINO & 0.290 & -0.002 & yes \\
-CheXpert & ResNet-50 & 0.780 & -0.002 & yes \\
-CheXpert & ViT-B/16 & 0.753 & -0.001 & yes \\
-CheXpert & ViT-B/32 & 0.615 & 0.001 & yes \\
-MIMIC-CXR & MedSigLIP & 0.387 & -0.002 & yes \\
-MIMIC-CXR & RAD-DINO & 0.387 & -0.002 & yes \\
-MIMIC-CXR & ViT-B/16 & 0.361 & 0.003 & yes \\
-MIMIC-CXR & ViT-B/32 (rows misaligned) & 0.006 & 0.000 & no \\
+CheXpert & DenseNet-121 & 0.780 & -0.001 & 0.88 & no & no & no \\
+CheXpert & DINOv2 & 0.692 & 0.006 & 0.92 & no & no & no \\
+CheXpert & MedSigLIP & 0.242 & -0.003 & 0.68 & no & no & no \\
+CheXpert & RAD-DINO & 0.290 & -0.002 & 0.99 & no & no & no \\
+CheXpert & ResNet-50 & 0.780 & -0.002 & 0.84 & no & no & no \\
+CheXpert & ViT-B/16 & 0.753 & -0.001 & 0.85 & no & no & no \\
+CheXpert & ViT-B/32 & 0.615 & 0.001 & 0.88 & no & no & no \\
+MIMIC-CXR & MedSigLIP & 0.387 & -0.002 & 0.99 & no & no & no \\
+MIMIC-CXR & RAD-DINO & 0.387 & -0.002 & 1.00 & no & no & no \\
+MIMIC-CXR & ViT-B/16 & 0.361 & 0.003 & 0.93 & no & no & no \\
+MIMIC-CXR & ViT-B/32 (rows misaligned) & 0.006 & 0.000 & 0.51 & yes & yes & yes \\
 \bottomrule
 \end{tabular}

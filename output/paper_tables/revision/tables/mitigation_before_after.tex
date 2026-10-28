@@ -1,11 +1,17 @@
 \begin{tabular}{llcccccccc}
 \toprule
-Mitigation & $A$ & Probe before & Probe after & Sig. before & Sig. after & Task AUROC before & Task AUROC after & TPR gap before & TPR gap after \\
+Encoder & $A$ & Probe before & Probe after & Sig. before & Sig. after & Task AUROC before & Task AUROC after & TPR gap before & TPR gap after \\
 \midrule
-Adversarial debiasing & Sex & 0.82 & 0.68 & 21/21 & 15/21 & 0.71 & 0.71 & 0.18 & 0.18 \\
- & Age 60+ & 0.65 & 0.59 & 16/21 & 11/21 & 0.71 & 0.72 & 0.14 & 0.14 \\
+Adversarial debiasing & Sex & 0.81 & 0.67 & 60/63 & 48/63 & 0.71 & 0.71 & 0.18 & 0.18 \\
+ & Age 60+ & 0.68 & 0.63 & 52/63 & 38/63 & 0.70 & 0.71 & 0.16 & 0.14 \\
 \midrule
-Contrastive debiasing & Sex & 0.82 & 0.68 & 21/21 & 17/21 & 0.71 & 0.71 & 0.18 & 0.19 \\
- & Age 60+ & 0.65 & 0.59 & 16/21 & 13/21 & 0.71 & 0.71 & 0.14 & 0.15 \\
+Same encoder, adversary weight 0 & Sex & 0.81 & 0.69 & 60/63 & 54/63 & 0.71 & 0.71 & 0.18 & 0.19 \\
+ & Age 60+ & 0.68 & 0.63 & 52/63 & 42/63 & 0.70 & 0.71 & 0.16 & 0.16 \\
+\midrule
+Contrastive debiasing & Sex & 0.81 & 0.67 & 60/63 & 48/63 & 0.71 & 0.71 & 0.18 & 0.19 \\
+ & Age 60+ & 0.68 & 0.62 & 52/63 & 35/63 & 0.70 & 0.71 & 0.16 & 0.16 \\
+\midrule
+Same encoder, contrastive weight 0 & Sex & 0.81 & 0.66 & 60/63 & 43/63 & 0.71 & 0.70 & 0.18 & 0.18 \\
+ & Age 60+ & 0.68 & 0.61 & 52/63 & 34/63 & 0.70 & 0.70 & 0.16 & 0.14 \\
 \bottomrule
 \end{tabular}
