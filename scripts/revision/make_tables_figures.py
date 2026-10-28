@@ -539,7 +539,7 @@ def head():
     write_tabular("head_reliance", pd.DataFrame(rows), "ll" + "c" * (len(hdr) - 2), escape_cells=False, header=hdr)
 
     _apply_pub_style()
-    fig, axes = plt.subplots(1, 3, figsize=(12, 3.6))
+    fig, axes = plt.subplots(1, 3, figsize=(13, 3.8), gridspec_kw={"wspace": 0.45})
     for ax, (col, lab) in zip(axes, [("tpr_gap", "TPR gap (A=1 minus A=0)"), ("auroc_drop", "AUROC drop vs unconfounded head"),
                                      ("output_shift", "Mean |output shift| after removing A")], strict=True):
         for attr, c, mk in (("sex", OI["blue"], "o"), ("age", OI["orange"], "s")):
@@ -547,7 +547,8 @@ def head():
             ax.scatter(s.probe_auroc, s[col], color=c, marker=mk, s=28, label={"sex": "Sex", "age": "Age 60+"}[attr],
                        edgecolor="black", linewidth=0.4)
         r, p = rho_vals[col]
-        ax.set_title(f"Spearman $\\rho$ = {r:.2f} (p = {p:.3f})", fontsize=10)
+        ptxt = "p < 0.001" if p < 0.001 else f"p = {p:.3f}"
+        ax.set_title(f"Spearman $\\rho$ = {r:.2f} ({ptxt})", fontsize=10)
         ax.set_xlabel("Conditional probe AUROC (audit)")
         ax.set_ylabel(lab)
     axes[0].legend(frameon=False)
