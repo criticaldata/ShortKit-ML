@@ -836,7 +836,9 @@ def analyses():
             ax.scatter(s.x, s.y, s=6, alpha=0.7, color=c, label=f"{race} ({len(s)})", linewidths=0)
         ax.set_xticks([]), ax.set_yticks([])
         ax.set_title("MIMIC-CXR RAD-DINO, coloured by race", fontsize=10)
-        ax.legend(frameon=False, fontsize=8, markerscale=2)
+        ax.legend(frameon=False, fontsize=8, markerscale=2, loc="upper center", bbox_to_anchor=(0.5, -0.02), ncol=4)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
         fig.savefig(FIG / "umap_mimic_raddino_race.pdf")
         plt.close(fig)
         put("umap_mimic_n_shown", len(um), "{:,.0f}")
@@ -849,7 +851,9 @@ def analyses():
             ax.scatter(s.x, s.y, s=4, alpha=0.6, color=c, label=f"{lab} ({len(s)})", linewidths=0)
         ax.set_xticks([]), ax.set_yticks([])
         ax.set_title("CelebA ResNet-50, coloured by Male", fontsize=10)
-        ax.legend(frameon=False, fontsize=8, markerscale=2)
+        ax.legend(frameon=False, fontsize=8, markerscale=2, loc="upper center", bbox_to_anchor=(0.5, -0.02), ncol=4)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
         fig.savefig(FIG / "umap_celeba_resnet50_male.pdf")
         plt.close(fig)
 
