@@ -24,7 +24,7 @@ class ReportBuilder:
     Supports HTML and PDF output formats with visualizations and CSV export.
     """
 
-    GITHUB_REPO = "https://github.com/Kqp1227/Shortcut_Detect"
+    GITHUB_REPO = "https://github.com/criticaldata/ShortKit-ML"
 
     def __init__(self, detector: "ShortcutDetector"):
         """
