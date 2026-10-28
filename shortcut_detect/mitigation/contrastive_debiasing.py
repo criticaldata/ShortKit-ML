@@ -258,8 +258,9 @@ class ContrastiveDebiasing:
 
                 sim_pos = torch.matmul(anchor_z, pos_z.T) / self.temperature
                 sim_neg = torch.matmul(anchor_z, neg_z.T) / self.temperature
-                logits = torch.cat([sim_pos, sim_neg], dim=1)
-                labels_cl = torch.zeros(1, dtype=torch.long, device=device)
+                # one InfoNCE term per positive, each against the negatives only
+                logits = torch.cat([sim_pos.T, sim_neg.expand(n_pos, -1)], dim=1)
+                labels_cl = torch.zeros(n_pos, dtype=torch.long, device=device)
                 loss_cl = F.cross_entropy(logits, labels_cl)
 
                 loss = self.contrastive_weight * loss_cl

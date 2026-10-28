@@ -581,8 +581,18 @@ def head():
             put("spearman_probe_tprgap_ci", [lo, hi], text=rng_text(lo, hi))
     for attr in ["sex", "age"]:
         s = cell[cell.attribute == attr]
-        r, _ = spearmanr(s.probe_auroc, s.tpr_gap)
+        r, p = spearmanr(s.probe_auroc, s.tpr_gap)
         put(f"spearman_probe_tprgap_within_{attr}", r)
+        put(f"spearman_probe_tprgap_within_{attr}_p", p, "{:.3f}")
+        # whole backbones resampled, as for the pooled interval
+        rng_w = np.random.default_rng(2)
+        bw = []
+        for _ in range(2000):
+            pick = rng_w.choice(s.backbone.unique(), size=s.backbone.nunique(), replace=True)
+            bs = pd.concat([s[s.backbone == b] for b in pick], ignore_index=True)
+            bw.append(spearmanr(bs.probe_auroc, bs.tpr_gap)[0])
+        lo, hi = np.nanpercentile(bw, [2.5, 97.5])
+        put(f"spearman_probe_tprgap_within_{attr}_cluster_ci", [lo, hi], text=rng_text(lo, hi))
 
     # the cells are not independent: the 7 backbones embed the same images, and the
     # attributes and tasks reuse the same patients
@@ -692,6 +702,12 @@ def head():
             if meth == "dfr":
                 # the head is refit, the embeddings are not changed
                 put("mitig4_frac_tpr_gap_smaller", (g.tpr_gap_after.abs() < g.tpr_gap_before.abs()).mean())
+                # seeds of a cell share images, so test on cell means
+                from scipy.stats import wilcoxon
+                dc = (g.tpr_gap_after - g.tpr_gap_before).groupby([g.backbone, g.attribute, g.task]).mean()
+                put("mitig4_n_cells", int(len(dc)), "{:d}")
+                put("mitig4_n_cells_gap_lower", int((dc < 0).sum()), "{:d}")
+                put("mitig4_cells_wilcoxon_p", wilcoxon(dc).pvalue, "{:.3f}")
             for mm_ in (meth, f"{meth}_control"):
                 gm = m[m.method == mm_]
                 if gm.empty:
@@ -873,7 +889,7 @@ def marker():
         return
     put("marker_rate", 0.5, "{:.1f}")
     put("marker_rate_head_train", 0.9, "{:.1f}")
-    put("probe_auroc_marker", mk.probe_stat.mean())
+    put("probe_auroc_marker", mk.probe_stat.mean(), "{:.3f}")  # 3 places, as in its table
     put("probe_p_marker", mk.probe_p.max(), "{:.3f}")
     put("head_tprgap_marker", mk.tpr_gap.mean())
     put("head_fprgap_marker", mk.fpr_gap.mean())
