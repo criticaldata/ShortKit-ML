@@ -81,16 +81,17 @@ def test_parametric_shortcut_effect_size_controls_mean_separation():
     )
 
     subtle_gap = (
-        subtle.embeddings[subtle.labels == 1, 0].mean()
-        - subtle.embeddings[subtle.labels == 0, 0].mean()
+        subtle.embeddings[subtle.group_labels == 1, 0].mean()
+        - subtle.embeddings[subtle.group_labels == 0, 0].mean()
     )
     strong_gap = (
-        strong.embeddings[strong.labels == 1, 0].mean()
-        - strong.embeddings[strong.labels == 0, 0].mean()
+        strong.embeddings[strong.group_labels == 1, 0].mean()
+        - strong.embeddings[strong.group_labels == 0, 0].mean()
     )
 
     assert strong_gap > subtle_gap
-    assert strong_gap > 3.0
+    # The shortcut sits on the attribute and the gap equals effect_size (Cohen's d).
+    assert 1.8 < strong_gap < 2.2
     assert subtle_gap > 0.1
 
 

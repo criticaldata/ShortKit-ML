@@ -69,7 +69,8 @@ class TestSyntheticGeneratorReproducibility:
             g0 = r.embeddings[r.group_labels == 0, dim]
             g1 = r.embeddings[r.group_labels == 1, dim]
             diff = float(g1.mean() - g0.mean())
-            assert diff > 3.0, f"Dim {dim}: diff={diff:.3f} too small for delta=2.0"
+            # shift is +/- delta/2, so the mean difference is delta (Cohen's d)
+            assert diff > 1.7, f"Dim {dim}: diff={diff:.3f} too small for delta=2.0"
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,9 @@
+dataset,variant,note,n_images
+chexpert,min50_per_group,"CI: resampling of out-of-fold predictions pooled over CV repeats, no refit; see repeat_sd",1507
+chexpert,min50_per_group,,1507
+chexpert,min50_per_stratum,"CI: resampling of out-of-fold predictions pooled over CV repeats, no refit; see repeat_sd",1450
+chexpert,min50_per_stratum,,1450
+mimic,min50_per_group,"CI: resampling of out-of-fold predictions pooled over CV repeats, no refit; see repeat_sd",1235
+mimic,min50_per_group,,1235
+mimic,min50_per_stratum,"CI: resampling of out-of-fold predictions pooled over CV repeats, no refit; see repeat_sd",1229
+mimic,min50_per_stratum,,1229

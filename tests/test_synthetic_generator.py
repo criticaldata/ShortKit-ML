@@ -95,9 +95,9 @@ class TestEffectSizeStrong:
             g0 = result.embeddings[result.group_labels == 0, dim]
             g1 = result.embeddings[result.group_labels == 1, dim]
             diff = g1.mean() - g0.mean()
-            # Expected separation is 4.0 (shift of +2 for group 1, -2 for group 0).
+            # Expected separation is 2.0 (shift of +1 for group 1, -1 for group 0).
             assert (
-                diff > 3.0
+                diff > 1.7
             ), f"Shortcut dim {dim}: mean diff {diff:.3f} too small for effect_size=2.0"
 
     def test_non_shortcut_dims_unaffected(self):
@@ -254,7 +254,7 @@ class TestGenerateCorrelated:
             g0 = result.embeddings[result.labels == 0, dim]
             g1 = result.embeddings[result.labels == 1, dim]
             diff = g1.mean() - g0.mean()
-            assert diff > 1.5, f"Dim {dim}: mean diff {diff:.3f} too small"
+            assert diff > 1.2, f"Dim {dim}: mean diff {diff:.3f} too small"
 
     def test_non_shortcut_dims_unaffected(self):
         result = generate_correlated_parametric(
@@ -324,7 +324,7 @@ class TestGenerateDistributed:
         result = generate_distributed_parametric(
             effect_size=effect, n_samples=5000, embedding_dim=d, shortcut_dims=k, seed=0
         )
-        expected_per_dim_shift = 2 * effect * np.sqrt(k / d)
+        expected_per_dim_shift = effect * np.sqrt(k / d)
         shifts = []
         for dim in range(d):
             g0 = result.embeddings[result.labels == 0, dim]

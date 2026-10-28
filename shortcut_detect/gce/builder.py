@@ -1,11 +1,12 @@
 """Builder for GCE (Generalized Cross Entropy) detector."""
 
+import dataclasses
 import warnings
 from typing import Any
 
 import numpy as np
 
-from ..base_builder import BaseDetector
+from ..base_builder import BaseDetector, resolve_target
 from . import GCEDetector
 
 
@@ -33,6 +34,16 @@ class GCEDetectorBuilder(BaseDetector):
         try:
             detector.fit(embeddings, labels)
             report = detector.report_
+            attribute_test = None
+            _, target_kind = resolve_target(labels, group_labels)
+            if self.kwargs.get("gce_attribute_test", True) and target_kind == "attribute":
+                # GCE trains on the task label. Its high-loss samples only point
+                # to a shortcut on A if they are enriched for some A group.
+                attribute_test = _minority_attribute_enrichment(
+                    detector.is_minority_, np.asarray(group_labels)
+                )
+                if attribute_test["p_value"] >= self.kwargs.get("gce_attribute_alpha", 0.05):
+                    report = dataclasses.replace(report, risk_level="low")
             summary_lines = [
                 f"Minority/bias-conflicting samples: {report.n_minority} ({report.minority_ratio:.1%})",
                 f"Loss (mean ± std): {report.loss_mean:.4f} ± {report.loss_std:.4f}",
@@ -51,6 +62,7 @@ class GCEDetectorBuilder(BaseDetector):
             return {
                 "detector": detector,
                 "report": report,
+                "attribute_test": attribute_test,
                 "per_sample_losses": detector.per_sample_losses_,
                 "is_minority": detector.is_minority_,
                 "minority_indices": detector.get_minority_indices(),
@@ -62,3 +74,16 @@ class GCEDetectorBuilder(BaseDetector):
         except Exception as exc:
             warnings.warn(f"GCE detection failed: {exc}", stacklevel=2)
             return {"success": False, "error": str(exc)}
+
+
+def _minority_attribute_enrichment(is_minority: np.ndarray, groups: np.ndarray) -> dict[str, Any]:
+    """Chi-square test of GCE minority membership against the attribute."""
+    from scipy.stats import chi2_contingency
+
+    is_minority = np.asarray(is_minority, dtype=bool)
+    cats = np.unique(groups)
+    table = np.array([[np.sum((groups == c) & is_minority), np.sum((groups == c) & ~is_minority)] for c in cats])
+    if table.shape[0] < 2 or table[:, 0].sum() == 0 or table[:, 1].sum() == 0:
+        return {"chi2": 0.0, "p_value": 1.0, "table": table.tolist()}
+    chi2, p, _, _ = chi2_contingency(table)
+    return {"chi2": float(chi2), "p_value": float(p), "table": table.tolist()}

@@ -246,22 +246,26 @@ class SensitivitySweep:
         effect_size: float,
         group_ratio: float,
         seed: int,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """Generate a synthetic shortcut dataset.
 
         The generation logic mirrors
-        ``PaperBenchmarkRunner._generate_synthetic_dataset``.
+        ``PaperBenchmarkRunner._generate_synthetic_dataset``: the shortcut sits
+        on an attribute A (shift of +/- effect_size/2, so effect_size is Cohen's
+        d) and the task label Y agrees with A with probability 0.9.
         """
         rng = np.random.RandomState(seed)
-        y = (rng.rand(n_samples) > group_ratio).astype(np.int64)
+        g = (rng.rand(n_samples) > group_ratio).astype(np.int64)
         X = rng.randn(n_samples, embedding_dim).astype(np.float32)
         true_dims = np.arange(shortcut_dims, dtype=int)
 
         if effect_size > 0:
             for dim in true_dims:
-                X[y == 0, dim] -= effect_size
-                X[y == 1, dim] += effect_size
-        return X, y, true_dims
+                X[g == 0, dim] -= 0.5 * effect_size
+                X[g == 1, dim] += 0.5 * effect_size
+        agree = rng.rand(n_samples) < 0.9
+        y = np.where(agree, g, 1 - g).astype(np.int64)
+        return X, y, g, true_dims
 
     # ------------------------------------------------------------------
     # Single-run evaluation
@@ -273,8 +277,14 @@ class SensitivitySweep:
         true_dims: np.ndarray,
         embedding_dim: int,
         seed: int,
+        g: np.ndarray | None = None,
     ) -> list[dict[str, Any]]:
-        """Run all methods on a single dataset and return per-method rows."""
+        """Run all methods on a single dataset and return per-method rows.
+
+        ``g`` is the attribute carrying the shortcut; it defaults to ``y`` only
+        for callers that pass a dataset where the two coincide.
+        """
+        g = y if g is None else g
         method_results: dict[str, dict[str, Any]] = {}
         for method in self.methods:
             detector = ShortcutDetector(
@@ -284,7 +294,7 @@ class SensitivitySweep:
                 statistical_alpha=0.05,
             )
             try:
-                detector.fit(X, y, group_labels=y)
+                detector.fit(X, y, group_labels=g)
                 method_results[method] = detector.results_.get(
                     method, {"success": False, "error": "missing result"}
                 )
@@ -355,7 +365,7 @@ class SensitivitySweep:
             kwargs[sweep_param] = pval
 
             for seed in seeds:
-                X, y, true_dims = self._generate_synthetic_dataset(
+                X, y, g, true_dims = self._generate_synthetic_dataset(
                     n_samples=kwargs["n_samples"],
                     embedding_dim=kwargs["embedding_dim"],
                     shortcut_dims=self.shortcut_dims,
@@ -363,7 +373,7 @@ class SensitivitySweep:
                     group_ratio=kwargs["group_ratio"],
                     seed=seed,
                 )
-                run_rows = self._evaluate_single(X, y, true_dims, kwargs["embedding_dim"], seed)
+                run_rows = self._evaluate_single(X, y, true_dims, kwargs["embedding_dim"], seed, g=g)
                 for row in run_rows:
                     row["param_value"] = pval
                     row["seed"] = seed

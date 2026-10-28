@@ -236,7 +236,12 @@ class PaperBenchmarkRunner:
         imbalance_ratio: float,
         seed: int,
         with_shortcut: bool,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Return embeddings, task labels Y, attribute labels A and shortcut dims.
+
+        The shortcut sits on A; Y agrees with A with probability 0.9, so the
+        detectors receive the attribute, not the task label, as ``group_labels``.
+        """
         if with_shortcut:
             dataset = generate_parametric_shortcut_dataset(
                 n_samples=n_samples,
@@ -246,13 +251,20 @@ class PaperBenchmarkRunner:
                 positive_class_probability=max(1e-6, min(1.0 - 1e-6, 1.0 - imbalance_ratio)),
                 seed=seed,
             )
-            return dataset.embeddings, dataset.labels, dataset.shortcut_dim_indices
+            return (
+                dataset.embeddings,
+                dataset.labels,
+                dataset.group_labels,
+                dataset.shortcut_dim_indices,
+            )
 
         rng = np.random.RandomState(seed)
-        labels = (rng.rand(n_samples) < (1.0 - imbalance_ratio)).astype(np.int64)
+        groups = (rng.rand(n_samples) < (1.0 - imbalance_ratio)).astype(np.int64)
         embeddings = rng.randn(n_samples, embedding_dim).astype(np.float32)
+        agree = rng.rand(n_samples) < 0.9
+        labels = np.where(agree, groups, 1 - groups).astype(np.int64)
         true_dims = np.arange(shortcut_dims, dtype=int)
-        return embeddings, labels, true_dims
+        return embeddings, labels, groups, true_dims
 
     @staticmethod
     def _method_flag(method: str, result: dict[str, Any]) -> bool:
@@ -353,7 +365,9 @@ class PaperBenchmarkRunner:
             scores /= float(n_pairs)
         return scores
 
-    def _run_methods(self, X: np.ndarray, y: np.ndarray, seed: int) -> dict[str, dict[str, Any]]:
+    def _run_methods(
+        self, X: np.ndarray, y: np.ndarray, g: np.ndarray, seed: int
+    ) -> dict[str, dict[str, Any]]:
         out: dict[str, dict[str, Any]] = {}
         active_methods = [m for m in self.config.methods if m not in SKIP_IN_SYNTHETIC]
         for method in active_methods:
@@ -364,7 +378,7 @@ class PaperBenchmarkRunner:
                 statistical_alpha=self.config.synthetic.alpha,
             )
             try:
-                detector.fit(X, y, group_labels=y)
+                detector.fit(X, y, group_labels=g)
                 out[method] = detector.results_.get(
                     method, {"success": False, "error": "missing result"}
                 )
@@ -383,7 +397,7 @@ class PaperBenchmarkRunner:
                 for imb in self.config.synthetic.imbalance_ratios:
                     for dim in self.config.synthetic.embedding_dims:
                         for seed in seeds:
-                            X, y, true_dims = self._generate_synthetic_dataset(
+                            X, y, g, true_dims = self._generate_synthetic_dataset(
                                 n_samples=n_samples,
                                 embedding_dim=dim,
                                 shortcut_dims=self.config.synthetic.shortcut_dims,
@@ -392,7 +406,7 @@ class PaperBenchmarkRunner:
                                 seed=seed,
                                 with_shortcut=True,
                             )
-                            method_results = self._run_methods(X, y, seed)
+                            method_results = self._run_methods(X, y, g, seed)
                             active_methods = [
                                 m for m in self.config.methods if m not in SKIP_IN_SYNTHETIC
                             ]
@@ -477,7 +491,7 @@ class PaperBenchmarkRunner:
                             )
 
                             # Null-control run at same configuration.
-                            X0, y0, _ = self._generate_synthetic_dataset(
+                            X0, y0, g0, _ = self._generate_synthetic_dataset(
                                 n_samples=n_samples,
                                 embedding_dim=dim,
                                 shortcut_dims=self.config.synthetic.shortcut_dims,
@@ -486,7 +500,7 @@ class PaperBenchmarkRunner:
                                 seed=seed + 17,
                                 with_shortcut=False,
                             )
-                            null_results = self._run_methods(X0, y0, seed + 17)
+                            null_results = self._run_methods(X0, y0, g0, seed + 17)
                             null_flags = [
                                 int(self._method_flag(m, null_results.get(m, {})))
                                 for m in active_methods

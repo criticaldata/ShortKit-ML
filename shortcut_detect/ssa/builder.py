@@ -8,7 +8,22 @@ import numpy as np
 from ..base_builder import BaseDetector
 
 
+SSA_REQUIREMENTS = (
+    "SSA needs splits={'train_u': idx, 'train_l': idx} (disjoint unlabelled and "
+    "labelled index sets) and extra_labels['spurious'] (attribute labels for the "
+    "train_l rows). A frozen-embedding audit without these inputs cannot run SSA; "
+    "the method is reported as not evaluated, never as 'no shortcut'."
+)
+
+
 class SSADetectorBuilder(BaseDetector):
+    """Builder for SSA (Spread Spurious Attribute).
+
+    SSA is semi-supervised: it trains a model on a labelled split and spreads
+    attribute pseudo-labels to an unlabelled split. It therefore requires
+    ``splits`` and ``extra_labels['spurious']``; see ``SSA_REQUIREMENTS``.
+    """
+
     def build(self):
         from ..groupdro.groupdro import GroupDROConfig
         from . import SSAConfig, SSADetector
@@ -131,10 +146,11 @@ class SSADetectorBuilder(BaseDetector):
         print("Running SSA (Spread Spurious Attribute)...")
 
         if splits is None:
-            warnings.warn("SSA analysis skipped (splits parameter is required).", stacklevel=2)
+            warnings.warn(f"SSA analysis skipped. {SSA_REQUIREMENTS}", stacklevel=2)
             return {
                 "success": False,
-                "error": "splits parameter required for SSA analysis",
+                "error": f"splits parameter required for SSA analysis. {SSA_REQUIREMENTS}",
+                "not_evaluated_reason": "missing_splits",
                 "summary_title": "SSA (Spread Spurious Attribute)",
                 "summary_lines": ["⚠️  SSA skipped: splits parameter required"],
                 "risk_indicators": [],

@@ -25,6 +25,12 @@ ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "data" / "chexpert_multibackbone"
 CACHE_DIR = OUTPUT_DIR / "_cache"
 
+# danjacobellis/chexpert encodes Sex as a class label with 0 = Male, 1 = Female
+# (dataset README). The submitted extraction used the reverse mapping, so every
+# CheXpert sex value in the shipped metadata is flipped; the revision runners
+# read sex from the official train.csv instead.
+HF_SEX_MAP = {0: "Male", 1: "Female"}
+
 DIAGNOSIS_COLS = [
     "No Finding",
     "Enlarged Cardiomediastinum",
@@ -68,7 +74,7 @@ def download_and_cache(n_samples: int, seed: int, output_dir: Path) -> tuple[Pat
     print(f"Streaming CheXpert from HuggingFace (first {n_samples} samples)...")
     ds = load_dataset("danjacobellis/chexpert", split="train", streaming=True)
 
-    sex_map = {0: "Female", 1: "Male"}
+    sex_map = HF_SEX_MAP
     rows = []
     images = []
     for i, sample in enumerate(ds):
