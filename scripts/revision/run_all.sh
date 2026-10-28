@@ -2,7 +2,7 @@
 # End-to-end revision pipeline (CMPB-D-26-02542). Called by
 # `scripts/reproduce_paper.sh revision`; can also run selected stages:
 #   scripts/revision/run_all.sh [stage ...]
-# Stages: old clinical negctl synthetic head analyses marker extraction tables (default: all, in order)
+# Stages: old clinical negctl synthetic head analyses marker extraction alignment tables (default: all, in order)
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PY="${PYTHON:-python3}"
@@ -12,7 +12,7 @@ if [ -z "${SHORTKIT_REVISION_DIR:-}" ]; then
 fi
 mkdir -p "${SHORTKIT_REVISION_DIR}"
 STAGES=("$@")
-[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic head analyses marker extraction tables)
+[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic head analyses marker extraction alignment tables)
 echo "results: ${SHORTKIT_REVISION_DIR}"
 for s in "${STAGES[@]}"; do
     start=$(date +%s)
@@ -27,6 +27,7 @@ for s in "${STAGES[@]}"; do
         marker)    "${PY}" "${REPO}/scripts/revision/run_planted_marker.py" ;;
         # needs torch >= 2.6 with transformers (EXTRACT_PYTHON) and the MPS lease
         extraction) "${EXTRACT_PYTHON:-${PY}}" "${REPO}/scripts/revision/extract_missing_chexpert_backbones.py" --device "${EXTRACT_DEVICE:-cpu}" ;;
+        alignment) "${PY}" "${REPO}/scripts/revision/run_alignment_check.py" ;;
         tables)    "${PY}" "${REPO}/scripts/revision/make_tables_figures.py" ;;
         *) echo "unknown stage ${s}" >&2; exit 1 ;;
     esac

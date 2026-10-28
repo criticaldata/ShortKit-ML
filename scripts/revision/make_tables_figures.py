@@ -748,6 +748,31 @@ def extraction():
     write_tabular("extraction_check", t, "lllccl")
 
 
+def alignment():
+    """Mark backbones whose rows share no similarity structure with the other
+    backbones of the same dataset (run_alignment_check.py)."""
+    a = load("alignment_check/alignment.csv")
+    if a is None:
+        return
+    real = a[~a.b.str.contains("shuffled")]
+    shuf = a[a.b.str.contains("shuffled")]
+    rows, bad = [], []
+    for ds, sub in real.groupby("dataset"):
+        for bb in sorted(set(sub.a) | set(sub.b)):
+            mx = sub[(sub.a == bb) | (sub.b == bb)].spearman.max()
+            ctl = shuf[(shuf.dataset == ds) & (shuf.a == bb)].spearman.iloc[0]
+            ok = bool(mx > 0.05)
+            if not ok:
+                bad.append(f"{ds}:{bb}")
+                BACKBONE_LABELS[bb] = BACKBONE_LABELS.get(bb, bb) + " (rows misaligned)"
+            rows.append({"Dataset": {"chexpert": "CheXpert", "mimic": "MIMIC-CXR"}[ds],
+                         "Backbone": BACKBONE_LABELS.get(bb, bb), "Max Spearman": f2(mx, 3),
+                         "Shuffled control": f2(ctl, 3), "Aligned": "yes" if ok else "no"})
+            put(f"alignment_max_spearman_{ds}_{bb}", float(mx), "{:.3f}")
+    put("alignment_misaligned_backbones", ", ".join(bad) if bad else "none", None)
+    write_tabular("alignment_check", pd.DataFrame(rows), "llccc")
+
+
 def finish():
     out = {k: NUM[k] for k in sorted(NUM)}
     out["raw"] = {k: RAW[k] for k in sorted(RAW)}
@@ -779,6 +804,7 @@ def finish():
 
 def main() -> int:
     settings()
+    alignment()
     synthetic()
     clinical()
     cohorts()
