@@ -34,14 +34,14 @@ Of ShortKit-ML's 19 implemented detection methods, **13 are benchmarked** in the
 
 **All 13 methods** work with the `ShortcutDetector.fit(embeddings, labels, group_labels=g)` API. No raw images, model weights, or external data required.
 
-### Excluded Methods (6) — and Why
+### Excluded Methods (6) and Why
 
 | Method | Key | Why Excluded | Could Be Included? |
 |--------|-----|-------------|-------------------|
 | CAV | `cav` | Requires concept activation sets via `fit_from_loaders()` | Only with manually curated concept sets |
 | GradCAM Mask Overlap | `gradcam_mask_overlap` | Requires raw images + model with gradients | Only with image data + model access |
 | Early Epoch Clustering | `early_epoch_clustering` | Requires epoch-by-epoch representations during training | Only during model training |
-| VAE | `vae` | Trains a VAE — expensive and noisy on small samples | Possible but slow (~minutes per run on 2K samples) |
+| VAE | `vae` | Trains a VAE; expensive and noisy on small samples | Possible but slow (~minutes per run on 2K samples) |
 | Generative CVAE | `generative_cvae` | Trains a CVAE counterfactual generator | Possible but very slow |
 | Causal Effect | `causal_effect` | Requires interventional data via `fit_from_loaders()` | Only with causal/interventional data |
 
@@ -51,15 +51,15 @@ Of ShortKit-ML's 19 implemented detection methods, **13 are benchmarked** in the
 - **GroupDRO**: Detection threshold is `avg_acc - worst_group_acc > 0.10` (10% gap). In practice, GroupDRO reports `success=False` on most benchmark runs because its internal training doesn't converge or produce a meaningful gap with pre-extracted embeddings. It was designed for end-to-end training scenarios. **Effectively 0 detections in benchmarks.**
 - **GCE**: Reports `risk=high` on most runs but doesn't meet the flagging threshold via `method_flag()` because its `risk_level` in the report dict stays at "low". GCE is designed to identify high-loss minority samples; on pre-extracted embeddings with binary labels, the loss landscape is shallow. **Effectively 0 detections in benchmarks.**
 - **SSA**: Requires a `splits` parameter (labeled/unlabeled split indices) that the benchmark scripts don't provide. Fails with "splits parameter required for SSA analysis". **Effectively 0 detections in benchmarks.**
-- **Net effect of Tier 3 methods**: GroupDRO, GCE, and SSA are included for completeness (the Gradio demo runs them) but they add 0 detections in the embedding-only benchmark protocol. The effective detection count is X/13 where the 3 Tier 3 methods always report "not flagged." This is documented honestly — these methods were designed for training-time scenarios, not post-hoc embedding analysis.
+- **Net effect of Tier 3 methods**: GroupDRO, GCE, and SSA are included for completeness (the Gradio demo runs them) but they add 0 detections in the embedding-only benchmark protocol. The effective detection count is X/13 where the 3 Tier 3 methods always report "not flagged." This is documented honestly: these methods were designed for training-time scenarios, not post-hoc embedding analysis.
 
 ## Datasets & Backbones
 
 | Dataset | Backbones | Samples | Attributes | Methods Run |
 |---------|-----------|---------|------------|-------------|
 | **Synthetic** | N/A (128-dim generated) | 200-5000 | 1 (binary) | 12 (no intersectional) |
-| **CheXpert** | ResNet-50, DenseNet-121, ViT-B/16, ViT-B/32, DINOv2, RAD-DINO, MedSigLIP | 2,000 each | sex, age_bin, race | 13 |
-| **MIMIC-CXR** | RAD-DINO, ViT-B/16, ViT-B/32, MedSigLIP | 1,491 each | race, sex, age_bin | 13 |
+| **CheXpert** | ResNet-50, DenseNet-121, ViT-B/16, ViT-B/32, DINOv2, RAD-DINO, MedSigLIP-448 | 2,000 each | sex, age_bin, race | 13 |
+| **MIMIC-CXR** | RAD-DINO, ViT-B/16, ViT-B/32, SigLIP So400m (files labelled MedSigLIP) | 1,491 each | race, sex, age_bin | 13 |
 | **CelebA** | ResNet-50 | 10,000 | Male + 39 binary attrs | 13 |
 | **Cross-dataset** | ResNet-50 (CheXpert) + RAD-DINO (MIMIC) | varies by diagnosis | sex, race | 13 (intersectional fails on single-attr CheXpert) |
 
@@ -72,7 +72,8 @@ git clone https://github.com/criticaldata/ShortKit-ML.git
 cd Shortcut_Detect
 pip install -e ".[all]"
 
-# Download embeddings
+# Download embeddings (gated: request access on the dataset page, then email your
+# PhysioNet username and proof of MIMIC-CXR access to sebasmos@mit.edu)
 huggingface-cli download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir data/
 ```
 
@@ -131,7 +132,7 @@ The 13-method benchmarks revealed a clear **method paradigm hierarchy**:
 | **Conservative** | Statistical, Geometric | 0% | Only flag strong/linear effects |
 | **Inactive in embedding-only** | GroupDRO, SSA | 0% | Need training splits/spurious labels |
 
-This pattern persists across all datasets, backbones, and attributes — supporting the paper's thesis that different methods detect different **aspects** of demographic encoding, and multi-method convergence is essential.
+This pattern persists across all datasets, backbones, and attributes, which supports the paper's thesis that different methods detect different **aspects** of demographic encoding, and multi-method convergence is essential.
 
 ## File Locations
 

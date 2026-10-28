@@ -2,7 +2,7 @@
   <img src="docs/assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
 </p>
 
-> **ShortKit-ML** — Detect and mitigate shortcuts and biases in machine learning embedding spaces. 20+ detection and mitigation methods with a unified API. **Multi-attribute support** tests multiple sensitive attributes simultaneously. Model Comparison mode for benchmarking multiple embedding models.
+> **ShortKit-ML** detects and mitigates shortcuts and biases in machine learning embedding spaces. 20+ detection and mitigation methods with a unified API. **Multi-attribute support** tests multiple sensitive attributes simultaneously. Model Comparison mode for benchmarking multiple embedding models.
 
 [![PyPI version](https://img.shields.io/pypi/v/shortkit-ml.svg)](https://pypi.org/project/shortkit-ml/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -179,7 +179,7 @@ Custom conditions can be registered via `@register_condition("name")`. See [Cond
 
 ## MCP Server
 
-ShortKit-ML ships an [MCP](https://modelcontextprotocol.io/) server so AI assistants (Claude, Cursor, GitHub Copilot in VS Code, etc.) can call detection tools directly from chat — no Python script required.
+ShortKit-ML ships an [MCP](https://modelcontextprotocol.io/) server so AI assistants (Claude, Cursor, GitHub Copilot in VS Code, etc.) can call detection tools directly from chat, with no Python script required.
 
 ```bash
 uv pip install -e ".[mcp]"
@@ -252,9 +252,9 @@ docker run --rm -v $(pwd)/output:/app/output shortcut-detect full
 
 ### Data
 
-> **Important:** The `data/` folder in this repository is empty. All embeddings and metadata are hosted on HuggingFace and must be downloaded separately. Raw CheXpert and MIMIC-CXR images and labels are **not redistributed** — access requires accepting the respective dataset licenses (PhysioNet for MIMIC-CXR, Stanford for CheXpert).
+> **Important:** The `data/` folder in this repository is empty. All embeddings and metadata are hosted on HuggingFace and must be downloaded separately. Raw CheXpert and MIMIC-CXR images are **not redistributed**.
 
-All embeddings are hosted on HuggingFace (gated, PhysioNet-restricted access):
+All embeddings are hosted on HuggingFace (gated, PhysioNet-restricted access). The embeddings, metadata and MIMIC-CXR label file there are derived from credentialed data and are shared only with users who hold the matching access (PhysioNet for MIMIC-CXR, Stanford for CheXpert); see [Requesting access](#requesting-access) below.
 
 **[MITCriticalData/ShortKit-ML-data](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data)**
 
@@ -266,9 +266,24 @@ huggingface-cli download MITCriticalData/ShortKit-ML-data --repo-type dataset --
 | Dataset | Location | Embedding Models | Dim | Samples |
 |---------|----------|-----------------|-----|---------|
 | Synthetic | Generated at runtime | `SyntheticGenerator(seed=42)` | 128 | Configurable |
-| CheXpert | `data/chexpert/` | MedCLIP, ResNet-50, DenseNet-121, ViT-B/16, ViT-B/32, DINOv2, RAD-DINO, MedSigLIP | 512-2048 | 2,000 each |
-| MIMIC-CXR | `data/mimic_cxr/` | RAD-DINO, ViT-B/16, ViT-B/32, MedSigLIP | 768-1152 | ~1,500 each |
+| CheXpert (current) | `data/chexpert_multibackbone/` and `data/chexpert_multibackbone/public/` | ResNet-50, DenseNet-121, ViT-B/16, ViT-B/32, DINOv2, RAD-DINO, MedSigLIP-448 | 768-2048 | 2,000 each |
+| CheXpert (first submission) | `data/chexpert/`, and the ViT-B/32, DINOv2, RAD-DINO and MedSigLIP arrays in `chexpert_multibackbone/` | MedCLIP and the same seven names | 512-2048 | 2,000 each |
+| MIMIC-CXR | `data/mimic_cxr/` | RAD-DINO, ViT-B/16, ViT-B/32, SigLIP So400m (files labelled MedSigLIP) | 768-1152 | 1,491 each |
 | CelebA | `data/celeba/` | ResNet-50 (ImageNet) | 2,048 | 10,000 |
+
+**Which CheXpert arrays to use.** The revised paper (CMPB revision, 2026) uses ResNet-50, DenseNet-121 and ViT-B/16 from `chexpert_multibackbone/<backbone>_embeddings.npy`, and ViT-B/32, DINOv2, RAD-DINO and MedSigLIP-448 from `chexpert_multibackbone/public/`. The `public/` arrays were extracted from the same 2,000 images with [`scripts/revision/extract_missing_chexpert_backbones.py`](https://github.com/criticaldata/ShortKit-ML/blob/main/scripts/revision/extract_missing_chexpert_backbones.py) and pinned public checkpoints (torchvision ViT-B/32 default weights, `facebook/dinov2-base`, `microsoft/rad-dino`, `google/medsiglip-448`); rows follow `chexpert_multibackbone/<backbone>_metadata.csv`. The same code reproduces the stored ViT-B/16 array to cosine 1.000. The older ViT-B/32, DINOv2, RAD-DINO and MedSigLIP arrays have no extraction code and are kept only to replay the first submission. The MIMIC-CXR array labelled MedSigLIP was extracted with `google/siglip-so400m-patch14-384`, so the paper reports it as SigLIP (So400m).
+
+To regenerate every table and figure of the revised paper: `bash scripts/revision/run_all.sh`.
+
+### Requesting access
+
+The dataset is gated because it holds data derived from MIMIC-CXR, which PhysioNet releases only to credentialed users. To get access:
+
+1. Click **Request access** on the [dataset page](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data) and fill in the form, including your PhysioNet username.
+2. Email your PhysioNet credentials to **sebasmos@mit.edu**: your PhysioNet username and proof of current MIMIC-CXR access (for example a screenshot of the MIMIC-CXR project page showing you have access, or your CITI training certificate). Never send your PhysioNet password.
+3. Access is granted by hand once the credentials are checked.
+
+CheXpert users must also have accepted the Stanford CheXpert research use agreement.
 
 ### Paper Tables → Scripts Mapping
 
