@@ -52,6 +52,7 @@ DETECTION_CMAP = LinearSegmentedColormap.from_list("det", ["#f7fbff", OI["blue"]
 FALSEPOS_CMAP = LinearSegmentedColormap.from_list("fp", ["#fff7ec", OI["vermillion"]])
 
 NUM: dict[str, str] = {}
+MISALIGNED: set[tuple[str, str]] = set()  # (dataset, backbone), filled by alignment()
 RAW: dict[str, object] = {}
 
 
@@ -335,7 +336,11 @@ def clinical():
         hdr = ["Backbone", "Attribute", "Probe AUROC (95\\% CI)", "$p$"] + [DET_LABEL[d] for d in DET[1:]] + ["Flags"]
         write_tabular(f"clinical_audit_{ds}", t, "ll" + "c" * (len(hdr) - 2), escape_cells=False,
                       header=hdr, midrules=mids[:-1])
-        pp = prim[(prim.dataset == ds) & (prim.detector == "probe")]
+        # summaries leave out backbones whose rows fail the alignment check (rows stay in the table)
+        ok = ~prim.backbone.map(lambda b, ds=ds: (ds, b) in MISALIGNED)
+        pp = prim[(prim.dataset == ds) & (prim.detector == "probe") & ok]
+        put(f"n_cells_excluded_misaligned_{ds}",
+            int(((prim.dataset == ds) & (prim.detector == "probe") & ~ok).sum()), "{:d}")
         put(f"n_cells_probe_sig_{ds}", int(pp.flag.sum()), "{:d}")
         put(f"n_cells_primary_{ds}", int(len(pp)), "{:d}")
         sx = pp[pp.attribute == "sex"].statistic
@@ -345,7 +350,7 @@ def clinical():
             s = pp[pp.attribute == attr].statistic
             put(f"probe_auroc_{attr}_range_{ds}", [s.min(), s.max()], text=rng_text(s.min(), s.max()))
             put(f"n_cells_probe_sig_{attr}_{ds}", int(pp[pp.attribute == attr].flag.sum()), "{:d}")
-        allflag = prim[(prim.dataset == ds) & prim.detector.isin(DET)]
+        allflag = prim[(prim.dataset == ds) & prim.detector.isin(DET) & ok]
         put(f"n_secondary_flags_{ds}", int(allflag[allflag.detector != "probe"].flag.sum()), "{:d}")
     m = prim[(prim.dataset == "mimic") & (prim.backbone == "rad_dino") & (prim.attribute == "sex") & (prim.detector == "probe")]
     if not m.empty:
@@ -763,6 +768,7 @@ def alignment():
             ok = bool(mx > 0.05)
             if not ok:
                 bad.append(f"{ds}:{bb}")
+                MISALIGNED.add((ds, bb))
                 BACKBONE_LABELS[bb] = BACKBONE_LABELS.get(bb, bb) + " (rows misaligned)"
             rows.append({"Dataset": {"chexpert": "CheXpert", "mimic": "MIMIC-CXR"}[ds],
                          "Backbone": BACKBONE_LABELS.get(bb, bb), "Max Spearman": f2(mx, 3),
