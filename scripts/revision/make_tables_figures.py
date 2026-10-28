@@ -404,6 +404,13 @@ def clinical():
         r = m.iloc[0]
         put("probe_auroc_mimic_raddino_sex", r.statistic)
         put("probe_auroc_ci_mimic_raddino_sex", [r.ci_low, r.ci_high], text=rng_text(r.ci_low, r.ci_high))
+    # MedSigLIP-448, re-extracted for the revision (the stored array was not this checkpoint)
+    for attr in ["sex", "age", "race"]:
+        m = prim[(prim.dataset == "chexpert") & (prim.backbone == "medsiglip") & (prim.attribute == attr)
+                 & (prim.detector == "probe")]
+        if not m.empty:
+            put(f"probe_auroc_chexpert_medsiglip_{attr}", m.iloc[0].statistic)
+            put(f"probe_p_chexpert_medsiglip_{attr}", m.iloc[0].p_value, "{:.3f}")
     # grouped vs plain CV on CheXpert
     for bb in df[df.dataset == "chexpert"].backbone.unique():
         g = prim[(prim.dataset == "chexpert") & (prim.backbone == bb) & (prim.attribute == "sex")]
