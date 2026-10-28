@@ -2,7 +2,7 @@
 # End-to-end revision pipeline (CMPB-D-26-02542). Called by
 # `scripts/reproduce_paper.sh revision`; can also run selected stages:
 #   scripts/revision/run_all.sh [stage ...]
-# Stages: old clinical negctl synthetic head analyses marker extraction alignment tables (default: all, in order)
+# Stages: old clinical negctl synthetic nullcheck head analyses marker extraction alignment tables (default: all, in order)
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PY="${PYTHON:-python3}"
@@ -12,7 +12,7 @@ if [ -z "${SHORTKIT_REVISION_DIR:-}" ]; then
 fi
 mkdir -p "${SHORTKIT_REVISION_DIR}"
 STAGES=("$@")
-[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic head analyses marker extraction alignment tables)
+[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic nullcheck head analyses marker extraction alignment tables)
 echo "results: ${SHORTKIT_REVISION_DIR}"
 for s in "${STAGES[@]}"; do
     start=$(date +%s)
@@ -22,6 +22,7 @@ for s in "${STAGES[@]}"; do
         clinical)  "${PY}" "${REPO}/scripts/revision/run_clinical_audit.py" ;;
         negctl)    "${PY}" "${REPO}/scripts/revision/run_negative_control.py" ;;
         synthetic) "${PY}" "${REPO}/scripts/revision/run_synthetic.py" ;;
+        nullcheck) "${PY}" "${REPO}/scripts/revision/run_null_check.py" ;;
         head)      "${PY}" "${REPO}/scripts/revision/run_head_experiment.py" ;;
         analyses)  "${PY}" "${REPO}/scripts/revision/run_analyses.py" ;;
         marker)    "${PY}" "${REPO}/scripts/revision/run_planted_marker.py" ;;
