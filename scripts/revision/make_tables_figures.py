@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import matplotlib  # noqa: E402
 from common import (  # noqa: E402
     BACKBONE_LABELS,
+    CHEXPERT_PUBLIC,
     CHEXPERT_BACKBONES,
     MIMIC_BACKBONES,
     REPO,
@@ -927,6 +928,67 @@ def _short_error(err: str) -> str:
     return line[:60]
 
 
+def sensitivity():
+    """CheXpert probe under four changes: the arrays of the first submission, frontal
+    images only, C = 0.1 and C = 10; and the head experiment with an MLP head."""
+    main = load("clinical_audit/audit_rows.csv")
+    if main is None:
+        return
+    sel = lambda d: d[(d.dataset == "chexpert") & (d.detector == "probe") & (d.variant == "primary")]
+    main = sel(main).set_index(["backbone", "attribute"])
+    cell = lambda a, sig: f"{a:.2f}{'*' if str(sig).lower() == 'true' else ''}"
+    old = load("clinical_audit_stored_arrays/audit_rows.csv")
+    old = sel(old).set_index(["backbone", "attribute"]) if old is not None else None
+    fr = load("frontal_only/probe_rows.csv")
+    fr = fr.set_index(["backbone", "attribute"]) if fr is not None else None
+    cs = load("probe_C_sensitivity/probe_rows.csv")
+    rows, diffs = [], {"stored": [], "frontal": [], "C": []}
+    for (bb, attr), r in main.iterrows():
+        row = {"Encoder": BACKBONE_LABELS.get(bb, bb), "$A$": attr.capitalize(), "Main": cell(r.statistic, r.flag)}
+        if old is not None and bb in CHEXPERT_PUBLIC and (bb, attr) in old.index:
+            o = old.loc[(bb, attr)]
+            row["Stored array"] = cell(o.statistic, o.flag)
+            diffs["stored"].append(abs(o.statistic - r.statistic))
+        else:
+            row["Stored array"] = "same"
+        if fr is not None and (bb, attr) in fr.index:
+            f = fr.loc[(bb, attr)]
+            # no secondary detectors here: p <= 0.05/6 always passes BH across six, p >= 0.05 never does
+            row["Frontal only"] = cell(f.auroc, f.p <= 0.05 / 6) + ("+" if 0.05 / 6 < f.p < 0.05 else "")
+            diffs["frontal"].append(abs(f.auroc - r.statistic))
+        for C in (0.1, 10.0):
+            c = cs[(cs.backbone == bb) & (cs.attribute == attr) & (cs.C == C)] if cs is not None else []
+            if len(c):
+                c = c.iloc[0]
+                row[f"$C={C:g}$"] = cell(c.auroc, c.flag_bh_with_main_secondaries)
+                diffs["C"].append(abs(c.auroc - r.statistic))
+            else:
+                row[f"$C={C:g}$"] = "n/a"
+        rows.append(row)
+    write_tabular("sensitivity_probe", pd.DataFrame(rows), "llccccc", escape_cells=False,
+                  header=["Encoder", "$A$", "Main", "Stored array", "Frontal only", "$C=0.1$", "$C=10$"])
+    for k, v in diffs.items():
+        if v:
+            put(f"sens_max_absdiff_{k}", max(v))
+    if fr is not None:
+        put("frontal_n_images", int(fr.n_images.max()), "{:d}")
+        put("frontal_n_sig", int((fr.p <= 0.05 / 6).sum()), "{:d}")
+        put("frontal_n_cells", int(len(fr)), "{:d}")
+    if cs is not None and "decision_changes" in cs:
+        x = cs[cs.C != 1.0]
+        put("probe_C_n_cells", int(len(x)), "{:d}")
+        put("probe_C_n_decision_changes", int(x.decision_changes.astype(bool).sum()), "{:d}")
+    mlp = load("head_mlp/summary_mlp.csv")
+    if mlp is not None:
+        g = mlp.set_index("stat")
+        r = g.loc["rho probe vs MLP TPR gap, all cells"]
+        put("mlp_spearman", r.value)
+        put("mlp_spearman_ci", [r.ci_backbones_lo, r.ci_backbones_hi], text=rng_text(r.ci_backbones_lo, r.ci_backbones_hi))
+        put("mlp_spearman_within_sex", g.loc["rho probe vs MLP TPR gap, within sex"].value)
+        put("mlp_spearman_within_age", g.loc["rho probe vs MLP TPR gap, within age"].value)
+        put("mlp_vs_logistic_gap_spearman", g.loc["rho MLP TPR gap vs logistic TPR gap"].value)
+
+
 def extraction():
     p = ROOT / "extraction_check" / "extraction_check.json"
     if not p.exists():
@@ -1061,6 +1123,7 @@ def main() -> int:
     analyses()
     marker()
     extraction()
+    sensitivity()
     finish()
     return 0
 
