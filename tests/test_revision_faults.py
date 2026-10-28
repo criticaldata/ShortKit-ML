@@ -89,3 +89,73 @@ class TestSSAClearError:
         assert res["success"] is False
         assert "train_u" in res["error"] and "spurious" in res["error"]
         assert not method_utils.method_evaluated("ssa", res)
+
+
+def _cohens_d(x0: np.ndarray, x1: np.ndarray) -> float:
+    pooled = np.sqrt((np.var(x0, ddof=1) + np.var(x1, ddof=1)) / 2)
+    return float(abs(x1.mean() - x0.mean()) / pooled)
+
+
+class TestSyntheticDeltaIsCohensD:
+    """Fault 2: the shift was +/- delta, so the standardised difference was 2 * delta."""
+
+    def test_parametric_dataset_delta(self):
+        from shortcut_detect.benchmark.synthetic import generate_parametric_shortcut_dataset
+
+        ds = generate_parametric_shortcut_dataset(
+            n_samples=20000, embedding_dim=8, shortcut_dims=3, effect_size=0.8, seed=1
+        )
+        g = ds.group_labels
+        d = np.mean([_cohens_d(ds.embeddings[g == 0, j], ds.embeddings[g == 1, j]) for j in range(3)])
+        assert abs(d - 0.8) < 0.05
+
+    def test_parametric_dataset_delta_scales_with_noise(self):
+        from shortcut_detect.benchmark.synthetic import generate_parametric_shortcut_dataset
+
+        ds = generate_parametric_shortcut_dataset(
+            n_samples=20000, embedding_dim=8, shortcut_dims=3, effect_size=0.5, noise_std=2.0
+        )
+        g = ds.group_labels
+        d = _cohens_d(ds.embeddings[g == 0, 0], ds.embeddings[g == 1, 0])
+        assert abs(d - 0.5) < 0.05
+
+
+class TestSyntheticTaskIsNotAttribute:
+    """Fault 1: the synthetic benchmark passed the task label as the attribute."""
+
+    def test_dataset_has_separate_attribute(self):
+        from shortcut_detect.benchmark.synthetic import generate_parametric_shortcut_dataset
+
+        ds = generate_parametric_shortcut_dataset(n_samples=2000, effect_size=1.0, seed=3)
+        assert ds.group_labels is not None
+        agreement = float(np.mean(ds.group_labels == ds.labels))
+        assert 0.85 < agreement < 0.95
+
+    def test_paper_runner_passes_attribute_not_task(self, monkeypatch):
+        from shortcut_detect.benchmark import paper_runner as pr
+        from shortcut_detect.unified import ShortcutDetector
+
+        seen = {}
+
+        def fake_fit(self, X, y, group_labels=None, **kw):
+            seen["y"], seen["g"] = np.asarray(y), np.asarray(group_labels)
+            self.results_ = {m: {"success": True} for m in self.methods}
+            return self
+
+        monkeypatch.setattr(ShortcutDetector, "fit", fake_fit)
+        runner = pr.PaperBenchmarkRunner.__new__(pr.PaperBenchmarkRunner)
+        X, y, g, _ = runner._generate_synthetic_dataset(
+            n_samples=500, embedding_dim=16, shortcut_dims=3, effect_size=1.0,
+            imbalance_ratio=0.5, seed=0, with_shortcut=True,
+        )
+
+        class _Cfg:
+            methods = ["probe"]
+
+            class synthetic:
+                alpha = 0.05
+
+        runner.config = _Cfg()
+        runner._run_methods(X, y, g, seed=0)
+        assert not np.array_equal(seen["g"], seen["y"])
+        assert np.array_equal(seen["g"], g)

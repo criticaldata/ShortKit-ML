@@ -2,8 +2,9 @@
 
 For each requested effect_size, we generate data and compute the empirical
 Cohen's d on shortcut dimensions.  The generator shifts group means by
-+/- effect_size around a standard-normal base, so the expected Cohen's d
-is ``2 * effect_size`` (total mean separation divided by the pooled std of ~1).
++/- effect_size/2 around a standard-normal base, so the expected Cohen's d
+is ``effect_size`` (total mean separation divided by the pooled std of ~1).
+Before the revision fix the shift was +/- effect_size and d was 2 * effect_size.
 
 S04 – Effect size calibration validation (#64)
 """
@@ -33,9 +34,9 @@ def _empirical_cohens_d(values_g0: np.ndarray, values_g1: np.ndarray) -> float:
 def test_effect_size_calibration(effect_size: float) -> None:
     """Empirical Cohen's d on shortcut dims should match the intended effect size.
 
-    The generator applies ``+/- effect_size`` shifts to each group on top of
+    The generator applies ``+/- effect_size/2`` shifts to each group on top of
     standard-normal noise, producing an expected Cohen's d of
-    ``2 * effect_size``.  We verify the average empirical d across shortcut
+    ``effect_size``.  We verify the average empirical d across shortcut
     dimensions is within 20% of that target (or < 0.15 for the null case).
     """
     gen = SyntheticGenerator(
@@ -54,9 +55,9 @@ def test_effect_size_calibration(effect_size: float) -> None:
 
     mean_d = float(np.mean(empirical_ds))
 
-    # The expected Cohen's d is 2 * effect_size because the generator
-    # shifts group 0 by -effect_size and group 1 by +effect_size.
-    expected_d = 2.0 * effect_size
+    # The generator shifts group 0 by -effect_size/2 and group 1 by
+    # +effect_size/2, so the expected Cohen's d is effect_size.
+    expected_d = effect_size
 
     if effect_size == 0.0:
         # Null case: empirical d should be near zero (just noise).

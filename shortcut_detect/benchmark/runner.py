@@ -419,7 +419,7 @@ class BenchmarkRunner:
         return {
             "embeddings": dataset.embeddings,
             "labels": dataset.labels,
-            "group_labels": dataset.labels,
+            "group_labels": dataset.group_labels,
             "shortcut_dim_labels": dataset.shortcut_dim_labels,
         }
 

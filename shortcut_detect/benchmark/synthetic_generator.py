@@ -11,7 +11,8 @@ detection methods. Effect sizes follow Cohen's d convention:
 Three generation modes are available:
 
 * :meth:`SyntheticGenerator.generate` — standard independent shift: each
-  shortcut dimension is shifted by ±effect_size independently.
+  shortcut dimension is shifted by ±effect_size/2 independently, so
+  effect_size is the standardised mean difference (Cohen's d).
 
 * :meth:`SyntheticGenerator.generate_correlated` — harder correlated
   variant: the shortcut dimensions form a correlated block (compound
@@ -119,7 +120,8 @@ class SyntheticGenerator:
         consistency: group labels are drawn from a Bernoulli distribution
         controlled by ``group_ratio``, embeddings start as standard-normal
         noise, and shortcut dimensions have their means shifted by
-        ``+/- effect_size`` for groups 1 and 0 respectively.
+        ``+/- effect_size/2`` for groups 1 and 0 respectively, so the
+        standardised mean difference between groups is ``effect_size``.
 
         Parameters
         ----------
@@ -157,8 +159,8 @@ class SyntheticGenerator:
         # Apply effect-size shift in shortcut dimensions.
         if effect_size > 0.0:
             for dim in true_dims:
-                embeddings[labels == 0, dim] -= effect_size
-                embeddings[labels == 1, dim] += effect_size
+                embeddings[labels == 0, dim] -= 0.5 * effect_size
+                embeddings[labels == 1, dim] += 0.5 * effect_size
 
         return SyntheticResult(
             embeddings=embeddings,
@@ -175,7 +177,7 @@ class SyntheticGenerator:
         Unlike :meth:`generate`, where each shortcut dimension shifts
         independently, here the ``shortcut_dims`` dimensions form a
         correlated block with uniform off-diagonal correlation ``rho``.
-        The group means are still shifted by ``±effect_size``, but the
+        The group means are still shifted by ``±effect_size/2``, but the
         inter-dimensional correlation reduces the effective degrees of
         freedom and makes univariate per-dimension tests less powerful.
         Methods that capture joint distributional structure (e.g. MMD,
@@ -225,7 +227,7 @@ class SyntheticGenerator:
             for group_id in (0, 1):
                 mask = labels == group_id
                 n_group = int(mask.sum())
-                mean_shift = effect_size if group_id == 1 else -effect_size
+                mean_shift = 0.5 * effect_size if group_id == 1 else -0.5 * effect_size
                 # Sample z ~ N(0, I_k), then rotate to get N(0, cov).
                 z = rng.randn(n_group, k)
                 correlated = (z @ L.T + mean_shift).astype(np.float32)
@@ -244,7 +246,7 @@ class SyntheticGenerator:
         The shortcut signal is spread uniformly across **all** embedding
         dimensions instead of being concentrated in ``shortcut_dims``
         leading dimensions.  Each dimension is shifted by
-        ``±effect_size * sqrt(shortcut_dims / embedding_dim)``, which
+        ``±(effect_size/2) * sqrt(shortcut_dims / embedding_dim)``, which
         preserves the total squared signal energy relative to
         :meth:`generate` while reducing the per-dimension effect size.
         This challenges methods that rely on detecting large shifts in
@@ -254,7 +256,7 @@ class SyntheticGenerator:
         ----------
         effect_size : float
             Global effect magnitude.  The per-dimension shift is
-            ``effect_size * sqrt(shortcut_dims / embedding_dim)``.
+            ``(effect_size/2) * sqrt(shortcut_dims / embedding_dim)`` per group.
 
         Returns
         -------
@@ -273,7 +275,7 @@ class SyntheticGenerator:
         embeddings = rng.randn(self.n_samples, self.embedding_dim).astype(np.float32)
 
         if effect_size > 0.0 and self.shortcut_dims > 0:
-            per_dim_effect = float(effect_size * np.sqrt(self.shortcut_dims / self.embedding_dim))
+            per_dim_effect = float(0.5 * effect_size * np.sqrt(self.shortcut_dims / self.embedding_dim))
             shift = np.where(labels == 1, per_dim_effect, -per_dim_effect).astype(np.float32)
             embeddings += shift[:, np.newaxis]
 
@@ -377,7 +379,7 @@ def generate_distributed_parametric(
     ----------
     effect_size : float
         Global effect magnitude; per-dim shift =
-        ``effect_size * sqrt(shortcut_dims / embedding_dim)``.
+        ``(effect_size/2) * sqrt(shortcut_dims / embedding_dim)`` per group.
     n_samples, embedding_dim, shortcut_dims, group_ratio, seed :
         Same as :func:`generate_parametric`.
 
