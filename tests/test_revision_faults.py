@@ -223,3 +223,17 @@ def test_chexpert_hf_sex_mapping_matches_dataset_card():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     assert mod.HF_SEX_MAP == {0: "Male", 1: "Female"}
+
+
+def test_chexpert_race_unknown_and_refused_are_missing():
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "revision"))
+    from common import _code_chexpert_race
+
+    for v in ("Unknown", "Race and Ethnicity Unknown", "Patient Refused", float("nan")):
+        assert _code_chexpert_race(v) is None
+    assert _code_chexpert_race("Other, Hispanic") == "OTHER"
+    assert _code_chexpert_race("Native Hawaiian or Other Pacific Islander") == "NHPI"
+    assert _code_chexpert_race("White, non-Hispanic") == "WHITE"
