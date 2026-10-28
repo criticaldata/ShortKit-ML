@@ -157,17 +157,71 @@ def celeba_paths() -> tuple[Path, Path]:
     return d / "celeba_real_embeddings.npy", d / "celeba_real_attributes.csv"
 
 
+CHEXPERT_JOIN_NOTE = (
+    "CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror "
+    "codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis "
+    "labels are read from the official data/train.csv joined by image path via "
+    "race_mapping.csv; patient_id from race_mapping.csv; race from chexpert_manifest.csv."
+)
+CHEXPERT_LABEL_COLS = [
+    "No Finding", "Enlarged Cardiomediastinum", "Cardiomegaly", "Lung Opacity", "Lung Lesion",
+    "Edema", "Consolidation", "Pneumonia", "Atelectasis", "Pneumothorax", "Pleural Effusion",
+    "Pleural Other", "Fracture", "Support Devices",
+]
+
+
+def chexpert_meta() -> pd.DataFrame:
+    """Per-image CheXpert metadata in embedding row order (see CHEXPERT_JOIN_NOTE)."""
+    d = DATA / "chexpert_multibackbone"
+    man = pd.read_csv(d / "chexpert_manifest.csv")
+    rmap = pd.read_csv(d / "race_mapping.csv", dtype={"patient_id": str})
+    train = pd.read_csv(DATA / "train.csv")
+    assert (rmap["image_idx"].to_numpy() == man["image_idx"].to_numpy()).all()
+    j = rmap[["image_idx", "path", "patient_id"]].merge(
+        train, left_on="path", right_on="Path", how="left", validate="one_to_one"
+    )
+    assert j["Path"].notna().all() and len(j) == len(man)
+    meta = pd.DataFrame(
+        {
+            "image_idx": man["image_idx"].to_numpy(),
+            "path": j["path"].to_numpy(),
+            "patient_id": j["patient_id"].to_numpy(),
+            "sex": j["Sex"].to_numpy(),
+            "age": j["Age"].to_numpy(dtype=float),
+            "view": j["Frontal/Lateral"].to_numpy(),
+            "ap_pa": j["AP/PA"].fillna("NA").to_numpy(),
+            "race": man["race"].to_numpy(),
+            "age_bin": man["age_bin"].to_numpy(),
+            "sex_shipped_metadata": man["sex"].to_numpy(),
+        }
+    )
+    for c in CHEXPERT_LABEL_COLS:
+        meta[c] = j[c].to_numpy(dtype=float)  # 1 positive, 0 negative, -1 uncertain, NaN blank
+    # audit task (spec section 5): the existing task label, Pneumothorax positive vs rest
+    meta["task_label"] = (meta["Pneumothorax"] == 1).astype(int)
+    assert (meta["task_label"].to_numpy() == man["task_label"].to_numpy()).all()
+    assert (meta["age"].to_numpy() == man["age"].to_numpy()).all()
+    return meta
+
+
 def load_chexpert(backbone: str) -> tuple[np.ndarray, pd.DataFrame]:
-    """CheXpert embeddings plus metadata. Race comes from the ``race`` column of
-    ``chexpert_manifest.csv`` (same row order as every backbone's metadata)."""
-    emb, meta_p = chexpert_paths(backbone)
+    emb, _ = chexpert_paths(backbone)
     X = np.load(emb).astype(np.float32)
-    meta = pd.read_csv(meta_p)
-    man = pd.read_csv(DATA / "chexpert_multibackbone" / "chexpert_manifest.csv")
-    assert len(man) == len(meta) == X.shape[0]
-    assert (man["image_idx"].to_numpy() == meta["image_idx"].to_numpy()).all()
-    meta["race"] = man["race"].to_numpy()
+    meta = chexpert_meta()
+    assert X.shape[0] == len(meta)
     return X, meta
+
+
+def load_celeba_identities() -> np.ndarray:
+    ids = pd.read_csv(
+        DATA / "celeba_real" / "celeba" / "identity_CelebA.txt",
+        sep=" ",
+        header=None,
+        names=["image_id", "identity"],
+    )
+    _, attrs = celeba_paths()
+    a = pd.read_csv(attrs, usecols=["image_id"])
+    return a.merge(ids, on="image_id", how="left")["identity"].to_numpy()
 
 
 def load_mimic(backbone: str) -> tuple[np.ndarray, pd.DataFrame]:
@@ -205,6 +259,7 @@ class Cell:
     a: np.ndarray
     rows: np.ndarray
     note: str = ""
+    groups: np.ndarray | None = None
 
     @property
     def key(self) -> str:
@@ -275,7 +330,10 @@ def attribute_cells(
         y_sub = y_all[rows].astype(int)
         if len(np.unique(a_sub)) < 2:
             note = (note + "; " if note else "") + "fewer than 2 groups, not testable"
-        cells.append(Cell(dataset, backbone, attr, variant, task, X[rows], y_sub, a_sub, rows, note))
+        grp = meta["patient_id"].to_numpy()[rows] if "patient_id" in meta.columns else None
+        cells.append(
+            Cell(dataset, backbone, attr, variant, task, X[rows], y_sub, a_sub, rows, note, grp)
+        )
 
     allrows = np.ones(len(meta), dtype=bool)
     add("sex", "primary", meta["sex"].to_numpy(), allrows)
@@ -291,12 +349,15 @@ def attribute_cells(
 
 
 def celeba_cells(X: np.ndarray, attrs: pd.DataFrame) -> list[Cell]:
+    """CelebA: A = Male (attribute 'Male' == 1), Y = each task attribute;
+    grouped by celebrity identity (repeated identities exist)."""
     out = []
+    ident = load_celeba_identities()
     a = np.where(attrs["Male"].to_numpy() == 1, "Male", "Female")
     rows = np.arange(len(attrs))
     for t in CELEBA_TASKS:
         y = attrs[t].to_numpy().astype(int)
-        out.append(Cell("celeba", "resnet50_celeba", "sex", "primary", t, X, y, a, rows))
+        out.append(Cell("celeba", "resnet50_celeba", "sex", "primary", t, X, y, a, rows, "", ident))
     return out
 
 
