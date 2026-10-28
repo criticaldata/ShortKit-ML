@@ -931,12 +931,19 @@ def extraction():
     NUM["model_ids"] = "; ".join(
         f"{b}: {v['model_id']} ({v['pooling']}), cosine mean {v['cos_mean']:.3f}, min {v['cos_min']:.3f}"
         + ("" if v["reproduced"] else ", NOT reproduced") for b, v in ids.items())
+    # the re-extraction each backbone's results now use (common.CHEXPERT_PUBLIC); vit_b_16 is the pipeline control
+    used = {("vit_b_32", "vit_b_32", "class token (heads = Identity)"),
+            ("dinov2_base", "facebook/dinov2-base", "pooler_output"),
+            ("rad_dino", "microsoft/rad-dino", "pooler_output"),
+            ("medsiglip", "google/medsiglip-448", "vision pooler_output")}
     t = pd.DataFrame([{"Backbone": BACKBONE_LABELS.get(r["backbone"], r["backbone"]), "Candidate": r["model_id"],
                        "Pooling": r["pooling"],
+                       "Used": "control" if r["backbone"] == "vit_b_16" else
+                       ("yes" if (r["backbone"], r["model_id"], r["pooling"]) in used else ""),
                        "Cosine mean": f2(r.get("cos_mean"), 3) if "cos_mean" in r else "n/a",
                        "Cosine min": f2(r.get("cos_min"), 3) if "cos_mean" in r else "n/a",
                        "Note": "" if "cos_mean" in r else _short_error(r.get("error", ""))} for r in rows])
-    write_tabular("extraction_check", t, "lllccl")
+    write_tabular("extraction_check", t, "llllccl")
 
 
 def alignment():

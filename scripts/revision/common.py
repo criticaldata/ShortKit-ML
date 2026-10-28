@@ -143,9 +143,24 @@ class Manifest:
 # ---------------------------------------------------------------------------
 
 
-def chexpert_paths(backbone: str) -> tuple[Path, Path]:
+# These four were stored without extraction code; the revision uses arrays re-extracted
+# from pinned public checkpoints (extract_missing_chexpert_backbones.py). The stored
+# arrays are kept for the submitted-pipeline replay and the extraction check.
+CHEXPERT_PUBLIC = {
+    "vit_b_32": "vit_b_32__vit_b_32__class.npy",
+    "dinov2_base": "dinov2_base__facebook_dinov2-base__pooler_output.npy",
+    "rad_dino": "rad_dino__microsoft_rad-dino__pooler_output.npy",
+    "medsiglip": "medsiglip__google_medsiglip-448__vision.npy",
+}
+
+
+def chexpert_paths(backbone: str, stored: bool = False) -> tuple[Path, Path]:
     d = DATA / "chexpert_multibackbone"
-    return d / f"{backbone}_embeddings.npy", d / f"{backbone}_metadata.csv"
+    if backbone in CHEXPERT_PUBLIC and not stored:
+        emb = d / "public" / CHEXPERT_PUBLIC[backbone]
+    else:
+        emb = d / f"{backbone}_embeddings.npy"
+    return emb, d / f"{backbone}_metadata.csv"
 
 
 def mimic_paths(backbone: str) -> tuple[Path, Path]:
@@ -260,8 +275,8 @@ def chexpert_meta() -> pd.DataFrame:
     return meta
 
 
-def load_chexpert(backbone: str) -> tuple[np.ndarray, pd.DataFrame]:
-    emb, _ = chexpert_paths(backbone)
+def load_chexpert(backbone: str, stored: bool = False) -> tuple[np.ndarray, pd.DataFrame]:
+    emb, _ = chexpert_paths(backbone, stored)
     X = np.load(emb).astype(np.float32)
     meta = chexpert_meta()
     assert X.shape[0] == len(meta)
