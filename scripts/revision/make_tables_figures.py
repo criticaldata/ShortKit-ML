@@ -19,7 +19,15 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import matplotlib  # noqa: E402
-from common import BACKBONE_LABELS, REPO, git_sha, results_root, to_jsonable  # noqa: E402
+from common import (  # noqa: E402
+    BACKBONE_LABELS,
+    CHEXPERT_BACKBONES,
+    MIMIC_BACKBONES,
+    REPO,
+    git_sha,
+    results_root,
+    to_jsonable,
+)
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -457,6 +465,10 @@ def clinical():
     fig, axes = plt.subplots(1, 2, figsize=(13, 8.5), gridspec_kw={"width_ratios": [1, 1], "wspace": 0.6})
     for ax, ds in zip(axes, ["chexpert", "mimic"], strict=True):
         sub = prim[(prim.dataset == ds) & prim.detector.isin(DET)]
+        bb_order = {b: i for i, b in enumerate(CHEXPERT_BACKBONES if ds == "chexpert" else MIMIC_BACKBONES)}
+        attr_order = {"sex": 0, "age": 1, "race": 2}
+        sub = sub.sort_values(["backbone", "attribute"], key=lambda c: c.map(bb_order if c.name == "backbone" else attr_order),
+                              kind="stable")  # partial reruns append rows; keep backbone then attribute order
         labels, Z, F, S = [], [], [], []
         for (bb, attr), g in sub.groupby(["backbone", "attribute"], sort=False):
             g = g.set_index("detector").reindex(DET)
