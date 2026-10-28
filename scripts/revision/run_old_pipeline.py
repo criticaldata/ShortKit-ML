@@ -160,8 +160,9 @@ def main() -> int:
     if "chexpert" in args.datasets:
         t0 = time.time()
         for bb in CHEXPERT_BACKBONES:
-            X, meta = load_chexpert(bb)
-            man.add_data(*chexpert_paths(bb))
+            # the submitted pipeline ran on the stored arrays
+            X, meta = load_chexpert(bb, stored=True)
+            man.add_data(*chexpert_paths(bb, stored=True))
             y = meta["task_label"].astype(int).to_numpy()
             extra = {a: meta[a].astype(str).to_numpy() for a in ["sex", "age_bin", "race"]}
             for attr in ["sex", "age_bin", "race"]:
