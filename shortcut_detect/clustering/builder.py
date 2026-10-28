@@ -5,7 +5,7 @@ from typing import Any
 
 import numpy as np
 
-from ..base_builder import BaseDetector
+from ..base_builder import BaseDetector, resolve_target
 from . import HBACDetector
 
 
@@ -30,7 +30,10 @@ class HBACDetectorBuilder(BaseDetector):
         print("Running HBAC detection...")
         detector = self.build()
         try:
-            detector.fit(embeddings, labels, feature_names=feature_names)
+            target, target_kind = resolve_target(
+                labels, group_labels, self.kwargs.get("hbac_target", "attribute")
+            )
+            detector.fit(embeddings, target, feature_names=feature_names)
             report = detector.shortcut_report_
             shortcut_info = report["has_shortcut"]
             summary_lines = [
@@ -47,6 +50,7 @@ class HBACDetectorBuilder(BaseDetector):
             return {
                 "detector": detector,
                 "report": report,
+                "target": target_kind,
                 "summary_title": "HBAC (Clustering-based Detection)",
                 "summary_lines": summary_lines,
                 "risk_indicators": risk_indicators,

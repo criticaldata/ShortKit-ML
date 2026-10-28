@@ -8,6 +8,30 @@ from typing import Any
 import numpy as np
 
 
+def resolve_target(
+    labels: np.ndarray, group_labels: np.ndarray | None, mode: str = "attribute"
+) -> tuple[np.ndarray, str]:
+    """Pick the label a label-predicting detector should be fitted on.
+
+    HBAC, Frequency and SIS fit a model to a label. A shortcut audit asks about
+    the attribute A, so by default they target ``group_labels`` when it is given
+    and differs from the task labels. ``mode="task"`` restores the submitted
+    behaviour (fit on the task label and never see A).
+    """
+    if mode not in {"attribute", "task"}:
+        raise ValueError("target mode must be 'attribute' or 'task'")
+    if mode == "task" or group_labels is None:
+        return np.asarray(labels), "task"
+    g = np.asarray(group_labels)
+    if g.shape[0] != np.asarray(labels).shape[0]:
+        raise ValueError("group_labels must have one entry per sample")
+    if np.array_equal(g, np.asarray(labels)):
+        return np.asarray(labels), "task"
+    if not np.issubdtype(g.dtype, np.number):
+        g = np.unique(g, return_inverse=True)[1].astype(np.int64)
+    return g, "attribute"
+
+
 class BaseDetector(ABC):
     """Abstract base for detector builders."""
 
