@@ -59,6 +59,8 @@ For all optional extras (dashboard, reporting, VAE, HuggingFace, MCP, etc.):
 pip install "shortkit-ml[all]"
 ```
 
+The PyPI release 0.1.0 predates the `shortcut_detect.audit` module used by the revised paper; install from source (`pip install -e .`) until the next release.
+
 ### Development Install (from source)
 
 ```bash
@@ -115,7 +117,7 @@ detector.fit(embeddings=None, labels=labels, group_labels=groups,
              raw_inputs=texts, embedding_source=hf_source)
 ```
 
-> See [Embedding-Only Guide](docs/methods/overview.md) for `CallableEmbeddingSource` and caching options.
+> See [Embedding-Only Guide](docs/api/embedding-sources.md) for `CallableEmbeddingSource` and caching options.
 
 ## Detection Methods
 
@@ -202,10 +204,10 @@ The two commands in this section run the first-submission benchmark. The revised
 
 ### Dataset 1 -- Synthetic Grid
 
-Configure `examples/paper_benchmark_config.json` to control effect sizes, sample sizes, imbalance ratios, and embedding dimensionalities. A smoke profile (`examples/paper_benchmark_config_smoke.json`) is provided for quick sanity checks.
+Configure `examples/paper_benchmark_config_reproducible.json` to control effect sizes, sample sizes, imbalance ratios, and embedding dimensionalities. For a quick sanity check run the smoke profile, `./scripts/reproduce_paper.sh smoke`.
 
 ```bash
-python -m shortcut_detect.benchmark.paper_run --config examples/paper_benchmark_config.json
+python -m shortcut_detect.benchmark.paper_run --config examples/paper_benchmark_config_reproducible.json
 ```
 
 Outputs CSVs, figures, and summary markdown into `output/paper_benchmark/`.
@@ -220,7 +222,7 @@ python3 scripts/run_dataset2_benchmark.py \
   --model medclip \
   --root . \
   --artifacts-dir output/paper_benchmark/chexpert_embeddings \
-  --config examples/paper_benchmark_config.json
+  --config examples/paper_benchmark_config_reproducible.json
 ```
 
 See `scripts/reproduce_paper.sh` and the Dockerfile for full reproducibility.
@@ -233,7 +235,7 @@ Every table, figure and number of the revised paper (under revision at *Computer
 ./scripts/reproduce_paper.sh revision   # same as scripts/revision/run_all.sh
 ```
 
-The paper's audit is `shortcut_detect.audit.conditional_audit`. One primary test, the conditional probe (L2 logistic regression predicting the attribute from the embedding and the task label, out-of-fold AUROC), is calibrated by permuting the attribute within task-label strata, at patient level where patient ids are given, with K=500 permutations in the clinical audits. Five secondary detectors (statistical, geometric, bias direction PCA, HBAC, frequency) share the same null and are reported as diagnostics; the number of flagged detectors in a cell is descriptive only. SIS, the fairness gaps and the training-dynamics methods are outside the score. The audit reports shortcut potential: a positive result says the attribute is recoverable from the embedding given the task. Whether a classifier uses it is a separate question, tested in the head experiment. See the [reproducibility page](docs/reproducibility.md) for the stages and output folders.
+The paper's audit is `shortcut_detect.audit.conditional_audit`. One primary test, the conditional probe (L2 logistic regression predicting the attribute from the embedding and the task label, out-of-fold AUROC), is calibrated by permuting the attribute within task-label strata, at patient level where patient ids are given, with K=500 permutations in the clinical audits. Five secondary detectors (statistical, geometric, bias direction PCA, HBAC, frequency) share the same null with K=200 permutations and are reported as diagnostics; the number of flagged detectors in a cell is descriptive only. SIS, the fairness gaps and the training-dynamics methods are outside the score. The audit reports shortcut potential: a positive result says the attribute is recoverable from the embedding given the task. Whether a classifier uses it is a separate question, tested in the head experiment. See the [reproducibility page](docs/reproducibility.md) for the stages and output folders.
 
 ### First-submission scripts
 
@@ -268,7 +270,7 @@ All embeddings are hosted on HuggingFace (gated, PhysioNet-restricted access). T
 
 ```bash
 # Download all embeddings into data/
-huggingface-cli download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir data/
+hf download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir data/
 ```
 
 | Dataset | Location | Embedding Models | Dim | Samples |

@@ -106,11 +106,14 @@ class MyMethodDetector(DetectorBase):
         report_: Detailed :class:`MyMethodReport` (populated after ``fit``).
 
     Example:
+        >>> import numpy as np
+        >>> rng = np.random.default_rng(0)
+        >>> embeddings, labels, group_labels = rng.normal(size=(200, 16)), rng.integers(0, 2, 200), rng.integers(0, 2, 200)
         >>> detector = MyMethodDetector(threshold=0.6)
-        >>> detector.fit(embeddings, labels, group_labels)
-        >>> print(detector.summary())
+        >>> _ = detector.fit(embeddings, labels, group_labels)  # doctest: +SKIP
+        >>> print(detector.summary())  # doctest: +SKIP
         my_method: shortcut=NO, risk=LOW, score=0.42
-        >>> report = detector.get_report()
+        >>> report = detector.get_report()  # doctest: +SKIP
     """
 
     def __init__(

@@ -1,5 +1,5 @@
 # All data files are hosted on HuggingFace: MITCriticalData/ShortKit-ML-data
-# Do NOT commit embeddings, metadata, or labels — these are either large or PhysioNet-restricted.
+# Do NOT commit embeddings, metadata, or labels, these are either large or PhysioNet-restricted.
 *
 !.gitignore
 !.gitattributes
