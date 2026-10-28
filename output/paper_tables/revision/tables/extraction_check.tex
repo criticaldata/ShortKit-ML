@@ -1,16 +1,17 @@
-\begin{tabular}{lllccl}
+\begin{tabular}{llllccl}
 \toprule
-Backbone & Candidate & Pooling & Cosine mean & Cosine min & Note \\
+Backbone & Candidate & Pooling & Used & Cosine mean & Cosine min & Note \\
 \midrule
-ViT-B/32 & vit\_b\_32 & class token (heads = Identity) & 0.744 & 0.408 &  \\
-ViT-B/32 & google/vit-base-patch32-224-in21k & pooler\_output & 0.001 & -0.096 &  \\
-ViT-B/32 & google/vit-base-patch32-224-in21k & cls token & 0.002 & -0.094 &  \\
-ViT-B/32 & openai/clip-vit-base-patch32 & vision pooler\_output & 0.008 & -0.093 &  \\
-DINOv2 & facebook/dinov2-base & pooler\_output & 0.968 & 0.857 &  \\
-DINOv2 & facebook/dinov2-base & mean of patch tokens & 0.749 & 0.484 &  \\
-RAD-DINO & microsoft/rad-dino & pooler\_output & 0.896 & 0.483 &  \\
-RAD-DINO & microsoft/rad-dino & mean of patch tokens & 0.166 & -0.027 &  \\
-MedSigLIP & google/medsiglip-448 & vision pooler\_output & n/a & n/a & gated repository (no access) \\
-MedSigLIP & google/siglip-so400m-patch14-384 & vision pooler\_output & 0.018 & -0.053 &  \\
+ViT-B/16 & vit\_b\_16 & class token (heads = Identity) & control & 1.000 & 1.000 &  \\
+ViT-B/32 & vit\_b\_32 & class token (heads = Identity) & yes & 0.744 & 0.408 &  \\
+ViT-B/32 & google/vit-base-patch32-224-in21k & pooler\_output &  & 0.001 & -0.096 &  \\
+ViT-B/32 & google/vit-base-patch32-224-in21k & cls token &  & 0.002 & -0.094 &  \\
+ViT-B/32 & openai/clip-vit-base-patch32 & vision pooler\_output &  & 0.008 & -0.093 &  \\
+DINOv2 & facebook/dinov2-base & pooler\_output & yes & 0.968 & 0.857 &  \\
+DINOv2 & facebook/dinov2-base & mean of patch tokens &  & 0.749 & 0.484 &  \\
+RAD-DINO & microsoft/rad-dino & pooler\_output & yes & 0.896 & 0.483 &  \\
+RAD-DINO & microsoft/rad-dino & mean of patch tokens &  & 0.166 & -0.027 &  \\
+MedSigLIP & google/medsiglip-448 & vision pooler\_output & yes & 0.010 & -0.071 &  \\
+MedSigLIP & google/siglip-so400m-patch14-384 & vision pooler\_output &  & 0.018 & -0.053 &  \\
 \bottomrule
 \end{tabular}
