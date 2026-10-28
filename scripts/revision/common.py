@@ -52,11 +52,18 @@ RACE_NAMED = ["WHITE", "BLACK", "ASIAN"]
 
 
 def git_sha(short: bool = True) -> str:
+    """Commit of the code being run. ``SHORTKIT_COMMIT`` overrides it for runs
+    made from a frozen ``git archive`` copy of a commit."""
+    env = os.environ.get("SHORTKIT_COMMIT")
+    if env:
+        return env[:7] if short else env
     args = ["git", "-C", str(REPO), "rev-parse"] + (["--short"] if short else []) + ["HEAD"]
     return subprocess.check_output(args, text=True).strip()
 
 
 def git_dirty() -> bool:
+    if os.environ.get("SHORTKIT_COMMIT"):
+        return False
     out = subprocess.check_output(["git", "-C", str(REPO), "status", "--porcelain"], text=True)
     return any(line and not line.startswith("??") for line in out.splitlines())
 
