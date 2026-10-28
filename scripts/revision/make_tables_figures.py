@@ -713,6 +713,13 @@ def head():
                 from scipy.stats import wilcoxon
                 dc = (g.tpr_gap_after - g.tpr_gap_before).groupby([g.backbone, g.attribute, g.task]).mean()
                 put("mitig4_n_cells", int(len(dc)), "{:d}")
+                put("mitig4_tpr_gap_before", g.tpr_gap_before.mean())
+                put("mitig4_tpr_gap_after", g.tpr_gap_after.mean())
+                put("mitig4_task_auroc_before", g.task_auroc_before.mean())
+                put("mitig4_task_auroc_after", g.task_auroc_after.mean())
+                if "n_head_fit" in g:
+                    put("mitig4_n_fit_min", int(g.n_head_fit.min()), "{:d}")
+                    put("mitig4_n_fit_max", int(g.n_head_fit.max()), "{:d}")
                 put("mitig4_n_cells_gap_lower", int((dc < 0).sum()), "{:d}")
                 put("mitig4_cells_wilcoxon_p", wilcoxon(dc).pvalue, "{:.3f}")
             for mm_ in (meth, f"{meth}_control"):
