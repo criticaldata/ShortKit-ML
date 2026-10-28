@@ -1,0 +1,5 @@
+dataset,variant,note,n_images
+chexpert,min50_per_group,,1531
+chexpert,min50_per_stratum,,1474
+mimic,min50_per_group,,1235
+mimic,min50_per_stratum,,1229
