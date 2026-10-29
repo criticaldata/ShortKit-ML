@@ -1162,6 +1162,22 @@ def sensitivity():
             put("nl_probe_d", int(cfg["d"]), "{:d}")
             put("nl_probe_rho", float(cfg["rho"]), "{:.1f}")
             put("nl_probe_K", int(cfg["K"]), "{:d}")
+    sc = load("probe_scaling/rows.csv")
+    if sc is not None:  # probe run time against n on synthetic embeddings (run_probe_scaling.py)
+        pts = sc.groupby("n", sort=True).agg(sec=("seconds_at_K500", "first"), extrap=("extrapolated", "any"))
+        for n, r in pts.iterrows():
+            key = f"probe_scaling_sec_{int(n) // 1000}k"
+            put(key, float(r.sec), "{:.0f}", text=f"{r.sec / 60:.0f} min" if r.sec > 600 else None)
+        put("probe_scaling_n_max", int(pts.index.max()), "{:,d}")
+        slope = np.polyfit(np.log(pts.index.to_numpy(dtype=float)), np.log(pts.sec.to_numpy(dtype=float)), 1)[0]
+        put("probe_scaling_exponent", float(slope), "{:.1f}")
+        if pts.extrap.any():  # some points measured at smaller K and read at 500 from a line in K
+            ks = sorted(int(k) for k in sc[sc.extrapolated].K.unique())
+            ns_ext = ", ".join(f"{int(n):,d}" for n in pts.index[pts.extrap])
+            put("probe_scaling_K", 500, text=f"500 (measured at K = {' and '.join(map(str, ks))} for n = {ns_ext} "
+                                              "and extrapolated linearly in K)")
+        else:
+            put("probe_scaling_K", int(sc.K.max()), "{:d}")
 
 
 def extraction():
