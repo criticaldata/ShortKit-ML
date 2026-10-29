@@ -20,7 +20,7 @@ We welcome contributions to ShortKit-ML! This guide explains how to get started.
 
 ```bash
 git clone https://github.com/criticaldata/ShortKit-ML.git
-cd Shortcut_Detect
+cd ShortKit-ML
 ```
 
 ### Create Virtual Environment

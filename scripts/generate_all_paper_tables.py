@@ -889,6 +889,9 @@ def generate_table_g_risk_conditions():
 
 
 def main():
+    celeba_json = BENCHMARK_DIR / "celeba_results" / "aggregate_report.json"
+    if not celeba_json.exists():
+        raise SystemExit(f"Missing {celeba_json}: run scripts/run_celeba_benchmark.py first (table f)")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     print(f"Output directory: {OUTPUT_DIR}")
     print()

@@ -14,7 +14,7 @@ This guide explains how to reproduce the results of the ShortKit-ML paper (under
 
 ```bash
 git clone https://github.com/criticaldata/ShortKit-ML.git
-cd Shortcut_Detect
+cd ShortKit-ML
 pip install -e ".[dev]"
 ```
 
