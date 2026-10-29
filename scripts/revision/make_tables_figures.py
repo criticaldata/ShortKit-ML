@@ -1558,8 +1558,8 @@ def v2_clinical_heatmap():
     attr_lab = {"sex": "Sex", "age": "Age 60+", "race": "Race"}
     zmax = 100.0
     fig = plt.figure(figsize=(V2_TEXTWIDTH_IN, 5.6))
-    gs = fig.add_gridspec(2, 2, height_ratios=[12, 9], width_ratios=[1, 1], wspace=1.05, hspace=0.35,
-                          left=0.21, right=0.985, top=0.95, bottom=0.07)
+    gs = fig.add_gridspec(2, 2, height_ratios=[12, 9], width_ratios=[1, 1], wspace=0.72, hspace=0.35,
+                          left=0.17, right=0.99, top=0.95, bottom=0.07)
     ax_c = fig.add_subplot(gs[:, 0])
     ax_m = fig.add_subplot(gs[0, 1])
     ax_leg = fig.add_subplot(gs[1, 1])
@@ -1584,7 +1584,7 @@ def v2_clinical_heatmap():
         im = ax.imshow(L, cmap=V2_BLUE_SEQ, aspect="auto", vmin=0, vmax=np.log1p(zmax))
         for i in range(L.shape[0]):
             for j in range(L.shape[1]):
-                ax.text(j, i, f"{S[i][j]:.2f}" + ("*" if F[i][j] else ""), ha="center", va="center", fontsize=6.5,
+                ax.text(j, i, f"{S[i][j]:.2f}" + ("*" if F[i][j] else ""), ha="center", va="center", fontsize=7,
                         color=_v2_text_colour(V2_BLUE_SEQ, L[i, j] / np.log1p(zmax)))
         # backbone groups: name to the left of the attribute labels, white gap between groups
         ax.set_yticks(range(len(rows)), [attr_lab[a] for _, a in rows])
@@ -1592,7 +1592,7 @@ def v2_clinical_heatmap():
         for k, s0 in enumerate(starts):
             s1 = (starts[k + 1] if k + 1 < len(starts) else len(rows)) - 1
             ax.annotate(bb_label(ds, rows[s0][0]), xy=(0, (s0 + s1) / 2), xycoords=("axes fraction", "data"),
-                        xytext=(-40, 0), textcoords="offset points", ha="right", va="center", fontsize=7.5,
+                        xytext=(-38, 0), textcoords="offset points", ha="right", va="center", fontsize=7.5,
                         color=V2C["ink"])
             if s0 > 0:
                 ax.axhline(s0 - 0.5, color="white", lw=2.0)
