@@ -79,6 +79,8 @@ def put(key: str, raw, fmt: str | None = "{:.2f}", text: str | None = None) -> N
         NUM[key] = str(raw)
     else:
         NUM[key] = fmt.format(raw)
+        if NUM[key].startswith("-0.") and float(NUM[key]) == 0.0:  # no "-0.00" in the paper
+            NUM[key] = NUM[key][1:]
 
 
 def rng_text(lo: float, hi: float, fmt="{:.2f}") -> str:
