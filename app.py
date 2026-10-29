@@ -89,23 +89,43 @@ def find_data_dir():
     return None
 
 
+def _synthetic_sample_metadata(n: int = 2000, seed: int = 42) -> pd.DataFrame:
+    """Synthetic stand-in for the CheXpert metadata used by the sample demo.
+
+    Used when Stanford's train.csv is not in data/ (it is never redistributed). Columns match
+    what load_sample_data reads: PATIENT, GENDER, race and a binary Cardiomegaly label.
+    """
+    rng = np.random.default_rng(seed)
+    race = rng.choice(["WHITE", "BLACK/AFRICAN AMERICAN", "ASIAN"], size=n, p=[0.6, 0.25, 0.15])
+    gender = rng.choice(["Male", "Female"], size=n)
+    # label prevalence differs by group so the demo has something to detect
+    base = np.where(race == "WHITE", 0.35, 0.15)
+    label = (rng.random(n) < base).astype(int)
+    df = pd.DataFrame({
+        "PATIENT": [f"synthetic{i // 2 + 1:05d}" for i in range(n)],
+        "GENDER": gender,
+        "race": race,
+        "Cardiomegaly": label,
+    })
+    df.attrs["metadata"] = "synthetic"
+    return df
+
+
 def load_sample_data(use_real_embeddings: bool = False):
     """
     Load CheXpert data with optional real or synthetic embeddings.
 
     When use_real_embeddings=True and data/chest_*.npy exist, loads pre-computed
     embeddings. Otherwise uses synthetic embeddings with real CheXpert metadata
-    and demographics (train.csv + CHEXPERT DEMO.xlsx).
+    and demographics (train.csv + CHEXPERT DEMO.xlsx) when those files are in data/,
+    or with synthetic metadata when they are not (metadata_df.attrs["metadata"] says which).
 
     Returns: embeddings, task_labels, group_labels, extra_labels, attributes, metadata_df
     """
     data_dir = find_data_dir()
 
-    if data_dir is None:
-        raise FileNotFoundError("Could not find data directory")
-
     # Optionally use real pre-computed embeddings (chest_*.npy from benchmark)
-    if use_real_embeddings:
+    if use_real_embeddings and data_dir is not None:
         emb_path = data_dir / "chest_embeddings.npy"
         lbl_path = data_dir / "chest_labels.npy"
         grp_path = data_dir / "chest_group_labels.npy"
@@ -127,22 +147,26 @@ def load_sample_data(use_real_embeddings: bool = False):
             attributes = {"group": np.asarray(codes)}
             return embeddings, task_labels, group_labels, extra_labels, attributes, None
 
-    # Load real CheXpert metadata and demographics
-    train_csv = data_dir / "train.csv"
-    demo_xlsx = data_dir / "CHEXPERT DEMO.xlsx"
+    # Load real CheXpert metadata and demographics when the user has placed Stanford's
+    # files in data/; otherwise build synthetic metadata so the demo runs on a fresh clone
+    train_csv = data_dir / "train.csv" if data_dir is not None else None
+    demo_xlsx = data_dir / "CHEXPERT DEMO.xlsx" if data_dir is not None else None
 
-    if not train_csv.exists():
-        raise FileNotFoundError(f"train.csv not found at {train_csv}")
+    if train_csv is not None and train_csv.exists():
+        # Load training data
+        data_df = pd.read_csv(train_csv)
 
-    # Load training data
-    data_df = pd.read_csv(train_csv)
-
-    # Extract patient ID from Path column
-    # Path format: "CheXpert-v1.0-small/train/patient00001/study1/..."
-    data_df["PATIENT"] = data_df["Path"].str.extract(r"(patient\d+)", expand=False)
+        # Extract patient ID from Path column
+        # Path format: "CheXpert-v1.0-small/train/patient00001/study1/..."
+        data_df["PATIENT"] = data_df["Path"].str.extract(r"(patient\d+)", expand=False)
+        data_df.attrs["metadata"] = "chexpert"
+    else:
+        data_df = _synthetic_sample_metadata(n=2000, seed=42)
+        demo_xlsx = None  # synthetic patients have no demographics record
+    metadata_kind = data_df.attrs["metadata"]
 
     # Load demographics if available
-    if demo_xlsx.exists():
+    if demo_xlsx is not None and demo_xlsx.exists():
         demo_df = pd.read_excel(demo_xlsx, engine="openpyxl")
         # Merge demographics
         data_df = data_df.merge(
@@ -160,7 +184,7 @@ def load_sample_data(use_real_embeddings: bool = False):
 
         mask_white = data_df.PRIMARY_RACE.str.contains("White", na=False)
         data_df.loc[mask_white, "race"] = "WHITE"
-    else:
+    elif "race" not in data_df.columns:
         # If no demographics, create synthetic groups
         data_df["race"] = np.random.choice(
             ["ASIAN", "BLACK/AFRICAN AMERICAN", "WHITE"], size=len(data_df)
@@ -171,6 +195,7 @@ def load_sample_data(use_real_embeddings: bool = False):
         data_df = data_df.sample(n=2000, random_state=42).reset_index(drop=True)
 
     n_samples = len(data_df)
+    data_df.attrs["metadata"] = metadata_kind  # merge and sample drop DataFrame.attrs
 
     # Generate lightweight embeddings (512-dim instead of 2048)
     embedding_dim = 512
@@ -1816,7 +1841,10 @@ def run_detection(
             n, d = embeddings.shape[0], embeddings.shape[1]
             # load_sample_data returns metadata_df=None only when real embeddings loaded
             emb_type = "real" if metadata_df is None else "synthetic"
-            dataset_name = f"CheXpert Sample ({n} samples, {d}-dim embeddings, {emb_type})"
+            meta_type = "" if metadata_df is None else (
+                ", synthetic metadata" if metadata_df.attrs.get("metadata") == "synthetic"
+                else ", CheXpert metadata")
+            dataset_name = f"CheXpert Sample ({n} samples, {d}-dim embeddings, {emb_type}{meta_type})"
 
             splits = None
             if "ssa" in methods:

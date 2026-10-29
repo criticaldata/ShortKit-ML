@@ -20,7 +20,7 @@ The dashboard opens at [http://127.0.0.1:7860](http://127.0.0.1:7860)
 
 The default data source is **Sample Data (CheXpert - Lightweight)**:
 
-- 2,000 rows drawn at random (`random_state=42`) from the CheXpert `train.csv`, with real metadata and demographics
+- 2,000 rows drawn at random (`random_state=42`) from the CheXpert `train.csv`, with real metadata and demographics when Stanford's `train.csv` (and `CHEXPERT DEMO.xlsx`) are in `data/`; without them, 2,000 rows of synthetic metadata (sex, race, a Cardiomegaly label) are generated and the run is labelled "synthetic metadata"
 - 512-dimensional **synthetic** embeddings generated over that metadata (the first 10 dimensions carry a planted shortcut)
 - Race groups (WHITE, BLACK/AFRICAN AMERICAN, ASIAN, OTHER) from the demographics file
 - Tick **Use real CheXpert embeddings** to load `data/chest_embeddings.npy`, `chest_labels.npy` and `chest_group_labels.npy` instead, when they exist
