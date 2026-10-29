@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit b53bf854bfc4cf4e53c7ddb8f7a8bae5e35850cd
+tables/figures built at commit d741bf6ecdfaa199db8f01b13c54e66b2af16655
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -1117,6 +1117,34 @@ notes:
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
   - Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. decision_bound: 'sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate'. For the C check, bh_with_main_secondaries recomputes BH with the probe p from this run and the five secondary p-values from the main audit (frequency_topk also uses C, so approximate).
   - Row order: extract_missing_chexpert_backbones.py embeds the images in _cache/images.pkl order and compares row by row with the stored array (cosine in extraction_check.json); no reordering, so rows match chexpert_meta().
+
+===== sample_vs_full =====
+run: Audited CheXpert sample against the full train.csv
+commit: d741bf6ecdfaa199db8f01b13c54e66b2af16655
+working tree has uncommitted changes: True
+command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML/scripts/revision/run_sample_vs_full.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-29 02:02:44 GMT
+wall_seconds: 3.6
+
+config:
+{
+  "n_sample": 2000,
+  "race_known": "coded by common._code_chexpert_race"
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  ac0a03f94190895924a060e5bc86f683  data/CHEXPERT DEMO.xlsx
+  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+
+timings (s):
+  all: 3.322
+
+notes:
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - Age is the per-image Age column of train.csv on both sides, not the audit's age at first study. Sex and view from train.csv; race per patient from CHEXPERT DEMO.xlsx, white_pct_of_known over images with a coded race.
 
 ===== synthetic =====
 run: conditional synthetic benchmark

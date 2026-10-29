@@ -1108,6 +1108,14 @@ def sensitivity():
         for meth in ["dfr", "dfr_l2", "random_dfr_head", "random_l2"]:
             put(f"dfrctl_{meth}_task_auroc", g.loc[meth, "task_auroc_mean"])
             put(f"dfrctl_{meth}_tpr_gap", g.loc[meth, "tpr_gap_mean"])
+    sv = load("sample_vs_full/sample_vs_full.csv")
+    if sv is not None:  # audited CheXpert sample against the full train.csv
+        g = sv.set_index("statistic")
+        for side in ("sample", "full"):
+            put(f"{side}_female_pct", g.loc["female_pct", side], "{:.0f}")
+            put(f"{side}_age_median", g.loc["age_median", side], "{:.0f}")
+            put(f"{side}_lateral_pct", g.loc["lateral_pct", side], "{:.0f}")
+            put(f"{side}_white_pct", g.loc["white_pct_of_known", side], "{:.0f}")
 
 
 def extraction():

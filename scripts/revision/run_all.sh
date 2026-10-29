@@ -2,7 +2,7 @@
 # End-to-end revision pipeline (CMPB-D-26-02542). Called by
 # `scripts/reproduce_paper.sh revision`; can also run selected stages:
 #   scripts/revision/run_all.sh [stage ...]
-# Stages: old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity tables (default: all, in order)
+# Stages: old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full tables (default: all, in order)
 # Run on request only: prepare_mimic (rebuilds two MIMIC inputs from the qml-mimic-cxr-embeddings parquet files)
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -13,7 +13,7 @@ if [ -z "${SHORTKIT_REVISION_DIR:-}" ]; then
 fi
 mkdir -p "${SHORTKIT_REVISION_DIR}"
 STAGES=("$@")
-[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity tables)
+[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full tables)
 echo "results: ${SHORTKIT_REVISION_DIR}"
 for s in "${STAGES[@]}"; do
     start=$(date +%s)
@@ -38,6 +38,7 @@ for s in "${STAGES[@]}"; do
         alignment) "${PY}" "${REPO}/scripts/revision/run_alignment_check.py" ;;
         overlap)   "${PY}" "${REPO}/scripts/revision/run_pretraining_overlap.py" ;;
         sensitivity) for c in C frontal labelled; do "${PY}" "${REPO}/scripts/revision/run_probe_sensitivity.py" --check "${c}"; done ;;
+        sample_vs_full) "${PY}" "${REPO}/scripts/revision/run_sample_vs_full.py" ;;
         # clinical_audit_stored_arrays/ (the "Stored array" column of the sensitivity table) has
         # no stage: it is the clinical stage's output from before the CheXpert switch to public
         # re-extractions (8728cb3), kept under that name as a frozen input. The stored arrays have
