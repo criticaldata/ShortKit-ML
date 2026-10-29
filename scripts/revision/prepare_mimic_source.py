@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Rebuild two MIMIC-CXR inputs from the source parquet files (needs pyarrow).
 
-The MIMIC-CXR embeddings come from the qml-mimic-cxr-embeddings dataset, coreset
-strategy 5 (PathologyStratifiedClean, 1,999 images, seed 0), minus rows without
+The MIMIC-CXR embeddings come from the coreset parquet files kept under
+``mimic_cxr/source/`` in the ShortKit-ML-data dataset, strategy 5 (PathologyStratifiedClean, 1,999 images, seed 0), minus rows without
 an in-hospital mortality label (1,491 subjects, one image each).
 
 1. ``vit32_cls_embeddings_realigned.npy``: the stored ViT-B/32 file holds the first
@@ -12,6 +12,7 @@ an in-hospital mortality label (1,491 subjects, one image each).
    can code unknown, unable-to-obtain and declined as missing.
 
 Usage: python scripts/revision/prepare_mimic_source.py [--qml PATH]
+(PATH is a local copy of the source folder; by default it is downloaded from the hub)
 """
 
 from __future__ import annotations
@@ -24,17 +25,19 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from common import DATA  # noqa: E402
+from mimic_source import mimic_source_dir  # noqa: E402
 
-QML = Path.home() / "Desktop" / "repositories" / "qml-mimic-cxr-embeddings"
 VIT32 = "vit-base-patch32-224-embeddings/data_type5_n1999_seed0_vit_base_patch32_224_cls_embedding.parquet"
 SIGLIP = "medsiglip-448-embeddings/data_type5_n1999_seed0_medsiglip_448.parquet"
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--qml", type=Path, default=QML)
+    ap.add_argument("--qml", type=Path, default=None)
     args = ap.parse_args()
+    args.qml = mimic_source_dir(args.qml)
     d = DATA / "mimic_cxr"
     meta = pd.read_csv(d / "vit32_cls_metadata.csv")
 
