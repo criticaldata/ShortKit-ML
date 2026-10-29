@@ -1021,8 +1021,8 @@ def marker():
         rows.append({"Detector": DET_LABEL[d], "Score": f"{mk[f'{d}_stat'].mean():.3f}",
                      "max p": f"{mk[f'{d}_p'].max():.3f}",
                      "Flagged": f"{int(flags[d].sum())}/{len(mk)}"})
-    rows.append({"Detector": "Head TPR gap", "Score": f"{mk.tpr_gap.mean():.2f}", "max p": "", "Flagged": ""})
-    rows.append({"Detector": "Head FPR gap", "Score": f"{mk.fpr_gap.mean():.2f}", "max p": "", "Flagged": ""})
+    rows.append({"Detector": "Head TPR gap", "Score": f"{mk.tpr_gap.mean():.2f}", "max p": "n/a", "Flagged": "n/a"})
+    rows.append({"Detector": "Head FPR gap", "Score": f"{mk.fpr_gap.mean():.2f}", "max p": "n/a", "Flagged": "n/a"})
     write_tabular("planted_marker", pd.DataFrame(rows), "lccc",
                   header=["", "Mean score", "Max $p$", "Flagged"], midrules=[len(DET)])
 
