@@ -3,7 +3,7 @@
 # `scripts/reproduce_paper.sh revision`; can also run selected stages:
 #   scripts/revision/run_all.sh [stage ...]
 # Stages: old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full nlprobe nlprobe_clinical scaling tables (default: all, in order)
-# Run on request only: prepare_mimic (rebuilds two MIMIC inputs from the qml-mimic-cxr-embeddings parquet files)
+# Run on request only: prepare_mimic (rebuilds two MIMIC inputs from the coreset parquet files in the hub dataset)
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PY="${PYTHON:-python3}"
@@ -19,7 +19,7 @@ for s in "${STAGES[@]}"; do
     start=$(date +%s)
     echo ">>> stage ${s} ($(date))"
     case "${s}" in
-        # rebuilds data/mimic_cxr/vit32_cls_embeddings_realigned.npy and mimic_race_raw.csv; needs pyarrow and the qml-mimic-cxr-embeddings parquet files (QML_DIR)
+        # rebuilds data/mimic_cxr/vit32_cls_embeddings_realigned.npy and mimic_race_raw.csv; needs pyarrow; the parquet files come from the hub dataset (mimic_cxr/source/) or QML_DIR
         prepare_mimic) "${PY}" "${REPO}/scripts/revision/prepare_mimic_source.py" ${QML_DIR:+--qml "${QML_DIR}"} ;;
         old)       "${PY}" "${REPO}/scripts/revision/run_old_pipeline.py" ;;
         clinical)  "${PY}" "${REPO}/scripts/revision/run_clinical_audit.py" ;;

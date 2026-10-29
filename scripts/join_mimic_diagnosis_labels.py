@@ -7,7 +7,7 @@ filter to the parquet before joining so row counts align.
 
 Reads:
   - data/mimic_cxr/mimic-cxr-2.0.0-chexpert.csv  (227k rows, 14 diagnoses)
-  - qml-mimic-cxr-embeddings parquet files          (subject_id, study_id)
+  - mimic_cxr/source/ parquet files (ShortKit-ML-data) (subject_id, study_id)
   - data/mimic_cxr/{backbone}_metadata.csv           (demographics + mortality)
 
 Writes:
@@ -18,14 +18,17 @@ Writes:
 from __future__ import annotations
 
 import argparse
+import sys
 import shutil
 from pathlib import Path
 
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from mimic_source import mimic_source_dir  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 MIMIC_DIR = ROOT / "data" / "mimic_cxr"
-MIMIC_REPO = Path.home() / "Desktop" / "repositories" / "qml-mimic-cxr-embeddings"
 
 BACKBONES = {
     "rad_dino": "rad-dino-embeddings/data_type5_n1998_seed0_rad_dino.parquet",
@@ -54,8 +57,9 @@ DIAGNOSES = [
 def main() -> int:
     parser = argparse.ArgumentParser(description="Join MIMIC-CXR diagnosis labels")
     parser.add_argument("--mimic-dir", type=Path, default=MIMIC_DIR)
-    parser.add_argument("--mimic-repo", type=Path, default=MIMIC_REPO)
+    parser.add_argument("--mimic-repo", type=Path, default=None)
     args = parser.parse_args()
+    args.mimic_repo = mimic_source_dir(args.mimic_repo)
 
     labels_path = args.mimic_dir / "mimic-cxr-2.0.0-chexpert.csv"
     if not labels_path.exists():

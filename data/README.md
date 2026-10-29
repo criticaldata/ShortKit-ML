@@ -47,7 +47,7 @@ The Stanford files and the CelebA images are never redistributed; download them 
 | `data/train.csv` | CheXpert-v1.0-small `train.csv`, [Stanford research use agreement](https://stanfordmlgroup.github.io/competitions/chexpert/) | sex, age, view, AP/PA and the 14 labels, joined to the embeddings by image path through `race_mapping.csv` |
 | `data/CHEXPERT DEMO.xlsx` | CheXpert demographics file from Stanford | `PRIMARY_RACE` per patient |
 | `data/celeba_real/celeba/` | CelebA via `torchvision.datasets.CelebA` (`identity_CelebA.txt`, `list_attr_celeba.txt`, `img_align_celeba/`) | celebrity identity for grouping; images for `scripts/extract_celeba_embeddings.py` |
-| `mimic_cxr/vit32_cls_embeddings_realigned.npy`, `mimic_cxr/mimic_race_raw.csv` | Rebuilt by `scripts/revision/prepare_mimic_source.py` from the [qml-mimic-cxr-embeddings](https://huggingface.co/datasets/MITCriticalData/qml-mimic-cxr-embeddings) parquet files (PhysioNet credential) | the realigned ViT-B/32 array and the raw MIMIC race strings |
+| `mimic_cxr/vit32_cls_embeddings_realigned.npy`, `mimic_cxr/mimic_race_raw.csv` | Rebuilt by `scripts/revision/prepare_mimic_source.py` from the coreset parquet files in `mimic_cxr/source/` | the realigned ViT-B/32 array and the raw MIMIC race strings |
 
 ## Layout
 
@@ -96,7 +96,7 @@ Sex, age, view and the labels come from `train.csv`, joined by image path throug
 
 ## MIMIC-CXR (`mimic_cxr/`)
 
-1,491 subjects with one image each: the qml-mimic-cxr-embeddings coreset (strategy 5, PathologyStratifiedClean, 1,999 images, seed 0) minus rows without an in-hospital mortality label. Four backbones: RAD-DINO, ViT-B/16, ViT-B/32 and the array labelled MedSigLIP, which was extracted with `google/siglip-so400m-patch14-384` and is reported in the paper as SigLIP (So400m). The stored `vit32_cls_embeddings.npy` does not match its metadata; the loader reads `vit32_cls_embeddings_realigned.npy` instead. Race is coded from `mimic_race_raw.csv`, with Unknown, Unable to Obtain and Patient Declined treated as missing.
+1,491 subjects with one image each: the coreset in `mimic_cxr/source/` (strategy 5, PathologyStratifiedClean, 1,999 images, seed 0) minus rows without an in-hospital mortality label. Four backbones: RAD-DINO, ViT-B/16, ViT-B/32 and the array labelled MedSigLIP, which was extracted with `google/siglip-so400m-patch14-384` and is reported in the paper as SigLIP (So400m). The stored `vit32_cls_embeddings.npy` does not match its metadata; the loader reads `vit32_cls_embeddings_realigned.npy` instead. Race is coded from `mimic_race_raw.csv`, with Unknown, Unable to Obtain and Patient Declined treated as missing.
 
 ## CelebA (`celeba/`)
 
@@ -109,5 +109,5 @@ Sex, age, view and the labels come from `train.csv`, joined by image path throug
 ## Provenance
 
 - **CheXpert**: Stanford ML Group, [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/). Images from the `danjacobellis/chexpert` mirror; labels, sex and age from the official `train.csv`.
-- **MIMIC-CXR**: Johnson et al., [MIMIC-CXR-JPG](https://physionet.org/content/mimic-cxr-jpg/2.1.0/) via `MITCriticalData/qml-mimic-cxr-embeddings`. Diagnosis labels from PhysioNet; demographics from MIMIC-IV joined by `subject_id`.
+- **MIMIC-CXR**: Johnson et al., [MIMIC-CXR-JPG](https://physionet.org/content/mimic-cxr-jpg/2.1.0/) embedded by us from the coreset in `mimic_cxr/source/`. Diagnosis labels from PhysioNet; demographics from MIMIC-IV joined by `subject_id`.
 - **CelebA**: Liu et al., [Large-scale CelebFaces Attributes Dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Prepare MIMIC-CXR embedding data for the shortcut detection benchmark.
 
-Reads parquet files from the qml-mimic-cxr-embeddings repository and creates
+Reads the coreset parquet files (mimic_cxr/source/ in ShortKit-ML-data) and creates
 standardised numpy arrays + metadata CSVs for three backbones:
   - RAD-DINO  (768-dim)
   - ViT-B/16 CLS  (768-dim)
@@ -14,16 +14,19 @@ Outputs are written to data/mimic_cxr/:
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from mimic_source import mimic_source_dir  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parent.parent
-MIMIC_REPO = Path.home() / "Desktop" / "repositories" / "qml-mimic-cxr-embeddings"
 OUTPUT_DIR = ROOT / "data" / "mimic_cxr"
 
 BACKBONES = {
@@ -135,10 +138,11 @@ def process_backbone(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Prepare MIMIC-CXR data for benchmark")
     parser.add_argument(
-        "--mimic-repo", type=Path, default=MIMIC_REPO, help="Path to qml-mimic-cxr-embeddings repo"
+        "--mimic-repo", type=Path, default=None, help="local copy of the source parquet folder (default: hub download)"
     )
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
     args = parser.parse_args()
+    args.mimic_repo = mimic_source_dir(args.mimic_repo)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
