@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit 6f4b07e2ba0d188338b9d8cbce787ad596f6016f
+tables/figures built at commit ade774e5d5341fe6df415dfb838f48e0b628dc58
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
