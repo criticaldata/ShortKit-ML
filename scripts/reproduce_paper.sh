@@ -2,7 +2,7 @@
 # Reproduce all paper benchmark results for ShortKIT-ML.
 #
 # Usage:
-#   ./scripts/reproduce_paper.sh [smoke|default|full]
+#   ./scripts/reproduce_paper.sh [smoke|default|full|revision]
 #
 # Profiles:
 #   smoke   - Quick sanity check (~2-5 min). Minimal grid, 2 seeds.
@@ -22,6 +22,10 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROFILE="${1:-default}"
 
+if [ "${PROFILE}" = "-h" ] || [ "${PROFILE}" = "--help" ]; then
+    sed -n '/^# Usage:/,/^set -euo/p' "${BASH_SOURCE[0]}" | sed '/^set -euo/d; s/^#//; s/^ //'
+    exit 0
+fi
 if [ "${PROFILE}" = "revision" ]; then
     shift || true
     exec "${REPO_ROOT}/scripts/revision/run_all.sh" "$@"

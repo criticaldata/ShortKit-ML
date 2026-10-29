@@ -361,14 +361,15 @@ print(df.to_string())
 
 ## Jupyter Notebooks
 
-Full notebooks available:
+Notebooks in the repository:
 
 ```bash
-jupyter lab examples/03_advanced/
+jupyter lab examples/
 ```
 
-- `01_model_comparison.ipynb` - Compare multiple models
-- `02_custom_analysis.ipynb` - Intersectional + custom visualizations
+- `01_basic_usage/` - unified API, HBAC clustering, statistical testing
+- `02_real_data/` - medical imaging demo, embeddings analysis
+- `04_risk_recommendations.ipynb` - risk conditions and recommendations
 
 ---
 

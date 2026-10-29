@@ -20,7 +20,7 @@ pip install shortkit-ml
 
 ```bash
 git clone https://github.com/criticaldata/ShortKit-ML.git
-cd Shortcut_Detect
+cd ShortKit-ML
 pip install -e .
 ```
 

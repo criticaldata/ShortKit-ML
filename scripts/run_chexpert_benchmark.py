@@ -37,7 +37,10 @@ def load_backbone(embeddings_dir: Path, backbone: str) -> tuple[np.ndarray, pd.D
     emb_path = embeddings_dir / f"{backbone}_embeddings.npy"
     meta_path = embeddings_dir / f"{backbone}_metadata.csv"
     if not emb_path.exists() or not meta_path.exists():
-        raise FileNotFoundError(f"Missing artifacts for {backbone}: {emb_path}, {meta_path}")
+        raise SystemExit(
+            f"Missing first-submission artefacts {emb_path} and/or {meta_path}: produce them with "
+            f"scripts/run_dataset2_benchmark.py --model {backbone} --artifacts-dir {embeddings_dir}"
+        )
     X = np.load(str(emb_path))
     meta = pd.read_csv(meta_path)
     assert X.shape[0] == len(meta), f"Row mismatch: {X.shape[0]} vs {len(meta)}"

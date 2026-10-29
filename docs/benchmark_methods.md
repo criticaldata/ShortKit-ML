@@ -75,7 +75,7 @@ The commands below rerun the 13-method protocol. The `old` stage of `scripts/rev
 
 ```bash
 git clone https://github.com/criticaldata/ShortKit-ML.git
-cd Shortcut_Detect
+cd ShortKit-ML
 pip install -e ".[all]"
 
 # Download embeddings (gated: request access on the dataset page, then email your
