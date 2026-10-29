@@ -73,7 +73,7 @@ data/
 │   ├── rad_dino_embeddings.npy      # (1491, 768)
 │   ├── vit16_cls_embeddings.npy     # (1491, 768)
 │   ├── vit32_cls_embeddings_realigned.npy   # (1491, 768), built by prepare_mimic_source.py
-│   ├── medsiglip_embeddings.npy     # (1491, 1152), google/siglip-so400m-patch14-384
+│   ├── medsiglip_embeddings.npy     # (1491, 1152), google/medsiglip-448
 │   ├── {backbone}_metadata.csv      # image_path, task_label, race, sex, age, age_bin
 │   ├── mimic_race_raw.csv           # image_path, race_raw (built by prepare_mimic_source.py)
 │   ├── mimic_cxr_manifest.csv
@@ -96,7 +96,7 @@ Sex, age, view and the labels come from `train.csv`, joined by image path throug
 
 ## MIMIC-CXR (`mimic_cxr/`)
 
-1,491 subjects with one image each: the coreset in `mimic_cxr/source/` (strategy 5, PathologyStratifiedClean, 1,999 images, seed 0) minus rows without an in-hospital mortality label. Four backbones: RAD-DINO, ViT-B/16, ViT-B/32 and the array labelled MedSigLIP, which was extracted with `google/siglip-so400m-patch14-384` and is reported in the paper as SigLIP (So400m). The stored `vit32_cls_embeddings.npy` does not match its metadata; the loader reads `vit32_cls_embeddings_realigned.npy` instead. Race is coded from `mimic_race_raw.csv`, with Unknown, Unable to Obtain and Patient Declined treated as missing.
+1,491 subjects with one image each: the coreset in `mimic_cxr/source/` (strategy 5, PathologyStratifiedClean, 1,999 images, seed 0) minus rows without an in-hospital mortality label. Four backbones: RAD-DINO, ViT-B/16, ViT-B/32 and MedSigLIP (`google/medsiglip-448`; re-embedding 50 of its images reproduces the stored vectors at cosine 1.000). The stored `vit32_cls_embeddings.npy` does not match its metadata; the loader reads `vit32_cls_embeddings_realigned.npy` instead. Race is coded from `mimic_race_raw.csv`, with Unknown, Unable to Obtain and Patient Declined treated as missing.
 
 ## CelebA (`celeba/`)
 
