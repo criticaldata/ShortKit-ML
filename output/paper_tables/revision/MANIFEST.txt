@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit b6c7a88cd59ba5396afd0b8a1bd010fe473abe8a
+tables/figures built at commit 17dc97508455f6a8f722308294b42ee2dd421a02
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -1103,6 +1103,62 @@ timings (s):
 notes:
   - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
   - Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. decision_bound: 'sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate'. For the C check, bh_with_main_secondaries recomputes BH with the probe p from this run and the five secondary p-values from the main audit (frequency_topk also uses C, so approximate).
+
+===== probe_scaling =====
+run: probe run time against sample size (synthetic embeddings)
+commit: 17dc97508455f6a8f722308294b42ee2dd421a02
+working tree has uncommitted changes: True
+command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML/scripts/revision/run_probe_scaling.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-29 03:19:20 GMT
+wall_seconds: 831.6
+
+config:
+{
+  "n": [
+    2000,
+    10000,
+    50000
+  ],
+  "n_extra": 100000,
+  "extra_if_50k_under_seconds": 480.0,
+  "d": 768,
+  "rho": 0.5,
+  "images_per_patient": 4,
+  "attribute_dims": 4,
+  "attribute_effect": 0.3,
+  "task_dims": 4,
+  "task_effect": 1.0,
+  "K_paper": 500,
+  "K_small": [
+    50,
+    150
+  ],
+  "point_budget_seconds": 900.0,
+  "total_budget_seconds": 2400.0,
+  "n_bootstrap": 2000,
+  "n_folds": 5,
+  "cv_repeats": 5,
+  "seed": 42,
+  "detectors": [
+    "probe"
+  ],
+  "threads": 3,
+  "platform": "macOS-26.7.1-arm64-arm-64bit"
+}
+
+data files (md5):
+
+timings (s):
+  n_2000_K500: 30.9
+  n_10000_K500: 133.4
+  n_50000_K500: 666.4
+  all_points: 831.48
+
+notes:
+  - log-log slope of seconds at K=500 on n over 3 points: 0.954
+  - points marked extrapolated were measured at the two small K and a line in K was read at K_paper
+  - cpu: Apple M2 Pro; torch threads: 3
 
 ===== provenance_sensitivity =====
 run: CheXpert probe sensitivity: provenance
