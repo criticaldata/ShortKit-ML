@@ -63,7 +63,7 @@ Of the 19 detection methods counted in the first submission, **13 were benchmark
 |---------|-----------|---------|------------|-------------|
 | **Synthetic** | N/A (128-dim generated) | 200-5000 | 1 (binary) | 12 (no intersectional) |
 | **CheXpert** | ResNet-50, DenseNet-121, ViT-B/16, ViT-B/32, DINOv2, RAD-DINO, MedSigLIP-448 | 2,000 each | sex, age_bin, race | 13 |
-| **MIMIC-CXR** | RAD-DINO, ViT-B/16, ViT-B/32, SigLIP So400m (files labelled MedSigLIP) | 1,491 each | race, sex, age_bin | 13 |
+| **MIMIC-CXR** | RAD-DINO, ViT-B/16, ViT-B/32, MedSigLIP-448 | 1,491 each | race, sex, age_bin | 13 |
 | **CelebA** | ResNet-50 | 10,000 | Male + 39 binary attrs | 13 |
 | **Cross-dataset** | ResNet-50 (CheXpert) + RAD-DINO (MIMIC) | varies by diagnosis | sex, race | 13 (intersectional fails on single-attr CheXpert) |
 

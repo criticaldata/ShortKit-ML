@@ -252,7 +252,7 @@ hf download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir dat
 | Synthetic | Generated at runtime | `SyntheticGenerator(seed=42)` | 128 | Configurable |
 | CheXpert (current) | `data/chexpert_multibackbone/` and `data/chexpert_multibackbone/public/` | ResNet-50, DenseNet-121, ViT-B/16, ViT-B/32, DINOv2, RAD-DINO, MedSigLIP-448 | 768-2048 | 2,000 each |
 | CheXpert (first submission) | `data/chexpert/`, and the ViT-B/32, DINOv2, RAD-DINO and MedSigLIP arrays in `chexpert_multibackbone/` | MedCLIP and the same seven names | 512-2048 | 2,000 each |
-| MIMIC-CXR | `data/mimic_cxr/` | RAD-DINO, ViT-B/16, ViT-B/32, SigLIP So400m (files labelled MedSigLIP) | 768-1152 | 1,491 each |
+| MIMIC-CXR | `data/mimic_cxr/` | RAD-DINO, ViT-B/16, ViT-B/32, MedSigLIP-448 | 768-1152 | 1,491 each |
 | CelebA | `data/celeba/` | ResNet-50 (ImageNet) | 2,048 | 10,000 |
 
 **CheXpert sample.** The 2,000 images are the first 2,000 of the official `train.csv` order (not a random sample), from 477 patients; 423 are lateral views. Sex comes from `train.csv` and race per patient from the CheXpert demographics file, compared as White against non-White in the primary analysis. Cross-validation folds and the permutation null are grouped by patient. MIMIC-CXR has 1,491 subjects with one image each.
