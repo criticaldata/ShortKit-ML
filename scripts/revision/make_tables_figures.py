@@ -1115,7 +1115,7 @@ def sensitivity():
             put(f"{side}_female_pct", g.loc["female_pct", side], "{:.0f}")
             put(f"{side}_age_median", g.loc["age_median", side], "{:.0f}")
             put(f"{side}_lateral_pct", g.loc["lateral_pct", side], "{:.0f}")
-            put(f"{side}_white_pct", g.loc["white_pct_of_known", side], "{:.0f}")
+            put(f"{side}_white_pct", g.loc["white_pct_of_known", side], "{:.1f}")
 
 
 def extraction():
