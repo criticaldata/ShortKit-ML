@@ -1197,6 +1197,50 @@ def sensitivity():
             put("nl_probe_d", int(cfg["d"]), "{:d}")
             put("nl_probe_rho", float(cfg["rho"]), "{:.1f}")
             put("nl_probe_K", int(cfg["K"]), "{:d}")
+    nlc = load("nonlinear_probe_clinical/rows.csv")
+    if nlc is not None:  # squared-feature probe on the clinical cells (run_nonlinear_probe_clinical.py)
+        nlc = nlc[nlc.evaluated.astype(bool)].copy()
+        nlc["flagged_sq"] = nlc.p_sq < 0.05
+        nlc["flagged_linear"] = nlc.flagged_linear.astype(str).str.lower().isin(["true", "1"])
+        nlc["changed"] = nlc.flagged_sq != nlc.flagged_linear
+        rows, mids = [], []
+        for ds, order in (("chexpert", ["resnet50", "densenet121", "vit_b_16", "vit_b_32", "dinov2_base",
+                                         "rad_dino", "medsiglip"]),
+                          ("mimic", ["rad_dino", "vit16_cls", "vit32_cls", "medsiglip"])):
+            for bb in order:
+                for attr in ["sex", "age", "race"]:
+                    sub = nlc[(nlc.dataset == ds) & (nlc.encoder == bb) & (nlc.attribute == attr)]
+                    if sub.empty:
+                        continue
+                    r = sub.iloc[0]
+                    flag = "yes" if r.flagged_sq else "no"
+                    if r.changed:
+                        flag += " (linear: " + ("yes" if r.flagged_linear else "no") + ")"
+                    rows.append({
+                        "Dataset": {"chexpert": "CheXpert", "mimic": "MIMIC-CXR"}[ds]
+                        if (bb == order[0] and attr == "sex") else "",
+                        "Encoder": bb_label(ds, bb) if attr == "sex" else "",
+                        "Attribute": {"sex": "Sex", "age": "Age 60+", "race": "White vs non-White"}[attr],
+                        "linear": f2(r.probe_auroc_linear), "sq": f2(r.probe_auroc_sq),
+                        # three decimals where two would print "0.05" beside a flag (p = 0.046)
+                        "p": pfmt(r.p_sq) if pfmt(r.p_sq) != "0.05" else f"{r.p_sq:.3f}", "Flag": flag,
+                    })
+                mids.append(len(rows))
+        write_tabular("nonlinear_probe_clinical", pd.DataFrame(rows), "lllcccc", escape_cells=False,
+                      header=["Dataset", "Encoder", "Attribute", "AUROC $[E]$", "AUROC $[E,E^2]$", "$p$", "Flag"],
+                      midrules=mids[:-1])
+        put("nlc_n_cells", int(len(nlc)), "{:d}")
+        put("nlc_n_cells_chexpert", int((nlc.dataset == "chexpert").sum()), "{:d}")
+        put("nlc_n_cells_mimic", int((nlc.dataset == "mimic").sum()), "{:d}")
+        put("nlc_n_sig_sq_chexpert", int(nlc[nlc.dataset == "chexpert"].flagged_sq.sum()), "{:d}")
+        put("nlc_n_sig_sq_mimic", int(nlc[nlc.dataset == "mimic"].flagged_sq.sum()), "{:d}")
+        put("nlc_n_sig_linear", int(nlc.flagged_linear.sum()), "{:d}")
+        put("nlc_n_decisions_changed", int(nlc.changed.sum()), "{:d}")
+        gain = nlc.probe_auroc_sq - nlc.probe_auroc_linear
+        put("nlc_max_auroc_gain", float(gain.max()), "{:.2f}")
+        put("nlc_min_auroc_gain", float(gain.min()), "{:.2f}")
+        put("nlc_max_abs_auroc_diff", float(gain.abs().max()), "{:.2f}")
+        put("nlc_K", int(nlc.n_permutations.max()), "{:d}")
     sc = load("probe_scaling/rows.csv")
     if sc is not None:  # probe run time against n on synthetic embeddings (run_probe_scaling.py)
         pts = sc.groupby("n", sort=True).agg(sec=("seconds_at_K500", "first"), extrap=("extrapolated", "any"))
