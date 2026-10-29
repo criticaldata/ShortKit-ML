@@ -1098,7 +1098,7 @@ def sensitivity():
                     rows.append({"Encoder": bb_label("chexpert", bb), "Y": task.replace("_", " ").title(),
                                  "n train": f"{int(c.n_train.min())}-{int(c.n_train.max())}",
                                  "Probe": f2(c.probe_auroc.iloc[0]), "p": pfmt(c.probe_p.iloc[0]),
-                                 "TPR gap": f"{c.tpr_gap.mean():.2f} ({c.tpr_gap.std():.2f})",
+                                 "TPR gap": f"{f2(c.tpr_gap.mean())} ({f2(c.tpr_gap.std())})",
                                  "AUROC drop": f2(c.auroc_drop.mean())})
             hdr = ["Encoder", "$Y$", "$n$ train (min-max)", "Probe", "$p$", "TPR gap (SD)", "AUROC drop"]
             write_tabular("head_race", pd.DataFrame(rows), "ll" + "c" * (len(hdr) - 2), escape_cells=False, header=hdr)
