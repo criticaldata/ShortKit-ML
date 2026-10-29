@@ -1116,6 +1116,52 @@ def sensitivity():
             put(f"{side}_age_median", g.loc["age_median", side], "{:.0f}")
             put(f"{side}_lateral_pct", g.loc["lateral_pct", side], "{:.0f}")
             put(f"{side}_white_pct", g.loc["white_pct_of_known", side], "{:.1f}")
+    nl = load("nonlinear_probe/summary.csv")
+    if nl is not None:  # probes on nonlinear features under the same null (run_nonlinear_probe_check.py)
+        probes = ["linear", "sq", "prod"]
+        g = nl.set_index(["variant", "delta", "probe"])
+        rows = []
+        label = {"none": "Null", "linear": "Linear", "xor": "XOR", "variance": "Variance"}
+        for v in ["none", "linear", "xor", "variance"]:
+            for dl in sorted(nl[nl.variant == v].delta.unique()):
+                r = {"Variant": label[v], "delta": f"{dl:g}"}
+                for p in probes:
+                    c = g.loc[(v, dl, p)]
+                    r[f"{p}_rej"] = f2(c.reject_rate)
+                    r[f"{p}_auc"] = f2(c.auroc_mean)
+                rows.append(r)
+        hdr = ["Variant", "$\\delta$"] + ["Rej.", "AUROC"] * len(probes)
+        prehead = ["\\multicolumn{2}{c}{} & \\multicolumn{2}{c}{$[E]$} & \\multicolumn{2}{c}{$[E,E^2]$} "
+                   "& \\multicolumn{2}{c}{$[E,E^2,E_iE_j]$} \\\\",
+                   "\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}\\cmidrule(lr){7-8}"]
+        write_tabular("nonlinear_probe", pd.DataFrame(rows), "lc" + "c" * (len(hdr) - 2), escape_cells=False,
+                      header=hdr, prehead=prehead, midrules=[1, 3, 5])
+        top = float(nl.delta.max())
+        put("nl_probe_xor_reject_sq", g.loc[("xor", top, "sq")].reject_rate)
+        put("nl_probe_var_reject_sq", g.loc[("variance", top, "sq")].reject_rate)
+        put("nl_probe_xor_reject_prod", g.loc[("xor", top, "prod")].reject_rate)
+        put("nl_probe_var_reject_prod", g.loc[("variance", top, "prod")].reject_rate)
+        put("nl_probe_xor_reject_linear", g.loc[("xor", top, "linear")].reject_rate)
+        put("nl_probe_var_reject_linear", g.loc[("variance", top, "linear")].reject_rate)
+        put("nl_probe_xor_auroc_prod", g.loc[("xor", top, "prod")].auroc_mean)
+        put("nl_probe_var_auroc_sq", g.loc[("variance", top, "sq")].auroc_mean)
+        put("nl_probe_null_reject_linear", g.loc[("none", 0.0, "linear")].reject_rate)
+        put("nl_probe_null_reject_sq", g.loc[("none", 0.0, "sq")].reject_rate)
+        put("nl_probe_null_reject_prod", g.loc[("none", 0.0, "prod")].reject_rate)
+        low = float(nl[nl.delta > 0].delta.min())
+        put("nl_probe_delta_low", low, "{:.1f}")
+        put("nl_probe_delta_high", top, "{:.1f}")
+        put("nl_probe_xor_reject_prod_low", g.loc[("xor", low, "prod")].reject_rate)
+        put("nl_probe_var_reject_sq_low", g.loc[("variance", low, "sq")].reject_rate)
+        put("nl_probe_n_seeds", int(nl.n_seeds.max()), "{:d}")
+        put("nl_probe_prod_features", int(g.loc[("none", 0.0, "prod")].n_features), "{:d}")
+        man = ROOT / "nonlinear_probe" / "MANIFEST.txt"
+        if man.exists():
+            cfg = json.loads(man.read_text().split("config:\n", 1)[1].split("\n\n", 1)[0])
+            put("nl_probe_n", int(cfg["n"]), "{:d}")
+            put("nl_probe_d", int(cfg["d"]), "{:d}")
+            put("nl_probe_rho", float(cfg["rho"]), "{:.1f}")
+            put("nl_probe_K", int(cfg["K"]), "{:d}")
 
 
 def extraction():
