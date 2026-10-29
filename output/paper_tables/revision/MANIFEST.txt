@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit 1897dbd2bc2d253794860db046a65beff84d99e0
+tables/figures built at commit 73894cbee6083ab0abfa0a9a318cc154c882b185
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -882,6 +882,51 @@ data files (md5):
 
 timings (s):
   all: 806.156
+
+===== nonlinear_probe =====
+run: nonlinear probe check on the conditional synthetic benchmark
+commit: 73894cbee6083ab0abfa0a9a318cc154c882b185
+working tree has uncommitted changes: True
+command: python scripts/revision/run_nonlinear_probe_check.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-29 02:38:06 GMT
+wall_seconds: 314.1
+
+config:
+{
+  "cells": [
+    "none delta=0",
+    "linear delta=1.2",
+    "linear delta=2",
+    "xor delta=1.2",
+    "xor delta=2",
+    "variance delta=1.2",
+    "variance delta=2"
+  ],
+  "probes": [
+    "linear",
+    "sq",
+    "prod"
+  ],
+  "n": 1000,
+  "d": 64,
+  "rho": 0.5,
+  "seeds": 50,
+  "K": 200,
+  "task_dims": 4,
+  "attribute_dims": 4,
+  "task_effect": 1.0,
+  "alpha": 0.05,
+  "null": "A permuted within Y (image level)"
+}
+
+data files (md5):
+
+timings (s):
+  audits: 313.813
+
+notes:
+  - mean seconds per audit by probe: {'linear': 0.16, 'prod': 0.55, 'sq': 0.18}
 
 ===== old_pipeline_fixed_flag =====
 run: old 13-method pipeline, fixed method_flag
