@@ -109,5 +109,5 @@ Sex, age, view and the labels come from `train.csv`, joined by image path throug
 ## Provenance
 
 - **CheXpert**: Stanford ML Group, [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/). Images from the `danjacobellis/chexpert` mirror; labels, sex and age from the official `train.csv`.
-- **MIMIC-CXR**: Johnson et al., [MIMIC-CXR-JPG](https://physionet.org/content/mimic-cxr-jpg/2.1.0/) embedded by us from the coreset in `mimic_cxr/source/`. Diagnosis labels from PhysioNet; demographics from MIMIC-IV joined by `subject_id`.
+- **MIMIC-CXR**: Johnson et al., [MIMIC-CXR-JPG](https://physionet.org/content/mimic-cxr-jpg/2.1.0/) embeddings and metadata in `mimic_cxr/`, with the source parquet files in `mimic_cxr/source/`. Diagnosis labels from PhysioNet; demographics from MIMIC-IV joined by `subject_id`.
 - **CelebA**: Liu et al., [Large-scale CelebFaces Attributes Dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).

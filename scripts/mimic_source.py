@@ -24,5 +24,5 @@ def mimic_source_dir(path: Path | None = None) -> Path:
         return path
     from huggingface_hub import snapshot_download
 
-    root = snapshot_download(REPO, repo_type="dataset", allow_patterns=[f"{SOURCE_PREFIX}/*"])
+    root = snapshot_download(REPO, repo_type="dataset", allow_patterns=[f"{SOURCE_PREFIX}/**"])
     return Path(root) / SOURCE_PREFIX
