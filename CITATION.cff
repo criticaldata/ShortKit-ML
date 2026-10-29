@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the preprint below."
-title: "ShortKit-ML: A Unified Multi-Perspective Framework for Detecting Shortcut Learning in Medical Imaging Embeddings"
+title: "ShortKit-ML: an open toolkit for measuring shortcut potential in medical imaging embeddings"
 type: software
 version: 0.1.0
 license: MIT
@@ -35,7 +35,7 @@ identifiers:
     description: medRxiv preprint
 preferred-citation:
   type: article
-  title: "ShortKit-ML: A Unified Multi-Perspective Framework for Detecting Shortcut Learning in Medical Imaging Embeddings"
+  title: "ShortKit-ML: an open toolkit for measuring shortcut potential in medical imaging embeddings"
   journal: medRxiv
   year: 2026
   doi: 10.64898/2026.04.29.26352053
