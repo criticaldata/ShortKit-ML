@@ -63,8 +63,9 @@ FALSEPOS_CMAP = LinearSegmentedColormap.from_list("fp", ["#fff7ec", OI["vermilli
 
 NUM: dict[str, str] = {}
 MISALIGNED: set[tuple[str, str]] = set()  # (dataset, backbone), filled by alignment()
-# the MIMIC-CXR "medsiglip" files were extracted with google/siglip-so400m-patch14-384 (source README)
-DATASET_LABELS = {("mimic", "medsiglip"): "SigLIP (So400m)"}
+# the MIMIC-CXR "medsiglip" files are google/medsiglip-448 vision pooler output (re-embedded on 50 images,
+# cosine 1.000), although the source README names google/siglip-so400m-patch14-384; no relabel needed
+DATASET_LABELS: dict[tuple[str, str], str] = {}
 
 
 def bb_label(ds: str, bb: str) -> str:
