@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit 1763ec84f07db7b315b457a65b8ea1d4479f091b
+tables/figures built at commit 868e8e7dccedb726fb1546d6809bef88ee3ca9c1
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -927,6 +927,61 @@ timings (s):
 
 notes:
   - mean seconds per audit by probe: {'linear': 0.16, 'prod': 0.55, 'sq': 0.18}
+
+===== nonlinear_probe_clinical =====
+run: squared-feature conditional probe on the clinical cohorts
+commit: 868e8e7dccedb726fb1546d6809bef88ee3ca9c1
+working tree has uncommitted changes: True
+command: python scripts/revision/run_nonlinear_probe_clinical.py --jobs 3 --threads 3 --self-check
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-29 04:24:58 GMT
+wall_seconds: 647.7
+
+config:
+{
+  "K": 500,
+  "seed": 42,
+  "alpha": 0.05,
+  "C": 1.0,
+  "n_folds": 5,
+  "cv_repeats": 5,
+  "design": "[E, E^2], standardised in-fold through the probe's penalty weights",
+  "null": "A permuted within Y; patient-level within Y-pattern strata when grouped (the clinical audit's draws)",
+  "datasets": [
+    "chexpert",
+    "mimic"
+  ],
+  "self_check": true
+}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+  3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
+  472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
+  9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
+  955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
+  ba8c873ea226869dfc52a658dd198014  data/chexpert_multibackbone/public/vit_b_32__vit_b_32__class.npy
+  11de00f5ea683f9fd76cb78bcfb2d977  data/chexpert_multibackbone/public/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  data/chexpert_multibackbone/public/rad_dino__microsoft_rad-dino__pooler_output.npy
+  787129ce8297c61dd009a75fb0242fcc  data/chexpert_multibackbone/public/medsiglip__google_medsiglip-448__vision.npy
+  ce4f0dd65008a34d04ffaf0d55d1a142  data/mimic_cxr/rad_dino_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/rad_dino_metadata.csv
+  1ddaf5c90ce5334950d71746875a67e7  data/mimic_cxr/vit16_cls_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/vit16_cls_metadata.csv
+  873bae28f4a491a7ebc0eba7d21b4c2a  data/mimic_cxr/vit32_cls_embeddings_realigned.npy
+  90dee0af29c22263028d3ec11fcd9d09  data/mimic_cxr/vit32_cls_metadata.csv
+  3244e16214f3e0a9ca6feda83ee9faef  data/mimic_cxr/medsiglip_embeddings.npy
+  3ccf4d45d26588a1e699abcb9b904005  data/mimic_cxr/medsiglip_metadata.csv
+
+timings (s):
+  all_cells: 642.62
+
+notes:
+  - [E, E^2, E_i E_j] not run: at d = 2048 the product block has 2,096,128 columns (about 16 GB of float32 for 2,000 images before the permutation batches).
+  - CheXpert sex in data/chexpert_multibackbone/*_metadata.csv is inverted (the HF mirror codes 0 = Male; extraction mapped 0 to Female). Sex, age, view, AP/PA and diagnosis labels are read from the official data/train.csv joined by image path via race_mapping.csv; patient_id from race_mapping.csv. Race is recoded from the CheXpert demographics file (data/CHEXPERT DEMO.xlsx, PRIMARY_RACE, joined by patient): images without a demographics record, or recorded as Unknown or Patient Refused, are missing (the shipped manifest coded them OTHER, so non-White), and Native Hawaiian or Pacific Islander is its own group NHPI (the manifest coded it ASIAN). Age as an attribute is the patient's age at their first study in the cohort, so it is constant per patient.
+  - self-check (33 cells): max |AUROC refit [E] - audit| = 1.11e-16, max |p refit - audit| = 9.71e-17
+  - cells 33; flagged sq 33; decisions changed 0; max AUROC gain 0.0164; mean seconds per cell 57.9
 
 ===== old_pipeline_fixed_flag =====
 run: old 13-method pipeline, fixed method_flag
