@@ -381,7 +381,7 @@ The paper is under revision at *Computer Methods and Programs in Biomedicine*. P
 
 ```bibtex
 @article{cajas2026shortkit,
-  title={ShortKit-ML: A Unified Multi-Perspective Framework for Detecting Shortcut Learning in Medical Imaging Embeddings},
+  title={ShortKit-ML: an open toolkit for measuring shortcut potential in medical imaging embeddings},
   author={Cajas, Sebastian and Marzullo, Aldo and Kapadia, Sahil and Santos, Filipe and Ocampo Osorio, Felipe and Kong, Qingpeng and Quarta, Alessandro and Kuo, Po-Chih and Patel, Milit and Rojas Sillery, Raul Ignacio and Celi, Leo Anthony},
   journal={medRxiv},
   year={2026},
