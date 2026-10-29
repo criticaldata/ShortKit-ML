@@ -392,7 +392,7 @@ def clinical():
                 })
             mids.append(len(rows))
         t = pd.DataFrame(rows)
-        hdr = ["Backbone", "Attribute", "Probe AUROC (95\\% CI)", "$p$"] + [DET_LABEL[d] for d in DET[1:]] + ["Flags"]
+        hdr = ["Encoder", "Attribute", "Probe AUROC (95\\% CI)", "$p$"] + [DET_LABEL[d] for d in DET[1:]] + ["Flags"]
         write_tabular(f"clinical_audit_{ds}", t, "ll" + "c" * (len(hdr) - 2), escape_cells=False,
                       header=hdr, midrules=mids[:-1])
         # every detector's raw statistics per cell (statistic, null mean and SD, raw p, BH q)
@@ -415,7 +415,7 @@ def clinical():
                               f"{attr}_q": f"{s.p_bh:.3f}"})
                 rows.append(r)
             mids.append(len(rows))
-        hdr = ["Backbone", "Detector"] + ["$s$", "Null mean", "Null SD", "$p$", "$q$"] * len(attrs)
+        hdr = ["Encoder", "Detector"] + ["$s$", "Null mean", "Null SD", "$p$", "$q$"] * len(attrs)
         pre = [" & & " + " & ".join(f"\\multicolumn{{5}}{{c}}{{{lab}}}" for lab in
                                     ("Sex", "Age 60+", "White vs non-White")) + " \\\\",
                " ".join(f"\\cmidrule(lr){{{3 + 5 * i}-{7 + 5 * i}}}" for i in range(len(attrs)))]
@@ -506,12 +506,12 @@ def clinical():
             mids.append(len(rows))
         t = pd.DataFrame(rows)
         if attr == "race":
-            hdr = ["Dataset", "Backbone", "White vs non-White", "Groups with 50+ (W/B/A)", "Groups with 50+ per $Y$"]
+            hdr = ["Dataset", "Encoder", "White vs non-White", "Groups with 50+ (W/B/A)", "Groups with 50+ per $Y$"]
             t = t[["Dataset", "Backbone"] + variants]
             notes = df[(df.attribute == "race") & (df.variant != "primary")][["dataset", "variant", "note", "n_images"]].drop_duplicates()
             notes.to_csv(TAB / "race_sensitivity_groups.csv", index=False)
         else:
-            hdr = ["Dataset", "Backbone", "Age 60+ (binary)", "Age, 4 bins"]
+            hdr = ["Dataset", "Encoder", "Age 60+ (binary)", "Age, 4 bins"]
             t = t[["Dataset", "Backbone"] + variants]
         write_tabular(name, t, "ll" + "c" * (len(hdr) - 2), escape_cells=False, header=hdr, midrules=mids[:-1])
 
@@ -671,10 +671,10 @@ def head():
     lo, hi = np.nanpercentile(boot_c, [2.5, 97.5])
     put("spearman_probe_tprgap_cluster_ci", [lo, hi], text=rng_text(lo, hi))
     put("head_cells_share_image_sets",
-        f"the {len(cell)} cells are not independent: the {len(bbs)} backbones embed the same "
+        f"the {len(cell)} cells are not independent: the {len(bbs)} encoders embed the same "
         f"{int(h.n_labelled.max()) if 'n_labelled' in h.columns else 'CheXpert'}-or-fewer labelled images, "
         "and the two attributes and three tasks reuse the same patients; the partial Spearman (given "
-        "attribute and task) and the bootstrap over backbones (whole backbones resampled) address this", None)
+        "attribute and task) and the bootstrap over encoders (whole encoders resampled) address this", None)
     put("head_n_train_min", int(hf.n_train.min()), "{:d}")
     put("head_n_train_max", int(hf.n_train.max()), "{:d}")
     put("head_n_test_min", int(hf.n_test.min()), "{:d}")
@@ -794,7 +794,7 @@ def head():
         meths = ["adversarial", "contrastive", "masking", "dfr"]
         rows = []
         for bb in CHEXPERT_BACKBONES + ["All"]:
-            r = {"Backbone": bb_label("chexpert", bb) if bb != "All" else "All backbones"}
+            r = {"Backbone": bb_label("chexpert", bb) if bb != "All" else "All encoders"}
             for meth in meths:
                 g = m[m.method == meth] if bb == "All" else m[(m.method == meth) & (m.backbone == bb)]
                 if meth == "dfr":
@@ -805,7 +805,7 @@ def head():
                     dg, da = j.tpr_gap_after - j.tpr_gap_after_c, j.task_auroc_after - j.task_auroc_after_c
                 r[f"{meth}_gap"], r[f"{meth}_auc"] = f2(dg.mean()), f2(da.mean())
             rows.append(r)
-        hdr = ["Backbone"] + ["$\\Delta$ TPR gap", "$\\Delta$ AUROC"] * len(meths)
+        hdr = ["Encoder"] + ["$\\Delta$ TPR gap", "$\\Delta$ AUROC"] * len(meths)
         pre = [" & " + " & ".join(f"\\multicolumn{{2}}{{c}}{{{lab}}}" for lab in
                                   ("Adversarial", "Contrastive", "Masking", "DFR")) + " \\\\",
                " ".join(f"\\cmidrule(lr){{{2 + 2 * i}-{3 + 2 * i}}}" for i in range(len(meths)))]
@@ -889,7 +889,7 @@ def analyses():
         t = pd.DataFrame(rows)
         mids = [int((t.Dataset == "CheXpert").sum())]
         write_tabular("cluster_metadata", t, "llcccc",
-                      header=["Dataset", "Variable", "NMI (mean)", "NMI (range over backbones)",
+                      header=["Dataset", "Variable", "NMI (mean)", "NMI (range over encoders)",
                               "Cram\\'er's V (mean)", "$\\chi^2$ $p<0.05$"], midrules=mids)
         sd = c[(c.dataset == "chexpert") & (c.variable == "Support Devices")]
         put("cluster_support_devices_nmi_chexpert", sd.nmi.mean(), "{:.3f}")
@@ -1128,7 +1128,7 @@ def extraction():
             ("dinov2_base", "facebook/dinov2-base", "pooler_output"),
             ("rad_dino", "microsoft/rad-dino", "pooler_output"),
             ("medsiglip", "google/medsiglip-448", "vision pooler_output")}
-    t = pd.DataFrame([{"Backbone": BACKBONE_LABELS.get(r["backbone"], r["backbone"]), "Candidate": r["model_id"],
+    t = pd.DataFrame([{"Encoder": BACKBONE_LABELS.get(r["backbone"], r["backbone"]), "Candidate": r["model_id"],
                        "Pooling": r["pooling"],
                        "Used": "control" if r["backbone"] == "vit_b_16" else
                        ("yes" if (r["backbone"], r["model_id"], r["pooling"]) in used else ""),
@@ -1189,7 +1189,7 @@ def alignment():
             put(key, sex_auc[("mimic", bb)])
     put("alignment_misaligned_backbones", ", ".join(bad) if bad else "none", None)
     write_tabular("alignment_check", pd.DataFrame(rows), "llcccccc",
-                  header=["Dataset", "Backbone", "Max Spearman", "Shuffled control", "Sex probe AUROC",
+                  header=["Dataset", "Encoder", "Max Spearman", "Shuffled control", "Sex probe AUROC",
                           "Similarity fails", "Probe at chance", "Replaced"])
 
 
@@ -1227,7 +1227,356 @@ def finish():
     print(f"numbers: {len(NUM)} keys; copied to {dest}")
 
 
-def main() -> int:
+# ---------------------------------------------------------------------------
+# Figures, v2: polished variants written next to the originals as <name>_v2.pdf
+# and <name>_v2.png (200 dpi). Same data and panels as the originals; sized for
+# the printed width (elsarticle preprint, \textwidth = 390 pt) with 7 to 9 pt text.
+# Reads only files the main pass has written (CSV results, tables/, numbers.json),
+# so `--v2-only` redraws them without rebuilding tables or numbers.json.
+# ---------------------------------------------------------------------------
+
+V2_TEXTWIDTH_IN = 390 / 72.27
+# categorical palette (validated colour-blind safe, dataviz reference palette)
+V2C = {"blue": "#2a78d6", "orange": "#eb6834", "aqua": "#1baf7a", "violet": "#6250d6",
+       "magenta": "#e87ba4", "red": "#e34948", "ink": "#0b0b0b", "ink2": "#52514e",
+       "muted": "#898781", "grid": "#e1e0d9", "axis": "#c3c2b7"}
+V2_BLUE_SEQ = LinearSegmentedColormap.from_list("v2blue", ["#ffffff", "#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"])
+V2_ORANGE_SEQ = LinearSegmentedColormap.from_list("v2orange", ["#ffffff", "#fbd9c8", "#f4a27e", "#eb6834", "#b4451c"])
+V2_ORDINAL_BLUE = ["#86b6ef", "#5598e7", "#2a78d6", "#1c5cab", "#0d366b"]  # light to dark, 5 steps
+V2_RC = {
+    "font.family": "sans-serif", "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
+    "font.size": 8, "axes.titlesize": 8.5, "axes.labelsize": 8, "xtick.labelsize": 8,
+    "ytick.labelsize": 8, "legend.fontsize": 7.5, "pdf.fonttype": 42, "ps.fonttype": 42,
+    "savefig.bbox": "tight", "savefig.pad_inches": 0.02, "figure.dpi": 100,
+    "axes.grid": True, "grid.color": V2C["grid"], "grid.linewidth": 0.5, "grid.alpha": 1.0,
+    "axes.spines.top": False, "axes.spines.right": False, "axes.edgecolor": V2C["axis"],
+    "axes.linewidth": 0.6, "axes.labelcolor": V2C["ink"], "xtick.color": V2C["axis"],
+    "ytick.color": V2C["axis"], "xtick.labelcolor": V2C["ink2"], "ytick.labelcolor": V2C["ink2"],
+    "xtick.major.width": 0.6, "ytick.major.width": 0.6, "xtick.major.size": 2.5, "ytick.major.size": 2.5,
+    "lines.linewidth": 1.4, "lines.markersize": 3.5, "legend.frameon": False, "legend.handlelength": 1.6,
+    "axes.titlecolor": V2C["ink"], "axes.titleweight": "normal", "axes.unicode_minus": True,
+    "axes.axisbelow": True,
+}
+
+
+def _v2_save(fig, name: str, tight: bool = True) -> None:
+    # tight=False keeps the canvas at its designed printed size (bbox_inches=None falls back to the rc value)
+    with plt.rc_context({"savefig.bbox": "tight" if tight else None}):
+        fig.savefig(FIG / f"{name}_v2.pdf")
+        fig.savefig(FIG / f"{name}_v2.png", dpi=200)
+    plt.close(fig)
+    print(f"[v2] {name}_v2.pdf/.png")
+
+
+def _v2_text_colour(cmap, value) -> str:
+    """Ink colour for text drawn over a colormap cell, by the cell's luminance."""
+    r, g, b, _ = cmap(float(value))
+    return "white" if 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5 else V2C["ink"]
+
+
+def _v2_numbers() -> dict:
+    p = ROOT / "numbers.json"
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def v2_synthetic():
+    df = load("synthetic/synthetic_runs.csv")
+    if df is None:
+        return
+    df["flag"] = df["flag"].astype(bool)
+    null = df[(df.delta == 0) & (df.variant == "linear")]
+    alt = df[df.delta > 0]
+    deltas = sorted(alt.delta.unique())
+    variants = [("linear", "Linear"), ("xor", "XOR"), ("variance", "Variance")]
+
+    def sens(det, var, dl):
+        return alt[(alt.variant == var) & (alt.detector == det) & (alt.delta == dl)].flag.mean()
+
+    fig = plt.figure(figsize=(V2_TEXTWIDTH_IN, 2.1))
+    gs = fig.add_gridspec(1, 4, width_ratios=[1, 1, 1, 0.05], wspace=0.08, left=0.09, right=0.9,
+                          top=0.9, bottom=0.24)
+    axes = [fig.add_subplot(gs[0, i]) for i in range(3)]
+    im_det = im_fp = None
+    for ax, (v, title) in zip(axes, variants, strict=True):
+        mat = np.array([[null[null.detector == d].flag.mean()] + [sens(d, v, dl) for dl in deltas] for d in DET])
+        fp = np.ma.masked_all(mat.shape)
+        fp[:, 0] = mat[:, 0]
+        det = np.ma.array(mat, mask=np.zeros_like(mat, bool))
+        det.mask[:, 0] = True
+        im_det = ax.imshow(det, cmap=V2_BLUE_SEQ, vmin=0, vmax=1, aspect="auto")
+        im_fp = ax.imshow(fp, cmap=V2_ORANGE_SEQ, vmin=0, vmax=0.2, aspect="auto")
+        for i in range(mat.shape[0]):
+            for j in range(mat.shape[1]):
+                col = _v2_text_colour(V2_ORANGE_SEQ, mat[i, j] / 0.2) if j == 0 else _v2_text_colour(V2_BLUE_SEQ, mat[i, j])
+                ax.text(j, i, f"{mat[i, j]:.2f}", ha="center", va="center", fontsize=7, color=col)
+        ax.axvline(0.5, color="white", lw=2.0)  # surface gap between the null column and the rest
+        ax.set_xticks(range(len(deltas) + 1), ["0"] + [f"{x:g}" for x in deltas])
+        ax.set_title(title)
+        ax.grid(False)
+        ax.tick_params(length=0)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+        if ax is axes[0]:
+            ax.set_yticks(range(len(DET)), [DET_LABEL[d] for d in DET])
+        else:
+            ax.set_yticks(range(len(DET)), [""] * len(DET))
+    fig.supxlabel("Attribute signal δ (Cohen's d); the δ = 0 column is the false positive rate", fontsize=8, y=0.03)
+    col = fig.add_subplot(gs[0, 3])
+    col.axis("off")
+    cax2 = col.inset_axes([0.0, 0.56, 1.0, 0.44])
+    cax1 = col.inset_axes([0.0, 0.0, 1.0, 0.44])
+    cb1 = fig.colorbar(im_fp, cax=cax1)
+    cb2 = fig.colorbar(im_det, cax=cax2)
+    cb1.set_ticks([0, 0.1, 0.2])
+    cb2.set_ticks([0, 0.5, 1])
+    for cb in (cb1, cb2):
+        cb.ax.tick_params(length=0, labelsize=6.5, pad=1.5)
+        cb.outline.set_visible(False)
+    cb1.set_label("FP rate (δ = 0)", fontsize=7, labelpad=4)
+    cb2.set_label("Flag rate (δ > 0)", fontsize=7, labelpad=4)
+    _v2_save(fig, "synthetic_detection_heatmap")
+
+
+def v2_aggregation_sweep():
+    p = TAB / "aggregation_sweep.csv"
+    if not p.exists():
+        print("[skip] tables/aggregation_sweep.csv not found (run the full build once)")
+        return
+    sw = pd.read_csv(p)
+    deltas = sorted({float(c.split("_")[-1]) for c in sw.columns if c.startswith("sens_linear_")})
+    fig, axes = plt.subplots(1, 3, figsize=(V2_TEXTWIDTH_IN, 1.9), sharey=True,
+                             gridspec_kw={"wspace": 0.12, "left": 0.07, "right": 0.99, "top": 0.88, "bottom": 0.22})
+    for ax, (v, title) in zip(axes, [("linear", "Linear"), ("xor", "XOR"), ("variance", "Variance")], strict=True):
+        for c, dl in zip(V2_ORDINAL_BLUE, deltas, strict=True):
+            y = sw[f"sens_{v}_{dl:g}"]
+            ax.plot(sw.k, y, marker="o", color=c, label=f"δ = {dl:g}", markeredgecolor="white", markeredgewidth=0.5)
+            if v == "linear" and dl >= 0.5:  # direct labels where the lines separate at the end
+                ax.annotate(f"δ = {dl:g}", (sw.k.iloc[-1], y.iloc[-1]), xytext=(4, 0), textcoords="offset points",
+                            fontsize=6.5, color=V2C["ink2"], va="center")
+        ax.plot(sw.k, sw.fpr, marker="s", ls=(0, (3, 2)), color=V2C["red"], label="FPR (δ = 0)",
+                markeredgecolor="white", markeredgewidth=0.5)
+        ax.set_title(title)
+        ax.set_xticks(range(1, 7))
+        ax.set_xlim(0.7, 6.9 if v == "linear" else 6.3)
+        ax.set_ylim(-0.03, 1.05)
+        ax.grid(axis="x", visible=False)
+    axes[0].set_ylabel("Rate")
+    fig.supxlabel("k: flagged by at least k of the 6 detectors", fontsize=8, y=0.03)
+    axes[1].legend(loc="upper right", ncol=2, columnspacing=0.8, handletextpad=0.4, borderaxespad=0.2)
+    _v2_save(fig, "aggregation_sweep")
+
+
+def v2_statistical_correction():
+    sc = load("synthetic/statistical_correction.csv")
+    if sc is None:
+        return
+    fig, ax = plt.subplots(figsize=(0.6 * V2_TEXTWIDTH_IN, 2.3))
+    lab = {"uncorrected": "Uncorrected", "bonferroni": "Bonferroni", "holm": "Holm",
+           "fdr_bh": "FDR (BH)", "fdr_by": "FDR (BY)"}
+    # the caption names uncorrected and BH: those two carry colour, the rest stay grey
+    style = {"uncorrected": dict(color=V2C["orange"], zorder=4), "fdr_bh": dict(color=V2C["blue"], zorder=5),
+             "bonferroni": dict(color=V2C["muted"], ls=(0, (3, 2)), zorder=3),
+             "holm": dict(color=V2C["muted"], ls=(0, (1, 1.5)), zorder=3),
+             "fdr_by": dict(color=V2C["muted"], ls="-", zorder=2)}
+    for c in ["uncorrected", "fdr_bh", "bonferroni", "holm", "fdr_by"]:
+        g = sc[sc.correction == c].sort_values("d")
+        ax.plot(g.d, g.fpr, marker="o", label=lab[c], markeredgecolor="white", markeredgewidth=0.5, **style[c])
+    ax.axhline(0.05, color=V2C["ink"], ls=(0, (1, 2)), lw=0.8, zorder=1, label="Nominal level 0.05")
+    ax.set_xscale("log", base=2)
+    ds = sorted(sc.d.unique())
+    ax.set_xticks(ds, [str(int(d)) for d in ds])
+    ax.set_xlim(ds[0] / 1.2, ds[-1] * 1.2)
+    ax.set_ylim(-0.03, 1.05)
+    ax.set_xlabel("Embedding dimension d")
+    ax.set_ylabel("Share of null data sets with\nany significant dimension")
+    ax.legend(loc="center right", bbox_to_anchor=(1.0, 0.5), handlelength=2.0)
+    ax.grid(axis="x", visible=False)
+    _v2_save(fig, "synthetic_statistical_correction")
+
+
+def v2_clinical_heatmap():
+    df = load("clinical_audit/audit_rows.csv")
+    if df is None:
+        return
+    df = df[df.evaluated.astype(bool)]
+    df["flag"] = df["flag"].astype(str).str.lower().isin(["true", "1"])
+    prim = df[(df.variant == "primary") & df.detector.isin(DET)]
+    attr_lab = {"sex": "Sex", "age": "Age 60+", "race": "Race"}
+    zmax = 100.0
+    fig = plt.figure(figsize=(V2_TEXTWIDTH_IN, 5.6))
+    gs = fig.add_gridspec(2, 2, height_ratios=[12, 9], width_ratios=[1, 1], wspace=1.05, hspace=0.35,
+                          left=0.21, right=0.985, top=0.95, bottom=0.07)
+    ax_c = fig.add_subplot(gs[:, 0])
+    ax_m = fig.add_subplot(gs[0, 1])
+    ax_leg = fig.add_subplot(gs[1, 1])
+    ax_leg.axis("off")
+    im = None
+    for ax, ds in ((ax_c, "chexpert"), (ax_m, "mimic")):
+        order = CHEXPERT_BACKBONES if ds == "chexpert" else MIMIC_BACKBONES
+        sub = prim[prim.dataset == ds]
+        rows, Z, F, S = [], [], [], []
+        for bb in order:
+            for attr in ["sex", "age", "race"]:
+                g = sub[(sub.backbone == bb) & (sub.attribute == attr)]
+                if g.empty:
+                    continue
+                g = g.set_index("detector").reindex(DET)
+                rows.append((bb, attr))
+                Z.append(g.z.to_numpy(float))
+                F.append(g.flag.to_numpy(bool))
+                S.append(g.statistic.to_numpy(float))
+        Z = np.clip(np.array(Z), 0, zmax)
+        L = np.log1p(Z)
+        im = ax.imshow(L, cmap=V2_BLUE_SEQ, aspect="auto", vmin=0, vmax=np.log1p(zmax))
+        for i in range(L.shape[0]):
+            for j in range(L.shape[1]):
+                ax.text(j, i, f"{S[i][j]:.2f}" + ("*" if F[i][j] else ""), ha="center", va="center", fontsize=6.5,
+                        color=_v2_text_colour(V2_BLUE_SEQ, L[i, j] / np.log1p(zmax)))
+        # backbone groups: name to the left of the attribute labels, white gap between groups
+        ax.set_yticks(range(len(rows)), [attr_lab[a] for _, a in rows])
+        starts = [i for i, (bb, _) in enumerate(rows) if i == 0 or rows[i - 1][0] != bb]
+        for k, s0 in enumerate(starts):
+            s1 = (starts[k + 1] if k + 1 < len(starts) else len(rows)) - 1
+            ax.annotate(bb_label(ds, rows[s0][0]), xy=(0, (s0 + s1) / 2), xycoords=("axes fraction", "data"),
+                        xytext=(-40, 0), textcoords="offset points", ha="right", va="center", fontsize=7.5,
+                        color=V2C["ink"])
+            if s0 > 0:
+                ax.axhline(s0 - 0.5, color="white", lw=2.0)
+        ax.set_xticks(range(len(DET)), [DET_LABEL[d] for d in DET], rotation=35, ha="right", rotation_mode="anchor")
+        ax.set_title({"chexpert": "CheXpert, Y = Pneumothorax", "mimic": "MIMIC-CXR, Y = mortality"}[ds])
+        ax.grid(False)
+        ax.tick_params(length=0, pad=2)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+    cax = ax_leg.inset_axes([0.0, 0.62, 1.0, 0.07])
+    cb = fig.colorbar(im, cax=cax, orientation="horizontal")
+    ticks = [0, 1, 3, 10, 30, 100]
+    cb.set_ticks(np.log1p(ticks), labels=["0\n(null mean)", "1", "3", "10", "30", "100 or more"])
+    cb.ax.tick_params(length=0, labelsize=6.5, pad=2)
+    cb.outline.set_visible(False)
+    cb.set_label("z = (score - null mean) / null SD, log scale", fontsize=7.5, labelpad=4)
+    ax_leg.text(0.0, 0.3, "Cell text: continuous score\n* BH-adjusted q < 0.05 within the cell",
+                transform=ax_leg.transAxes, fontsize=7.5, color=V2C["ink2"], va="top")
+    _v2_save(fig, "clinical_scores_heatmap")
+
+
+def v2_audit_vs_reliance():
+    p = TAB / "head_reliance_cells.csv"
+    num = _v2_numbers()
+    if not p.exists() or "spearman_probe_tprgap_chexpert" not in num:
+        print("[skip] head_reliance_cells.csv or numbers.json missing (run the full build once)")
+        return
+    cell = pd.read_csv(p)
+    raw = num.get("raw", {})
+    markers = dict(zip(CHEXPERT_BACKBONES, ["o", "s", "^", "D", "v", "P", "X"], strict=True))
+    attr_style = {"sex": (V2C["blue"], "Sex"), "age": (V2C["orange"], "Age 60+")}
+    panels = [("tpr_gap", "tprgap", "TPR gap\n(A=1 minus A=0)"),
+              ("auroc_drop", "aurocdrop", "AUROC drop vs\nunconfounded head"),
+              ("output_shift", "outputshift", "Mean |output shift|\nafter removing A")]
+    fig, axes = plt.subplots(1, 3, figsize=(V2_TEXTWIDTH_IN, 2.6),
+                             gridspec_kw={"wspace": 0.52, "left": 0.09, "right": 0.99, "top": 0.84, "bottom": 0.34})
+    for ax, (col, key, lab) in zip(axes, panels, strict=True):
+        for attr, (c, _) in attr_style.items():
+            s = cell[cell.attribute == attr]
+            for bb, mk in markers.items():
+                b = s[s.backbone == bb]
+                ax.scatter(b.probe_auroc, b[col], color=c, marker=mk, s=20, edgecolor="white", linewidth=0.5, zorder=3)
+        rho = num[f"spearman_probe_{key}_chexpert"]
+        pv = float(raw.get(f"spearman_probe_{key}_p_chexpert", float(num[f"spearman_probe_{key}_p_chexpert"])))
+        ptxt = "p < 0.001" if pv < 0.001 else f"p = {pv:.3f}"
+        title = f"Spearman ρ = {rho} ({ptxt})"
+        if key == "tprgap" and "spearman_probe_tprgap_ci" in num:
+            title += f"\n95% CI {num['spearman_probe_tprgap_ci']}"
+        ax.set_title(title, fontsize=8)
+        ax.set_ylabel(lab)
+        ax.set_xticks([0.7, 0.8, 0.9, 1.0])
+        if col in ("auroc_drop",):
+            ax.axhline(0, color=V2C["axis"], lw=0.6, zorder=1)
+    from matplotlib.lines import Line2D
+
+    h_attr = [Line2D([], [], marker="o", ls="", color=c, markersize=5, label=l) for c, l in attr_style.values()]
+    h_bb = [Line2D([], [], marker=mk, ls="", color=V2C["ink2"], markersize=4.5, label=bb_label("chexpert", bb))
+            for bb, mk in markers.items()]
+    fig.supxlabel("Conditional probe AUROC (audit)", fontsize=8, y=0.2)
+    fig.legend(handles=h_attr + h_bb, loc="lower center", ncol=5, bbox_to_anchor=(0.53, 0.0), columnspacing=1.0,
+               handletextpad=0.3, fontsize=7.5)
+    _v2_save(fig, "audit_vs_reliance")
+
+
+def v2_lda():
+    lda = load("analyses/lda_heldout_mimic_raddino_sex.csv")
+    if lda is None:
+        return
+    from sklearn.metrics import roc_auc_score
+
+    auc = roc_auc_score(lda.sex == "Male", lda.projection)
+    fig, ax = plt.subplots(figsize=(0.55 * V2_TEXTWIDTH_IN, 2.05))
+    bins = np.linspace(lda.projection.quantile(0.005), lda.projection.quantile(0.995), 50)
+    for sex, c in (("Female", V2C["orange"]), ("Male", V2C["blue"])):
+        v = lda.projection[lda.sex == sex]
+        ax.hist(v, bins=bins, alpha=0.75, color=c, label=f"{sex} (n = {len(v)})", density=True, linewidth=0)
+    ax.set_xlabel("Held-out LDA projection (fit on training folds)")
+    ax.set_ylabel("Density")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.02))
+    ax.text(0.5, 0.74, f"held-out AUROC {auc:.3f}", transform=ax.transAxes, ha="center", fontsize=7,
+            color=V2C["ink2"])
+    ax.grid(axis="x", visible=False)
+    ax.set_ylim(0, ax.get_ylim()[1] * 1.08)
+    _v2_save(fig, "lda_sex_mimic_raddino_heldout")
+
+
+def v2_umaps():
+    um = load("analyses/umap_mimic_raddino_race.csv")
+    if um is not None:
+        fig, ax = plt.subplots(figsize=(0.55 * V2_TEXTWIDTH_IN, 0.55 * V2_TEXTWIDTH_IN))
+        # Okabe-Ito four, all pairs validated; the dominant group goes first, the smallest last and larger
+        groups = [("White", "#56B4E9", 3.5), ("Other", "#CC79A7", 4.5), ("Black", "#D55E00", 4.5), ("Asian", "#009E73", 7)]
+        for race, c, size in groups:
+            s = um[um.race == race]
+            ax.scatter(s.x, s.y, s=size, alpha=0.8, color=c, label=f"{race} ({len(s)})", linewidths=0)
+        ax.set_xticks([]), ax.set_yticks([])
+        ax.grid(False)
+        handles, labels = ax.get_legend_handles_labels()
+        order = [labels.index(next(l for l in labels if l.startswith(r))) for r in ("White", "Black", "Asian", "Other")]
+        ax.legend([handles[i] for i in order], [labels[i] for i in order], loc="upper center",
+                  bbox_to_anchor=(0.5, 0.0), ncol=4, markerscale=2.5, columnspacing=0.8,
+                  handletextpad=0.1, borderaxespad=0.1, fontsize=7)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+        fig.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.1)
+        _v2_save(fig, "umap_mimic_raddino_race", tight=False)
+    uc = load("analyses/umap_celeba_resnet50_male.csv")
+    if uc is not None:
+        fig, ax = plt.subplots(figsize=(0.55 * V2_TEXTWIDTH_IN, 0.55 * V2_TEXTWIDTH_IN))
+        for male, lab, c in ((False, "Not Male", V2C["orange"]), (True, "Male", V2C["blue"])):
+            s = uc[uc.male == male]
+            ax.scatter(s.x, s.y, s=2.5, alpha=0.6, color=c, label=f"{lab} ({len(s)})", linewidths=0)
+        ax.set_xticks([]), ax.set_yticks([])
+        ax.grid(False)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 0.0), ncol=2, markerscale=3, columnspacing=1.2,
+                  handletextpad=0.1, borderaxespad=0.1, fontsize=7)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+        fig.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.1)
+        _v2_save(fig, "umap_celeba_resnet50_male", tight=False)
+
+
+def figures_v2():
+    with plt.rc_context(V2_RC):
+        v2_synthetic()
+        v2_aggregation_sweep()
+        v2_statistical_correction()
+        v2_clinical_heatmap()
+        v2_audit_vs_reliance()
+        v2_lda()
+        v2_umaps()
+
+
+def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if "--v2-only" in argv:  # redraw the _v2 figures from the files of an earlier full build
+        figures_v2()
+        return 0
     settings()
     alignment()
     synthetic()
@@ -1241,6 +1590,7 @@ def main() -> int:
     extraction()
     sensitivity()
     finish()
+    figures_v2()
     return 0
 
 
