@@ -100,6 +100,26 @@ def test_planted_linear_signal_detected():
     assert res.results["probe"].p_value <= 0.02
 
 
+def test_flag_rule_probe_raw_secondaries_bh_over_five():
+    """The probe is judged at its own level; BH covers the five secondaries only."""
+    ds = generate_conditional_synthetic(n_samples=300, embedding_dim=8, delta=0.3, rho=0.5, seed=11)
+    res = conditional_audit(
+        ds.embeddings,
+        ds.attribute,
+        ds.task_labels,
+        AuditConfig(n_permutations=39, n_bootstrap=0, n_clusters=4, seed=3, max_iter=50),
+    )
+    probe = res.results["probe"]
+    assert probe.flag == (probe.p_value < 0.05)
+    assert np.isnan(probe.p_bh)
+    sec = [d for d in DETECTORS if d != "probe"]
+    assert len(sec) == 5
+    q = benjamini_hochberg(np.array([res.results[d].p_value for d in sec]))
+    for d, qv in zip(sec, q, strict=True):
+        assert res.results[d].p_bh == pytest.approx(qv)
+        assert res.results[d].flag == (qv < 0.05)
+
+
 def test_planted_xor_signal_detected_by_clustering():
     """XOR has zero mean difference; only the clustering statistic can see it."""
     ds = generate_conditional_synthetic(
@@ -112,7 +132,7 @@ def test_planted_xor_signal_detected_by_clustering():
         ds.task_labels,
         AuditConfig(n_permutations=199, n_bootstrap=0, n_clusters=8, seed=2),
     )
-    # with K = 199 a lone significant detector survives BH across six
+    # with K = 199 a lone significant detector survives BH across the five secondaries
     assert res.results["hbac_nmi"].flag
     assert res.results["hbac_nmi"].p_value <= 0.02
 

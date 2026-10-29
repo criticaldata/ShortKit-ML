@@ -8,8 +8,10 @@ Every detector returns a continuous statistic s(E, A, Y), larger meaning more A
 in E. It is calibrated by a conditional permutation null: A is shuffled within
 each Y stratum, the statistic is recomputed K times and
 p = (1 + #{s_null >= s_obs}) / (K + 1). Under the null each detector's false
-positive rate is alpha by construction. Detectors in one cell are flagged when
-their Benjamini-Hochberg adjusted p-value is below alpha.
+positive rate is alpha by construction. The primary probe is flagged when its
+own p-value is below alpha; the secondary detectors of a cell are flagged when
+their Benjamini-Hochberg adjusted p-value, computed across the secondaries
+only, is below alpha.
 
 Detectors
 ---------
@@ -884,8 +886,13 @@ def conditional_audit(
             repeat_sd=rep_sd,
             n_repeats=n_rep,
         )
-    if res.results:
-        names_d = list(res.results)
+    # the primary probe is judged at its own level; BH runs across the secondary detectors only
+    if PRIMARY in res.results:
+        pr = res.results[PRIMARY]
+        pr.p_bh = float("nan")
+        pr.flag = bool(pr.p_value < cfg.alpha)
+    names_d = [d for d in res.results if d != PRIMARY]
+    if names_d:
         q = benjamini_hochberg(np.array([res.results[d].p_value for d in names_d]))
         for d_, qv in zip(names_d, q, strict=True):
             res.results[d_].p_bh = float(qv)

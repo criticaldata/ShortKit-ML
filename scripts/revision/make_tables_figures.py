@@ -34,6 +34,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
+from shortcut_detect.audit.conditional import benjamini_hochberg  # noqa: E402
 from shortcut_detect.benchmark.figures import _apply_pub_style  # noqa: E402
 
 ROOT = results_root()
@@ -129,6 +130,28 @@ def pfmt(p):
     return "<0.01" if p < 0.01 else f"{p:.2f}"
 
 
+def apply_flag_rule(df: pd.DataFrame, cell_keys: list[str]) -> pd.DataFrame:
+    """Decision rule: the probe is flagged at p < 0.05 on its own; the five secondary
+    detectors are flagged by Benjamini-Hochberg across their five p-values within the
+    cell (q < 0.05). Recomputed from p_value. The stored flag and q (BH across all six
+    detectors) are kept as flag_bh6 and p_bh6 for the comparison in the letter. Rows of
+    detectors outside DET keep their stored flag."""
+    df = df.copy()
+    df["flag_bh6"] = df["flag"].astype(str).str.lower().isin(["true", "1"])
+    df["p_bh6"] = df["p_bh"].astype(float)
+    df["flag"] = df["flag_bh6"]
+    df["p_bh"] = df["p_bh6"]
+    probe = df.detector == "probe"
+    df.loc[probe, "flag"] = df.loc[probe, "p_value"] < 0.05
+    df.loc[probe, "p_bh"] = np.nan
+    sec = df[df.detector.isin(DET[1:])]
+    for _, g in sec.groupby(cell_keys, dropna=False):
+        q = benjamini_hochberg(g.p_value.to_numpy(float))
+        df.loc[g.index, "p_bh"] = q
+        df.loc[g.index, "flag"] = q < 0.05
+    return df
+
+
 # ---------------------------------------------------------------------------
 # Settings
 # ---------------------------------------------------------------------------
@@ -175,7 +198,7 @@ def synthetic():
     if df is None:
         return
     df["reject"] = df["p_value"] < 0.05
-    df["flag"] = df["flag"].astype(bool)
+    df = apply_flag_rule(df, ["variant", "rho", "delta", "n", "d", "seed"])
     null = df[(df.delta == 0) & (df.variant == "linear")]  # the three variants coincide at delta 0
     alt = df[df.delta > 0]
 
@@ -192,7 +215,7 @@ def synthetic():
         for rho in sorted(df.rho.unique()):
             r[f"rho={rho}"] = f2(sub[sub.rho == rho].reject.mean())
         r["All"] = f2(sub.reject.mean())
-        r["BH flag"] = f2(sub.flag.mean())
+        r["Flag"] = f2(sub.flag.mean())
         if big is not None:
             b = big[big.detector == d]
             r["Large check"] = f2(b.reject.mean()) if len(b) else "--"
@@ -201,15 +224,17 @@ def synthetic():
         rows.append(r)
         if d in DET_KEY:
             put(f"fpr_null_{DET_KEY[d]}", sub.reject.mean())
-            put(f"fpr_null_bhflag_{DET_KEY[d]}", sub.flag.mean())
+            put(f"fpr_null_bhflag_{DET_KEY[d]}", sub.flag.mean())  # probe: raw p; secondaries: BH over five
+            put(f"fpr_null_bh6flag_{DET_KEY[d]}", sub.flag_bh6.mean())  # BH across all six (earlier rule)
             for rho in sorted(df.rho.unique()):  # per-rho values next to the pooled one
                 put(f"fpr_null_{DET_KEY[d]}_rho{round(10 * rho):02d}", sub[sub.rho == rho].reject.mean())
     put("fpr_null_probe_rho09", null[(null.detector == "probe") & (null.rho == 0.9)].reject.mean())
     put("fpr_null_unconditional_probe_rho09",
         null[(null.detector == "probe_unconditional") & (null.rho == 0.9)].reject.mean())
     RAW["n_null_datasets"] = int(null[null.detector == "probe"].shape[0])
+    put("fpr_null_bhflag_secondary_max", max(null[null.detector == d].flag.mean() for d in DET[1:]))
     t = pd.DataFrame(rows)
-    hdr = ["Detector"] + [f"$\\rho={r}$" for r in sorted(df.rho.unique())] + ["All", "BH flag"]
+    hdr = ["Detector"] + [f"$\\rho={r}$" for r in sorted(df.rho.unique())] + ["All", "Flag"]
     if big is not None:
         hdr.append("$\\rho=0.9$, large")
     write_tabular("synthetic_null_fpr", t, "l" + "c" * (len(hdr) - 1), header=hdr, midrules=[len(DET)])
@@ -264,7 +289,8 @@ def synthetic():
         ax.set_xlabel("Cohen's d of the attribute signal ($\\delta$)")
         ax.set_title(v)
         ax.grid(False)
-    fig.suptitle("Flag rate after BH; $\\delta=0$ column (orange-red) is the false-positive rate", fontsize=10)
+    fig.suptitle("Flag rate (probe at $p<0.05$; secondaries at BH $q<0.05$ across the five); "
+                 "$\\delta=0$ column (orange-red) is the false-positive rate", fontsize=10)
     fig.savefig(FIG / "synthetic_detection_heatmap.pdf")
     plt.close(fig)
 
@@ -374,7 +400,7 @@ def clinical():
     if df is None:
         return None
     df = df[df.evaluated.astype(bool)]
-    df["flag"] = df["flag"].astype(str).str.lower().isin(["true", "1"])
+    df = apply_flag_rule(df, ["dataset", "backbone", "task", "attribute", "variant"])
     prim = df[df.variant == "primary"]
 
     for ds, order in (("chexpert", ["resnet50", "densenet121", "vit_b_16", "vit_b_32", "dinov2_base",
@@ -417,7 +443,7 @@ def clinical():
                     dd = 3 if d in {"statistical", "hbac_nmi"} else 2
                     r.update({f"{attr}_s": f"{s.statistic:.{dd}f}", f"{attr}_m": f3s(s.null_mean),
                               f"{attr}_sd": f3s(s.null_sd), f"{attr}_p": f"{s.p_value:.3f}",
-                              f"{attr}_q": f"{s.p_bh:.3f}"})
+                              f"{attr}_q": "--" if d == "probe" else f"{s.p_bh:.3f}"})  # the probe is judged on p
                 rows.append(r)
             mids.append(len(rows))
         hdr = ["Encoder", "Detector"] + ["$s$", "Null mean", "Null SD", "$p$", "$q$"] * len(attrs)
@@ -431,8 +457,9 @@ def clinical():
         pp = prim[(prim.dataset == ds) & (prim.detector == "probe") & ok]
         put(f"n_cells_excluded_misaligned_{ds}",
             int(((prim.dataset == ds) & (prim.detector == "probe") & ~ok).sum()), "{:d}")
-        put(f"n_cells_probe_sig_{ds}", int(pp.flag.sum()), "{:d}")
+        put(f"n_cells_probe_sig_{ds}", int(pp.flag.sum()), "{:d}")  # probe at p < 0.05
         put(f"n_cells_probe_raw_sig_{ds}", int((pp.p_value < 0.05).sum()), "{:d}")
+        put(f"n_cells_probe_sig_bh6_{ds}", int(pp.flag_bh6.sum()), "{:d}")  # BH across all six (earlier rule)
         if "cell_seconds" in pp:  # wall time of one cell, all six detectors, on the audit machine
             put(f"cell_seconds_{ds}", [pp.cell_seconds.min(), pp.cell_seconds.max()],
                 text=rng_text(pp.cell_seconds.min(), pp.cell_seconds.max(), "{:.0f}"))
@@ -458,6 +485,7 @@ def clinical():
         if not m.empty:
             put(f"probe_auroc_chexpert_medsiglip_{attr}", m.iloc[0].statistic)
             put(f"probe_p_chexpert_medsiglip_{attr}", m.iloc[0].p_value, "{:.3f}")
+            put(f"probe_q_bh6_chexpert_medsiglip_{attr}", m.iloc[0].p_bh6)  # q under BH across all six
     # grouped vs plain CV on CheXpert
     for bb in df[df.dataset == "chexpert"].backbone.unique():
         g = prim[(prim.dataset == "chexpert") & (prim.backbone == bb) & (prim.attribute == "sex")]
@@ -551,7 +579,8 @@ def clinical():
     ticks = [0, 1, 3, 10, 30]
     cb.set_ticks(np.log1p(ticks), labels=[str(t) for t in ticks])
     cb.set_label("z = (score - null mean) / null SD")
-    fig.text(0.5, 0.01, "Cell text: continuous score; * BH-adjusted p < 0.05", ha="center", fontsize=9)
+    fig.text(0.5, 0.01, "Cell text: continuous score; * probe p < 0.05, secondary detectors BH q < 0.05 across the five",
+             ha="center", fontsize=9)
     fig.savefig(FIG / "clinical_scores_heatmap.pdf")
     plt.close(fig)
     return df
@@ -982,15 +1011,20 @@ def marker():
     put("head_tprgap_marker", mk.tpr_gap.mean())
     put("head_fprgap_marker", mk.fpr_gap.mean())
     put("marker_n_seeds", int(len(mk)), "{:d}")
+    # flags under the decision rule, per seed: probe at p < 0.05, secondaries at BH q < 0.05 across the five
+    flags = {"probe": (mk.probe_p < 0.05).to_numpy()}
+    q5 = benjamini_hochberg(mk[[f"{d}_p" for d in DET[1:]]].to_numpy(float))
+    for j, d in enumerate(DET[1:]):
+        flags[d] = q5[:, j] < 0.05
     rows = []
     for d in DET:
         rows.append({"Detector": DET_LABEL[d], "Score": f"{mk[f'{d}_stat'].mean():.3f}",
                      "max p": f"{mk[f'{d}_p'].max():.3f}",
-                     "Flagged": f"{int(mk[f'{d}_flag'].astype(str).str.lower().isin(['true', '1']).sum())}/{len(mk)}"})
+                     "Flagged": f"{int(flags[d].sum())}/{len(mk)}"})
     rows.append({"Detector": "Head TPR gap", "Score": f"{mk.tpr_gap.mean():.2f}", "max p": "", "Flagged": ""})
     rows.append({"Detector": "Head FPR gap", "Score": f"{mk.fpr_gap.mean():.2f}", "max p": "", "Flagged": ""})
     write_tabular("planted_marker", pd.DataFrame(rows), "lccc",
-                  header=["", "Mean score", "Max $p$", "Flagged (BH)"], midrules=[len(DET)])
+                  header=["", "Mean score", "Max $p$", "Flagged"], midrules=[len(DET)])
 
 
 def _short_error(err: str) -> str:
@@ -1007,6 +1041,7 @@ def sensitivity():
     main = load("clinical_audit/audit_rows.csv")
     if main is None:
         return
+    # the probe is judged at p < 0.05 in every column (same rule as the main audit)
     sel = lambda d: d[(d.dataset == "chexpert") & (d.detector == "probe") & (d.variant == "primary")]
     main = sel(main).set_index(["backbone", "attribute"])
     cell = lambda a, sig: f"{a:.2f}{'*' if str(sig).lower() == 'true' else ''}"
@@ -1019,21 +1054,20 @@ def sensitivity():
     cs = load("probe_C_sensitivity/probe_rows.csv")
     rows, diffs = [], {"stored": [], "frontal": [], "labelled": [], "C": []}
     for (bb, attr), r in main.iterrows():
-        row = {"Encoder": BACKBONE_LABELS.get(bb, bb), "$A$": attr.capitalize(), "Main": cell(r.statistic, r.flag)}
+        row = {"Encoder": BACKBONE_LABELS.get(bb, bb), "$A$": attr.capitalize(), "Main": cell(r.statistic, r.p_value < 0.05)}
         if old is not None and bb in CHEXPERT_PUBLIC and (bb, attr) in old.index:
             o = old.loc[(bb, attr)]
-            row["Stored array"] = cell(o.statistic, o.flag)
+            row["Stored array"] = cell(o.statistic, o.p_value < 0.05)
             diffs["stored"].append(abs(o.statistic - r.statistic))
         else:
             row["Stored array"] = "same"
         if fr is not None and (bb, attr) in fr.index:
             f = fr.loc[(bb, attr)]
-            # no secondary detectors here: p <= 0.05/6 always passes BH across six, p >= 0.05 never does
-            row["Frontal only"] = cell(f.auroc, f.p <= 0.05 / 6) + ("+" if 0.05 / 6 < f.p < 0.05 else "")
+            row["Frontal only"] = cell(f.auroc, f.p < 0.05)
             diffs["frontal"].append(abs(f.auroc - r.statistic))
         if lb is not None and (bb, attr) in lb.index:
             f = lb.loc[(bb, attr)]
-            row["Labelled only"] = cell(f.auroc, f.p <= 0.05 / 6) + ("+" if 0.05 / 6 < f.p < 0.05 else "")
+            row["Labelled only"] = cell(f.auroc, f.p < 0.05)
             diffs["labelled"].append(abs(f.auroc - r.statistic))
         elif lb is not None:
             row["Labelled only"] = "n/a"
@@ -1041,7 +1075,7 @@ def sensitivity():
             c = cs[(cs.backbone == bb) & (cs.attribute == attr) & (cs.C == C)] if cs is not None else []
             if len(c):
                 c = c.iloc[0]
-                row[f"$C={C:g}$"] = cell(c.auroc, c.flag_bh_with_main_secondaries)
+                row[f"$C={C:g}$"] = cell(c.auroc, c.p < 0.05)
                 diffs["C"].append(abs(c.auroc - r.statistic))
             else:
                 row[f"$C={C:g}$"] = "n/a"
@@ -1055,17 +1089,18 @@ def sensitivity():
             put(f"sens_max_absdiff_{k}", max(v))
     if fr is not None:
         put("frontal_n_images", int(fr.n_images.max()), "{:d}")
-        put("frontal_n_sig", int((fr.p <= 0.05 / 6).sum()), "{:d}")
+        put("frontal_n_sig", int((fr.p < 0.05).sum()), "{:d}")
         put("frontal_n_cells", int(len(fr)), "{:d}")
     if lb is not None:
         put("labelled_n_images", int(lb.n_images.max()), "{:d}")
-        put("labelled_n_sig", int((lb.p <= 0.05 / 6).sum()), "{:d}")
+        put("labelled_n_sig", int((lb.p < 0.05).sum()), "{:d}")
         put("labelled_n_cells", int(len(lb)), "{:d}")
         put("labelled_n_raw_sig", int((lb.p < 0.05).sum()), "{:d}")
-    if cs is not None and "decision_changes" in cs:
+    if cs is not None and "main_p" in cs:
         x = cs[cs.C != 1.0]
         put("probe_C_n_cells", int(len(x)), "{:d}")
-        put("probe_C_n_decision_changes", int(x.decision_changes.astype(bool).sum()), "{:d}")
+        # decision at p < 0.05 with this C against the main audit's decision at C = 1
+        put("probe_C_n_decision_changes", int(((x.p < 0.05) != (x.main_p < 0.05)).sum()), "{:d}")
     mlp = load("head_mlp/summary_mlp.csv")
     if mlp is not None:
         g = mlp.set_index("stat")
@@ -1358,7 +1393,7 @@ def v2_synthetic():
     df = load("synthetic/synthetic_runs.csv")
     if df is None:
         return
-    df["flag"] = df["flag"].astype(bool)
+    df = apply_flag_rule(df, ["variant", "rho", "delta", "n", "d", "seed"])
     null = df[(df.delta == 0) & (df.variant == "linear")]
     alt = df[df.delta > 0]
     deltas = sorted(alt.delta.unique())
@@ -1474,7 +1509,7 @@ def v2_clinical_heatmap():
     if df is None:
         return
     df = df[df.evaluated.astype(bool)]
-    df["flag"] = df["flag"].astype(str).str.lower().isin(["true", "1"])
+    df = apply_flag_rule(df, ["dataset", "backbone", "task", "attribute", "variant"])
     prim = df[(df.variant == "primary") & df.detector.isin(DET)]
     attr_lab = {"sex": "Sex", "age": "Age 60+", "race": "Race"}
     zmax = 100.0
@@ -1530,7 +1565,7 @@ def v2_clinical_heatmap():
     cb.ax.tick_params(length=0, labelsize=6.5, pad=2)
     cb.outline.set_visible(False)
     cb.set_label("z = (score - null mean) / null SD, log scale", fontsize=7.5, labelpad=4)
-    ax_leg.text(0.0, 0.3, "Cell text: continuous score\n* BH-adjusted q < 0.05 within the cell",
+    ax_leg.text(0.0, 0.3, "Cell text: continuous score\n* probe p < 0.05; secondary detectors\n  BH q < 0.05 across the five within the cell",
                 transform=ax_leg.transAxes, fontsize=7.5, color=V2C["ink2"], va="top")
     _v2_save(fig, "clinical_scores_heatmap")
 
@@ -1664,8 +1699,8 @@ def main(argv: list[str] | None = None) -> int:
     marker()
     extraction()
     sensitivity()
-    finish()
     figures_v2()
+    finish()
     return 0
 
 
