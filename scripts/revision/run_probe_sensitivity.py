@@ -51,11 +51,12 @@ PROVENANCE = {
 }
 OUT = {"provenance": "provenance_sensitivity", "C": "probe_C_sensitivity", "frontal": "frontal_only", "labelled": "labelled_only"}
 BH_NOTE = (
-    "Paper significance = BH over the 6 detectors of a cell, q < 0.05 (flag column of "
-    "clinical_audit/audit_rows.csv). Only the probe is run here, so q is bounded: p <= q <= 6p. "
-    "decision_bound: 'sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate'. "
-    "For the C check, bh_with_main_secondaries recomputes BH with the probe p from this run and "
-    "the five secondary p-values from the main audit (frequency_topk also uses C, so approximate)."
+    "Paper significance of the probe = its own permutation p < 0.05 (raw_sig; BH covers only the "
+    "five secondary detectors of a cell, so the probe's decision does not depend on them). "
+    "decision_changes compares raw_sig with the main audit's raw_sig. Kept for reference: "
+    "decision_bound ('sig' if p < 0.05/6, 'not sig' if p >= 0.05, else 'indeterminate') and, for "
+    "the C check, bh_with_main_secondaries (BH over this run's probe p and the five secondary "
+    "p-values of the main audit), both from the earlier six-way rule."
 )
 
 
@@ -170,10 +171,7 @@ def main() -> int:
             q.append(float(bh(np.r_[p, sec.p_value.to_numpy(float)])[0]))
         df["q_bh_with_main_secondaries"] = q
         df["flag_bh_with_main_secondaries"] = df.q_bh_with_main_secondaries < ALPHA
-    df["decision_changes"] = np.where(df.decision_bound == "indeterminate", "indeterminate",
-                                      (df.decision_bound == "sig") != df.main_flag)
-    if args.check == "C":
-        df["decision_changes"] = df.flag_bh_with_main_secondaries != df.main_flag
+    df["decision_changes"] = df.raw_sig != (df.main_p < ALPHA)  # the probe is judged at p < 0.05
     path = out / "probe_rows.csv"
     df.to_csv(path, index=False)
     man.write()
