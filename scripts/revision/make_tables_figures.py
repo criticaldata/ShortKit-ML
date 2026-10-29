@@ -119,7 +119,10 @@ def load(rel: str) -> pd.DataFrame | None:
 
 
 def f2(x, d=2):
-    return "n/a" if x is None or (isinstance(x, float) and not np.isfinite(x)) else f"{x:.{d}f}"
+    if x is None or (isinstance(x, float) and not np.isfinite(x)):
+        return "n/a"
+    t = f"{x:.{d}f}"
+    return t[1:] if t.startswith("-0.") and float(t) == 0.0 else t  # no "-0.00"
 
 
 def pfmt(p):
