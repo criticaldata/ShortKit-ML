@@ -85,6 +85,18 @@ def put(key: str, raw, fmt: str | None = "{:.2f}", text: str | None = None) -> N
             NUM[key] = NUM[key][1:]
 
 
+def bh_adjust(p) -> np.ndarray:
+    """Benjamini-Hochberg adjusted p-values."""
+    p = np.asarray(p, float)
+    n = len(p)
+    order = np.argsort(p)
+    q = p[order] * n / np.arange(1, n + 1)
+    q = np.minimum.accumulate(q[::-1])[::-1]
+    out = np.empty(n)
+    out[order] = np.minimum(q, 1.0)
+    return out
+
+
 def rng_text(lo: float, hi: float, fmt="{:.2f}") -> str:
     return f"{fmt.format(lo)} to {fmt.format(hi)}"
 
@@ -461,6 +473,10 @@ def clinical():
         put(f"n_cells_probe_sig_{ds}", int(pp.flag.sum()), "{:d}")  # probe at p < 0.05
         put(f"n_cells_probe_raw_sig_{ds}", int((pp.p_value < 0.05).sum()), "{:d}")
         put(f"n_cells_probe_sig_bh6_{ds}", int(pp.flag_bh6.sum()), "{:d}")  # BH across all six (earlier rule)
+        # sensitivity: BH across the primary tests of the cohort (co-author review, 30 Oct 2026)
+        q_cells = bh_adjust(pp.p_value.to_numpy())
+        put(f"n_cells_probe_sig_bhcells_{ds}", int((q_cells < 0.05).sum()), "{:d}")
+        put(f"probe_bhcells_max_q_{ds}", float(q_cells.max()), "{:.3f}")
         if "cell_seconds" in pp:  # wall time of one cell, all six detectors, on the audit machine
             put(f"cell_seconds_{ds}", [pp.cell_seconds.min(), pp.cell_seconds.max()],
                 text=rng_text(pp.cell_seconds.min(), pp.cell_seconds.max(), "{:.0f}"))
@@ -638,7 +654,8 @@ def head():
         "the training-pool mean, and the confounded head is reapplied")
     hf = h[h.feasible.astype(bool)]
     cell = hf.groupby(["backbone", "attribute", "task"]).agg(
-        probe_auroc=("probe_auroc", "first"), tpr_gap=("tpr_gap", "mean"), fpr_gap=("fpr_gap", "mean"),
+        probe_auroc=("probe_auroc", "first"), probe_null_mean=("probe_null_mean", "first"),
+        tpr_gap=("tpr_gap", "mean"), fpr_gap=("fpr_gap", "mean"),
         auroc_drop=("auroc_drop", "mean"), output_shift=("output_shift", "mean"),
         auroc_aligned=("auroc_aligned", "mean"), auroc_misaligned=("auroc_misaligned", "mean"),
         ece_A1=("ece_A1", "mean"), ece_A0=("ece_A0", "mean"), n_train=("n_train", "mean"),
@@ -681,6 +698,24 @@ def head():
         g = hf[hf.attribute == attr].groupby(["backbone", "task"]).tpr_gap
         put(f"tprgap_cell_sd_{attr}", g.mean().std())
         put(f"tprgap_seed_sd_{attr}", g.std().mean())
+
+    # robustness of the pooled correlation (co-author review, 30 Oct 2026): the probe score with the
+    # permutation-null mean subtracted, so the part obtainable from Y alone is removed, and leave-one-out
+    cell["probe_incr"] = cell.probe_auroc - cell.probe_null_mean
+    put("spearman_incr_tprgap_chexpert", spearmanr(cell.probe_incr, cell.tpr_gap)[0])
+    for attr in ["sex", "age"]:
+        s = cell[cell.attribute == attr]
+        put(f"spearman_incr_tprgap_within_{attr}", spearmanr(s.probe_incr, s.tpr_gap)[0])
+    loo_b = {b: spearmanr(cell[cell.backbone != b].probe_auroc, cell[cell.backbone != b].tpr_gap)[0]
+             for b in cell.backbone.unique()}
+    put("loo_encoder_rho_min", min(loo_b.values()))
+    put("loo_encoder_rho_max", max(loo_b.values()))
+    put("loo_encoder_rho_min_name", bb_label("chexpert", min(loo_b, key=loo_b.get)))
+    task_name = {"pneumothorax": "Pneumothorax", "pleural_effusion": "Pleural Effusion", "cardiomegaly": "Cardiomegaly"}
+    loo_t = {k: spearmanr(cell[cell.task != k].probe_auroc, cell[cell.task != k].tpr_gap)[0] for k in cell.task.unique()}
+    put("loo_task_rho_min", min(loo_t.values()))
+    put("loo_task_rho_max", max(loo_t.values()))
+    put("loo_task_rho_min_name", task_name.get(min(loo_t, key=loo_t.get), min(loo_t, key=loo_t.get)))
 
     # the cells are not independent: the 7 backbones embed the same images, and the
     # attributes and tasks reuse the same patients
@@ -767,6 +802,7 @@ def head():
                  "masking": "Shortcut masking", "masking_control": "Same number of random dimensions",
                  "dfr": "Last-layer retraining (DFR)"}
         mids = []
+        rad_diffs = []
         for i, meth in ((1, "adversarial"), (2, "contrastive"), (3, "masking"), (4, "dfr")):
             g = m[m.method == meth]
             c = m[m.method == f"{meth}_control"]
@@ -787,6 +823,18 @@ def head():
                 put(f"mitig{i}_vs_control_probe_auroc", (j.probe_auroc_after - j.probe_auroc_after_c).mean())
                 put(f"mitig{i}_vs_control_task_auroc", (j.task_auroc_after - j.task_auroc_after_c).mean())
                 put(f"mitig{i}_vs_control_tpr_gap", (j.tpr_gap_after - j.tpr_gap_after_c).mean())
+                # paired by cell and seed; interval from resampling whole encoders (co-author review, 30 Oct 2026)
+                d_enc = (j.tpr_gap_after - j.tpr_gap_after_c).groupby(level=[0, 1, 2]).mean().groupby(level=0).mean()
+                rng_m = np.random.default_rng(3)
+                bm = [np.mean(rng_m.choice(d_enc.to_numpy(), len(d_enc), replace=True)) for _ in range(2000)]
+                lo, hi = np.percentile(bm, [2.5, 97.5])
+                put(f"mitig{i}_vs_control_tpr_gap_ci", [lo, hi], text=rng_text(lo, hi))
+                if "rad_dino" in d_enc.index:
+                    rad_diffs.append(float(d_enc["rad_dino"]))
+            if meth == "dfr" and rad_diffs:
+                put("mitig_raddino_vs_control_tpr_gap_mean", float(np.mean(rad_diffs)))
+                put("mitig_raddino_vs_control_tpr_gap_abs", abs(float(np.mean(rad_diffs))))
+                put("mitig_raddino_vs_control_all_lower", "yes" if all(d < 0 for d in rad_diffs) else "no")
             if meth == "dfr":
                 # the head is refit, the embeddings are not changed
                 put("mitig4_frac_tpr_gap_smaller", (g.tpr_gap_after.abs() < g.tpr_gap_before.abs()).mean())
@@ -908,8 +956,27 @@ def negative_control():
         put(f"negctl_fpr_patient_{DET_KEY[d]}", s.loc[d, "patient_permutation_grouped_cv"])
         put(f"negctl_fpr_image_{DET_KEY[d]}", s.loc[d, "image_permutation_plain_cv"])
     put("negctl_n_draws", int(n.draw.nunique()), "{:d}")
+    # 95% Wilson upper bound on the probe's patient-level rejection rate (co-author review, 30 Oct 2026)
+    pr = n[(n.detector == "probe") & (n["mode"] == "patient_permutation_grouped_cv")]
+    r0, nd = int(pr.rej.sum()), int(len(pr))
+    z = 1.959964
+    ph = r0 / nd
+    ub = (ph + z * z / (2 * nd) + z * np.sqrt(ph * (1 - ph) / nd + z * z / (4 * nd * nd))) / (1 + z * z / nd)
+    put("negctl_probe_rejections_patient", r0, "{:d}")
+    put("negctl_fpr_patient_probe_ub95", ub)
     write_tabular("negative_control", pd.DataFrame(rows), "lcc",
                   header=["Detector", "Patient-level permutation, grouped CV", "Image-level permutation, plain CV"])
+
+
+def patient_exchangeability():
+    e = load("patient_exchangeability/patient_exchangeability.csv")
+    if e is None:
+        return
+    put("exch_p_min", float(e.p_mannwhitney.min()))
+    put("exch_p_max", float(e.p_mannwhitney.max()))
+    put("exch_n_tests", int(len(e)), "{:d}")
+    mixed = e[e.quantity == "positive_share_mixed"].iloc[0]
+    put("exch_n_mixed_patients", int(mixed.n0 + mixed.n1), "{:d}")
 
 
 def analyses():
@@ -1740,6 +1807,7 @@ def main(argv: list[str] | None = None) -> int:
     head()
     old_pipeline()
     negative_control()
+    patient_exchangeability()
     analyses()
     marker()
     extraction()
