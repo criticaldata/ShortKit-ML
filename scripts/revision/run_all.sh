@@ -2,7 +2,7 @@
 # End-to-end revision pipeline (CMPB-D-26-02542). Called by
 # `scripts/reproduce_paper.sh revision`; can also run selected stages:
 #   scripts/revision/run_all.sh [stage ...]
-# Stages: old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full nlprobe nlprobe_clinical scaling tables (default: all, in order)
+# Stages: old clinical negctl exchange synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full nlprobe nlprobe_clinical scaling tables (default: all, in order)
 # Run on request only: prepare_mimic (rebuilds two MIMIC inputs from the coreset parquet files in the hub dataset)
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -13,7 +13,7 @@ if [ -z "${SHORTKIT_REVISION_DIR:-}" ]; then
 fi
 mkdir -p "${SHORTKIT_REVISION_DIR}"
 STAGES=("$@")
-[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full nlprobe nlprobe_clinical scaling tables)
+[ ${#STAGES[@]} -eq 0 ] && STAGES=(old clinical negctl exchange synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full nlprobe nlprobe_clinical scaling tables)
 echo "results: ${SHORTKIT_REVISION_DIR}"
 for s in "${STAGES[@]}"; do
     start=$(date +%s)
@@ -26,6 +26,7 @@ for s in "${STAGES[@]}"; do
         negctl)    "${PY}" "${REPO}/scripts/revision/run_negative_control.py" ;;
         synthetic) "${PY}" "${REPO}/scripts/revision/run_synthetic.py" ;;
         nullcheck) "${PY}" "${REPO}/scripts/revision/run_null_check.py" ;;
+        exchange)  "${PY}" "${REPO}/scripts/revision/run_patient_exchangeability.py" ;;
         head)      "${PY}" "${REPO}/scripts/revision/run_head_experiment.py" ;;
         dfr)       "${PY}" "${REPO}/scripts/revision/run_dfr_control.py" ;;
         mlp)       "${PY}" "${REPO}/scripts/revision/run_head_mlp.py" ;;
