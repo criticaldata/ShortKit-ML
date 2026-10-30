@@ -1,5 +1,5 @@
 revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
-tables/figures built at commit a1bf382e793fbb328af108bd393fd256f845f89a
+tables/figures built at commit 48d43972eba301cfc5f765fbbb89a1981b9e2f56
 
 ===== alignment_check =====
 run: row alignment across backbones (cosine-structure Spearman)
@@ -1054,6 +1054,25 @@ notes:
 note added after the run (28 Oct 2026): this rerun used the shipped CheXpert metadata, whose sex column is inverted (HF mirror codes 0 = Male). Sex is binary, so detection flags are unaffected; it reproduces the committed CSVs cell for cell (CheXpert 273/273, MIMIC 156/156).
 
 note: copied unchanged from /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/old_pipeline_fixed_flag (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
+
+===== patient_exchangeability =====
+run: patient exchangeability check (images per patient, positive share) on CheXpert
+commit: f81e157b04b873f55dc59d38c6c9aaa749e6c19a
+working tree has uncommitted changes: False
+command: python scripts/revision/run_patient_exchangeability.py
+python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
+written: 2026-10-30 19:31:40 GMT
+wall_seconds: 2.9
+
+config:
+{}
+
+data files (md5):
+  6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
+  41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
+
+timings (s):
+  wall_seconds: 2.659
 
 ===== planted_marker =====
 run: planted marker (section 7 item 4)

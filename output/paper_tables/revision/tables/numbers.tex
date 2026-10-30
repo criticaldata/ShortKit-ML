@@ -36,7 +36,7 @@
 \expandafter\def\csname num@cluster_top_variable_chexpert\endcsname{AP/PA}
 \expandafter\def\csname num@cluster_top_variable_mimic\endcsname{view (AP/PA)}
 \expandafter\def\csname num@cluster_view_nmi_chexpert\endcsname{0.378}
-\expandafter\def\csname num@code_commit\endcsname{a1bf382}
+\expandafter\def\csname num@code_commit\endcsname{48d4397}
 \expandafter\def\csname num@dfrctl_dfr_l2_task_auroc\endcsname{0.69}
 \expandafter\def\csname num@dfrctl_dfr_l2_tpr_gap\endcsname{0.00}
 \expandafter\def\csname num@dfrctl_dfr_task_auroc\endcsname{0.65}
@@ -64,6 +64,10 @@
 \expandafter\def\csname num@effective_n_detectors_xor_d08\endcsname{3.4}
 \expandafter\def\csname num@effective_n_detectors_xor_d12\endcsname{3.4}
 \expandafter\def\csname num@effective_n_detectors_xor_d2\endcsname{2.6}
+\expandafter\def\csname num@exch_n_mixed_patients\endcsname{44}
+\expandafter\def\csname num@exch_n_tests\endcsname{4}
+\expandafter\def\csname num@exch_p_max\endcsname{0.83}
+\expandafter\def\csname num@exch_p_min\endcsname{0.55}
 \expandafter\def\csname num@fpr_null_bh6flag_biasdir\endcsname{0.03}
 \expandafter\def\csname num@fpr_null_bh6flag_frequency\endcsname{0.01}
 \expandafter\def\csname num@fpr_null_bh6flag_geometric\endcsname{0.01}
@@ -144,6 +148,12 @@
 \expandafter\def\csname num@labelled_n_raw_sig\endcsname{20}
 \expandafter\def\csname num@labelled_n_sig\endcsname{20}
 \expandafter\def\csname num@lda_heldout_auroc_mimic_raddino_sex\endcsname{0.998}
+\expandafter\def\csname num@loo_encoder_rho_max\endcsname{0.68}
+\expandafter\def\csname num@loo_encoder_rho_min\endcsname{0.50}
+\expandafter\def\csname num@loo_encoder_rho_min_name\endcsname{RAD-DINO}
+\expandafter\def\csname num@loo_task_rho_max\endcsname{0.73}
+\expandafter\def\csname num@loo_task_rho_min\endcsname{0.45}
+\expandafter\def\csname num@loo_task_rho_min_name\endcsname{Pneumothorax}
 \expandafter\def\csname num@marker_n_seeds\endcsname{10}
 \expandafter\def\csname num@marker_rate\endcsname{0.5}
 \expandafter\def\csname num@marker_rate_head_train\endcsname{0.9}
@@ -165,6 +175,7 @@
 \expandafter\def\csname num@mitig1_vs_control_probe_auroc\endcsname{-0.01}
 \expandafter\def\csname num@mitig1_vs_control_task_auroc\endcsname{0.00}
 \expandafter\def\csname num@mitig1_vs_control_tpr_gap\endcsname{-0.01}
+\expandafter\def\csname num@mitig1_vs_control_tpr_gap_ci\endcsname{-0.03 to 0.01}
 \expandafter\def\csname num@mitig2_control_delta_probe_auroc\endcsname{-0.12}
 \expandafter\def\csname num@mitig2_control_delta_task_auroc\endcsname{-0.01}
 \expandafter\def\csname num@mitig2_control_delta_tpr_gap\endcsname{0.00}
@@ -179,6 +190,7 @@
 \expandafter\def\csname num@mitig2_vs_control_probe_auroc\endcsname{-0.04}
 \expandafter\def\csname num@mitig2_vs_control_task_auroc\endcsname{0.00}
 \expandafter\def\csname num@mitig2_vs_control_tpr_gap\endcsname{0.00}
+\expandafter\def\csname num@mitig2_vs_control_tpr_gap_ci\endcsname{-0.03 to 0.02}
 \expandafter\def\csname num@mitig3_control_delta_probe_auroc\endcsname{0.00}
 \expandafter\def\csname num@mitig3_control_delta_task_auroc\endcsname{0.00}
 \expandafter\def\csname num@mitig3_control_delta_tpr_gap\endcsname{0.00}
@@ -193,6 +205,7 @@
 \expandafter\def\csname num@mitig3_vs_control_probe_auroc\endcsname{-0.01}
 \expandafter\def\csname num@mitig3_vs_control_task_auroc\endcsname{0.00}
 \expandafter\def\csname num@mitig3_vs_control_tpr_gap\endcsname{-0.01}
+\expandafter\def\csname num@mitig3_vs_control_tpr_gap_ci\endcsname{-0.03 to -0.00}
 \expandafter\def\csname num@mitig4_cells_wilcoxon_p\endcsname{0.000}
 \expandafter\def\csname num@mitig4_delta_probe_auroc\endcsname{0.00}
 \expandafter\def\csname num@mitig4_delta_task_auroc\endcsname{-0.08}
@@ -211,6 +224,9 @@
 \expandafter\def\csname num@mitig4_tpr_gap_after\endcsname{0.01}
 \expandafter\def\csname num@mitig4_tpr_gap_before\endcsname{0.18}
 \expandafter\def\csname num@mitig_n_seeds\endcsname{3}
+\expandafter\def\csname num@mitig_raddino_vs_control_all_lower\endcsname{yes}
+\expandafter\def\csname num@mitig_raddino_vs_control_tpr_gap_abs\endcsname{0.06}
+\expandafter\def\csname num@mitig_raddino_vs_control_tpr_gap_mean\endcsname{-0.06}
 \expandafter\def\csname num@mlp_spearman\endcsname{0.53}
 \expandafter\def\csname num@mlp_spearman_ci\endcsname{0.20 to 0.76}
 \expandafter\def\csname num@mlp_spearman_within_age\endcsname{0.09}
@@ -228,6 +244,8 @@
 \expandafter\def\csname num@n_cells_probe_sig_age_mimic\endcsname{4}
 \expandafter\def\csname num@n_cells_probe_sig_bh6_chexpert\endcsname{20}
 \expandafter\def\csname num@n_cells_probe_sig_bh6_mimic\endcsname{12}
+\expandafter\def\csname num@n_cells_probe_sig_bhcells_chexpert\endcsname{21}
+\expandafter\def\csname num@n_cells_probe_sig_bhcells_mimic\endcsname{12}
 \expandafter\def\csname num@n_cells_probe_sig_chexpert\endcsname{21}
 \expandafter\def\csname num@n_cells_probe_sig_mimic\endcsname{12}
 \expandafter\def\csname num@n_cells_probe_sig_race_chexpert\endcsname{7}
@@ -249,8 +267,10 @@
 \expandafter\def\csname num@negctl_fpr_patient_geometric\endcsname{0.07}
 \expandafter\def\csname num@negctl_fpr_patient_hbac\endcsname{0.03}
 \expandafter\def\csname num@negctl_fpr_patient_probe\endcsname{0.00}
+\expandafter\def\csname num@negctl_fpr_patient_probe_ub95\endcsname{0.11}
 \expandafter\def\csname num@negctl_fpr_patient_statistical\endcsname{0.00}
 \expandafter\def\csname num@negctl_n_draws\endcsname{30}
+\expandafter\def\csname num@negctl_probe_rejections_patient\endcsname{0}
 \expandafter\def\csname num@nl_probe_K\endcsname{200}
 \expandafter\def\csname num@nl_probe_d\endcsname{64}
 \expandafter\def\csname num@nl_probe_delta_high\endcsname{2.0}
@@ -315,6 +335,8 @@
 \expandafter\def\csname num@probe_auroc_sex_max_mimic\endcsname{1.00}
 \expandafter\def\csname num@probe_auroc_sex_min_chexpert\endcsname{0.84}
 \expandafter\def\csname num@probe_auroc_sex_min_mimic\endcsname{0.93}
+\expandafter\def\csname num@probe_bhcells_max_q_chexpert\endcsname{0.022}
+\expandafter\def\csname num@probe_bhcells_max_q_mimic\endcsname{0.002}
 \expandafter\def\csname num@probe_p_chexpert_medsiglip_age\endcsname{0.002}
 \expandafter\def\csname num@probe_p_chexpert_medsiglip_race\endcsname{0.022}
 \expandafter\def\csname num@probe_p_chexpert_medsiglip_sex\endcsname{0.002}
@@ -357,6 +379,9 @@
 \expandafter\def\csname num@sens_probe_xor\endcsname{0.02}
 \expandafter\def\csname num@sens_statistical_var\endcsname{0.02}
 \expandafter\def\csname num@sens_statistical_xor\endcsname{0.03}
+\expandafter\def\csname num@spearman_incr_tprgap_chexpert\endcsname{0.57}
+\expandafter\def\csname num@spearman_incr_tprgap_within_age\endcsname{0.09}
+\expandafter\def\csname num@spearman_incr_tprgap_within_sex\endcsname{0.75}
 \expandafter\def\csname num@spearman_probe_aurocdrop_chexpert\endcsname{0.72}
 \expandafter\def\csname num@spearman_probe_aurocdrop_p_chexpert\endcsname{0.000}
 \expandafter\def\csname num@spearman_probe_fprgap_chexpert\endcsname{0.28}
