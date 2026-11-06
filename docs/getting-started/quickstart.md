@@ -22,6 +22,8 @@ Y = np.load("task_labels.npy")         # Shape: (1000,), 0/1
 patient_ids = np.load("patients.npy")  # Shape: (1000,)
 ```
 
+The width (512 here) is arbitrary: 2, 384, 4096 or any other size works. These four arrays are all the package needs, whatever model or modality (image, text, audio, tabular, multimodal) produced the embeddings.
+
 ### Step 2: Run the Conditional Audit
 
 ```python

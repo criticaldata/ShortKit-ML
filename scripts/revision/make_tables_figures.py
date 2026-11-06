@@ -768,8 +768,11 @@ def head():
                      "Output shift": f2(g.output_shift.mean()),
                      "AUROC aligned": f2(g.auroc_aligned.mean()), "AUROC misaligned": f2(g.auroc_misaligned.mean()),
                      "ECE A=1": f2(g.ece_A1.mean(), 3), "ECE A=0": f2(g.ece_A0.mean(), 3)})
-    hdr = ["$A$", "$Y$", "$n$ train (min-max)", "$n$ test (min-max)", "Probe", "TPR gap", "FPR gap", "AUROC drop",
-           "Output shift", "AUROC aligned", "AUROC misaligned", "ECE $A{=}1$", "ECE $A{=}0$"]
+    # two-line headers so the sideways table in the paper is not shrunk by adjustbox
+    hdr = ["$A$", "$Y$", "\\shortstack{$n$ train\\\\(min-max)}", "\\shortstack{$n$ test\\\\(min-max)}", "Probe",
+           "\\shortstack{TPR\\\\gap}", "\\shortstack{FPR\\\\gap}", "\\shortstack{AUROC\\\\drop}",
+           "\\shortstack{Output\\\\shift}", "\\shortstack{AUROC\\\\aligned}", "\\shortstack{AUROC\\\\misaligned}",
+           "\\shortstack{ECE\\\\$A{=}1$}", "\\shortstack{ECE\\\\$A{=}0$}"]
     write_tabular("head_reliance", pd.DataFrame(rows), "ll" + "c" * (len(hdr) - 2), escape_cells=False, header=hdr)
 
     _apply_pub_style()
@@ -867,8 +870,10 @@ def head():
                                  "Task before": f2(ga.task_auroc_before.mean()), "Task after": f2(ga.task_auroc_after.mean()),
                                  "TPR gap before": f2(ga.tpr_gap_before.mean()), "TPR gap after": f2(ga.tpr_gap_after.mean())})
                 mids.append(len(rows))
-        hdr = ["Method", "$A$", "Probe before", "Probe after", "Sig. before", "Sig. after",
-               "Task AUROC before", "Task AUROC after", "TPR gap before", "TPR gap after"]
+        hdr = ["Method", "$A$", "\\shortstack{Probe\\\\before}", "\\shortstack{Probe\\\\after}",
+               "\\shortstack{Sig.\\\\before}", "\\shortstack{Sig.\\\\after}",
+               "\\shortstack{Task AUROC\\\\before}", "\\shortstack{Task AUROC\\\\after}",
+               "\\shortstack{TPR gap\\\\before}", "\\shortstack{TPR gap\\\\after}"]
         write_tabular("mitigation_before_after", pd.DataFrame(rows), "ll" + "c" * 8, escape_cells=False,
                       header=hdr, midrules=mids[:-1])
         # per backbone: method minus its control on the same cell and seed (DFR: after minus before),

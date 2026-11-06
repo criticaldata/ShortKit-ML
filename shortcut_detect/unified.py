@@ -217,7 +217,9 @@ class ShortcutDetector:
         Fit all detection methods on embeddings.
 
         Args:
-            embeddings: (n_samples, embedding_dim) array. Optional when using
+            embeddings: (n_samples, embedding_dim) array. Any width and any
+                modality (image, text, audio, tabular, multimodal encoders):
+                the detectors only see the float matrix. Optional when using
                 embedding-only mode.
             labels: (n_samples,) target labels
             group_labels: (n_samples,) group labels (e.g., demographic attributes)

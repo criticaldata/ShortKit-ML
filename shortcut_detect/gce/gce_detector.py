@@ -260,7 +260,15 @@ class GCEDetector:
     def predict(self, embeddings: np.ndarray) -> np.ndarray:
         """Predict class labels from embeddings."""
         self._ensure_fitted()
-        logits = embeddings @ self.coef_ + self.intercept_
+        X = np.asarray(embeddings, dtype=float)
+        if X.ndim != 2:
+            raise ValueError("embeddings must be 2D (n_samples, n_features)")
+        if X.shape[1] != self.coef_.shape[0]:
+            raise ValueError(
+                f"embeddings have {X.shape[1]} features, but the detector was fitted on "
+                f"{self.coef_.shape[0]}"
+            )
+        logits = X @ self.coef_ + self.intercept_
         pred_idx = np.argmax(logits, axis=1)
         return self.classes_[pred_idx]
 

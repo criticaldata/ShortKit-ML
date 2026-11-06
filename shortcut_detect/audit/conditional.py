@@ -752,6 +752,10 @@ def conditional_audit(
 ) -> AuditResult:
     """Run the attribute-aware audit on one (embedding, attribute, task) cell.
 
+    ``E`` is any 2-D float matrix ``(n, d)``: any width ``d`` and any modality
+    (image, text, audio, tabular, multimodal encoders), the audit only sees the
+    numbers. ``A`` and ``Y`` are 1-D arrays of length ``n``.
+
     ``groups`` (e.g. patient ids) makes every cross-validation split
     patient-disjoint, every bootstrap resample whole patients, and the
     permutation patient-level within Y-pattern strata (see

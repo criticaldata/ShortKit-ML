@@ -196,6 +196,7 @@ class TorchProbe(DetectorBase):
 
         self.shortcut_detected_: bool | None = None
         self.metric_value_: float | None = None
+        self.n_features_in_: int | None = None
 
         self._optimizer: torch.optim.Optimizer | None = None
         self._scaler: torch.cuda.amp.GradScaler | None = None
@@ -204,6 +205,7 @@ class TorchProbe(DetectorBase):
 
     def fit(self, embeddings: np.ndarray, target: np.ndarray) -> TorchProbe:
         X, y = validate_embeddings_labels(embeddings, target, min_samples=4)
+        self.n_features_in_ = int(X.shape[1])
 
         # holdout split
         rng = np.random.RandomState(self.config.random_state)
@@ -663,6 +665,10 @@ class TorchProbe(DetectorBase):
         X_arr = np.asarray(X)
         if X_arr.ndim != 2:
             raise ValueError(f"X must be 2D (n_samples, n_features). Got shape={X_arr.shape}.")
+        if self.n_features_in_ is not None and X_arr.shape[1] != self.n_features_in_:
+            raise ValueError(
+                f"X has {X_arr.shape[1]} features, but the probe was fitted on {self.n_features_in_}."
+            )
         device = torch.device(self.device)
         self.model.to(device)
         self.model.eval()

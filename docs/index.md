@@ -4,6 +4,8 @@
 
 **ShortKit-ML**: Detect and mitigate shortcuts and biases in machine learning embedding spaces. 20+ detection and mitigation methods with a unified API. **Multi-attribute support** tests multiple sensitive attributes simultaneously. Model Comparison mode for benchmarking multiple embedding models.
 
+- **Input-agnostic: any embedding width, any modality.** The package only sees a 2-D float matrix `(n_samples, embedding_dim)` plus 1-D label arrays, so image, text, audio, tabular or multimodal encoders of any output size all work the same way.
+
 [![PyPI version](https://img.shields.io/pypi/v/shortkit-ml.svg)](https://pypi.org/project/shortkit-ml/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.2+-ee4c2c.svg)](https://pytorch.org/)
