@@ -1,6 +1,6 @@
 [project]
 name = "shortkit-ml"
-version = "0.1.0"
+version = "0.2.0"
 description = "ShortKit-ML: A toolkit for detecting shortcuts and biases in embedding spaces"
 authors = [
     {name = "Sebastian Cajas"},

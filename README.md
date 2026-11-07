@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://criticaldata.github.io/ShortKit-ML/getting-started/walkthrough/"><img src="docs/assets/walkthrough/dashboard-audit.gif" alt="ShortKit-ML: from python app.py to the PDF report" width="720"/></a>
-  <br/><sub>Install, bring your embeddings (any encoder, any modality), the dashboard from <code>python app.py</code> to the PDF report, and the MCP call; the full video with captions is on the <a href="https://criticaldata.github.io/ShortKit-ML/getting-started/walkthrough/">walkthrough page</a>.</sub>
+  <br/><sub>Any embedding, on your own machine: load your files, run the audit, read the verdict and the figures, download the PDF. The full walkthrough video is on the <a href="https://criticaldata.github.io/ShortKit-ML/getting-started/walkthrough/">walkthrough page</a>.</sub>
 </p>
 
 ## What it does
@@ -27,15 +27,18 @@
 ## Install
 
 ```bash
-git clone https://github.com/criticaldata/ShortKit-ML.git
-cd ShortKit-ML
+pip install shortkit-ml          # Python 3.10 to 3.12
+```
+
+From source, for the examples, the dashboard and the walkthrough data:
+
+```bash
+git clone https://github.com/criticaldata/ShortKit-ML.git && cd ShortKit-ML
 uv venv --python 3.10 && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 uv pip install -e .        # or: pip install -e .
 ```
 
-Python 3.10 to 3.12. `uv pip install -e ".[all]"` adds the MCP server, Hugging Face models, Jupyter and dev tools; PDF export needs Pango, see [Installation](docs/getting-started/installation.md).
-
-The PyPI release [0.1.0](https://pypi.org/project/shortkit-ml/) predates the `shortcut_detect.audit` module, so install from source until the next release.
+`pip install "shortkit-ml[all]"` (or `uv pip install -e ".[all]"` from source) adds the MCP server, Hugging Face models, Jupyter and dev tools; PDF export needs Pango, see [Installation](docs/getting-started/installation.md).
 
 ## Audit your embeddings
 

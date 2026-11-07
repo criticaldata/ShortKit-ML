@@ -1,6 +1,12 @@
 # Installation
 
-ShortKit-ML is the Python package `shortcut_detect`. Install it from source: the PyPI release 0.1.0 predates the `shortcut_detect.audit` module that the ShortKit-ML paper uses.
+ShortKit-ML is the Python package `shortcut_detect`, on PyPI as `shortkit-ml` (0.2.0 and later carry the `shortcut_detect.audit` module that the ShortKit-ML paper uses).
+
+```bash
+pip install shortkit-ml
+```
+
+Install from source when you want the examples, the dashboard and the walkthrough data, or to follow `main`.
 
 ## Requirements
 

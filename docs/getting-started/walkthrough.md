@@ -6,7 +6,7 @@ The question the audit answers: **does an embedding carry a sensitive attribute 
 
 ## 1. Install
 
-Clone and install from source (the PyPI release predates the audit module). About ten seconds with `uv` when the wheels are cached; `pip install -e .` works the same way.
+`pip install shortkit-ml` gives you the package; the clone below adds the examples and the sample data. About ten seconds with `uv` when the wheels are cached; `pip install -e .` works the same way.
 
 ```bash
 git clone https://github.com/criticaldata/ShortKit-ML.git && cd ShortKit-ML
