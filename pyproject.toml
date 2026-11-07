@@ -1,7 +1,7 @@
 [project]
 name = "shortkit-ml"
-version = "0.2.0"
-description = "ShortKit-ML: A toolkit for detecting shortcuts and biases in embedding spaces"
+version = "0.2.1"
+description = "Measure the shortcut potential of an embedding: one calibrated audit for any encoder and any modality, run locally, with HTML and PDF reports"
 authors = [
     {name = "Sebastian Cajas"},
     {name = "Aldo Marzullo"},
@@ -18,7 +18,7 @@ authors = [
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10,<3.13"
 license = {text = "MIT"}
-keywords = ["machine-learning", "bias-detection", "embeddings", "fairness", "shortcuts"]
+keywords = ["shortcut-learning", "embeddings", "fairness", "bias-detection", "medical-imaging", "audit", "machine-learning"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -138,6 +138,7 @@ Homepage = "https://github.com/criticaldata/ShortKit-ML"
 Documentation = "https://criticaldata.github.io/ShortKit-ML/"
 Repository = "https://github.com/criticaldata/ShortKit-ML"
 Issues = "https://github.com/criticaldata/ShortKit-ML/issues"
+Paper = "https://doi.org/10.64898/2026.04.29.26352053"
 
 [build-system]
 requires = ["setuptools>=68.0.0", "wheel"]

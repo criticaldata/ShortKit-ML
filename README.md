@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
+  <img src="https://raw.githubusercontent.com/criticaldata/ShortKit-ML/main/docs/assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
 </p>
 
 <p align="center">One calibrated test of whether an embedding carries a sensitive attribute beyond what the task label explains. Any encoder, any modality, your own data, on your own machine.</p>
@@ -11,7 +11,7 @@
 [![Dataset on HF](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-ShortKit--ML--data-yellow.svg)](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data)
 
 <p align="center">
-  <a href="https://criticaldata.github.io/ShortKit-ML/getting-started/walkthrough/"><img src="docs/assets/walkthrough/dashboard-audit.gif" alt="ShortKit-ML: from python app.py to the PDF report" width="720"/></a>
+  <a href="https://criticaldata.github.io/ShortKit-ML/getting-started/walkthrough/"><img src="https://raw.githubusercontent.com/criticaldata/ShortKit-ML/main/docs/assets/walkthrough/dashboard-audit.gif" alt="ShortKit-ML: from python app.py to the PDF report" width="720"/></a>
   <br/><sub>Any embedding, on your own machine: load your files, run the audit, read the verdict and the figures, download the PDF. The full walkthrough video is on the <a href="https://criticaldata.github.io/ShortKit-ML/getting-started/walkthrough/">walkthrough page</a>.</sub>
 </p>
 
@@ -22,7 +22,7 @@
 - **One calibrated test.** A conditional probe (L2 logistic regression predicting the attribute from the embedding and the task label, out-of-fold AUROC) against a permutation null that shuffles the attribute within task-label strata. Five secondary detectors describe; the probe decides at p < 0.05. The result is written as an HTML or PDF report.
 - **A dashboard.** `python app.py` runs the same audit with a mouse, sample data included.
 - **An MCP server.** Agents (Claude Code, Claude Desktop, GitHub Copilot, DOJO-style evaluation platforms) call the audit on files and get back the result, the summary and the report.
-- **Your data, your detectors.** Nothing is tied to chest X-rays: the same call audits any embedding you can load. New detectors subclass `DetectorBase` (template in `shortcut_detect/detector_template.py`) and run under the same permutation null; contributions are welcome, see [docs/contributing.md](docs/contributing.md).
+- **Your data, your detectors.** Nothing is tied to chest X-rays: the same call audits any embedding you can load. New detectors subclass `DetectorBase` (template in `shortcut_detect/detector_template.py`) and run under the same permutation null; contributions are welcome, see [docs/contributing.md](https://criticaldata.github.io/ShortKit-ML/contributing/).
 
 ## Install
 
@@ -38,7 +38,7 @@ uv venv --python 3.10 && source .venv/bin/activate   # Windows: .venv\Scripts\ac
 uv pip install -e .        # or: pip install -e .
 ```
 
-`pip install "shortkit-ml[all]"` (or `uv pip install -e ".[all]"` from source) adds the MCP server, Hugging Face models, Jupyter and dev tools; PDF export needs Pango, see [Installation](docs/getting-started/installation.md).
+`pip install "shortkit-ml[all]"` (or `uv pip install -e ".[all]"` from source) adds the MCP server, Hugging Face models, Jupyter and dev tools; PDF export needs Pango, see [Installation](https://criticaldata.github.io/ShortKit-ML/getting-started/installation/).
 
 ## Audit your embeddings
 
@@ -62,7 +62,7 @@ With several rows per patient, pass `groups=patient_ids`: folds become patient-d
 
 ## Dashboard
 
-The same audit with a mouse, served at http://127.0.0.1:7860 (or the next free port); guide in [docs/getting-started/dashboard.md](docs/getting-started/dashboard.md).
+The same audit with a mouse, served at http://127.0.0.1:7860 (or the next free port); guide in [docs/getting-started/dashboard.md](https://criticaldata.github.io/ShortKit-ML/getting-started/dashboard/).
 
 ```bash
 python app.py
@@ -75,7 +75,7 @@ uv pip install -e ".[mcp]"
 claude mcp add --scope project shortkit-ml .venv/bin/python -- -m shortcut_detect.mcp_server
 ```
 
-`run_audit` reads E, A, Y and optional patient ids from files, runs `conditional_audit` and returns the result as JSON, writing the HTML or PDF report where you ask. Setup for Claude Desktop and GitHub Copilot in VS Code, the other tools and troubleshooting: [docs/mcp-server.md](docs/mcp-server.md).
+`run_audit` reads E, A, Y and optional patient ids from files, runs `conditional_audit` and returns the result as JSON, writing the HTML or PDF report where you ask. Setup for Claude Desktop and GitHub Copilot in VS Code, the other tools and troubleshooting: [docs/mcp-server.md](https://criticaldata.github.io/ShortKit-ML/mcp-server/).
 
 ## Reproducing the paper
 
@@ -83,15 +83,15 @@ Every table and figure of the [ShortKit-ML paper](https://doi.org/10.64898/2026.
 
 It reads the paper's embeddings from the gated dataset [MITCriticalData/ShortKit-ML-data](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data) (`hf download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir data/`), shared only with users who hold PhysioNet access to MIMIC-CXR: request access on the dataset page and include your PhysioNet username; proof of MIMIC-CXR access is required before approval.
 
-Stages, output folders and the CheXpert files that come from Stanford: [docs/reproducibility.md](docs/reproducibility.md).
+Stages, output folders and the CheXpert files that come from Stanford: [docs/reproducibility.md](https://criticaldata.github.io/ShortKit-ML/reproducibility/).
 
 ## Other package methods
 
-`ShortcutDetector` runs 19 exploratory detectors against fixed thresholds, with six mitigation methods beside them, all documented on the site ([methods overview](docs/methods/overview.md)); their risk labels are for exploration and are not the paper's result.
+`ShortcutDetector` runs 19 exploratory detectors against fixed thresholds, with six mitigation methods beside them, all documented on the site ([methods overview](https://criticaldata.github.io/ShortKit-ML/methods/overview/)); their risk labels are for exploration and are not the paper's result.
 
 ## Documentation
 
-Site: [criticaldata.github.io/ShortKit-ML](https://criticaldata.github.io/ShortKit-ML/), starting with the [walkthrough](docs/getting-started/walkthrough.md). Tests: `pytest tests/ -v`. Contributing: [docs/contributing.md](docs/contributing.md).
+Site: [criticaldata.github.io/ShortKit-ML](https://criticaldata.github.io/ShortKit-ML/), starting with the [walkthrough](https://criticaldata.github.io/ShortKit-ML/getting-started/walkthrough/). Tests: `pytest tests/ -v`. Contributing: [docs/contributing.md](https://criticaldata.github.io/ShortKit-ML/contributing/).
 
 ## Cite
 
@@ -110,7 +110,7 @@ If you use ShortKit-ML, cite the ShortKit-ML paper ([preprint](https://doi.org/1
 
 ## License
 
-MIT License, see [LICENSE](LICENSE).
+MIT License, see [LICENSE](https://github.com/criticaldata/ShortKit-ML/blob/main/LICENSE).
 
 ## Contact
 

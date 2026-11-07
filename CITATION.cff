@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite the preprint below."
 title: "ShortKit-ML: an open toolkit for measuring shortcut potential in medical imaging embeddings"
 type: software
-version: 0.2.0
+version: 0.2.1
 license: MIT
 repository-code: "https://github.com/criticaldata/ShortKit-ML"
 authors:
