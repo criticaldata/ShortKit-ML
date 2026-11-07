@@ -1,102 +1,86 @@
-# Real Data Examples
+# Real data examples
 
-This guide demonstrates shortcut detection on real-world medical imaging data.
+This page shows the package on chest X-ray embeddings with demographic metadata.
 
-## CheXpert Dataset
+!!! note "Illustrative code"
+    The file paths and printed values on this page illustrate the API; they are not results from the paper. The paper's CheXpert arrays (seven backbones over the first 2,000 images of the official `train.csv`, 477 patients) are on the gated Hugging Face dataset described in [the paper's pipeline](../reproducibility.md#paper-pipeline), and its measurement is `shortcut_detect.audit.conditional_audit`.
 
-[CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) is a large chest X-ray dataset with demographic information. We use pre-computed embeddings from a trained model.
+## Loading embeddings
 
-!!! note "Illustrative code and output"
-    The CSV path and the printed numbers on this page illustrate the interactive API; they are not results from the paper. The paper's CheXpert arrays (seven backbones over the first 2,000 images of the official `train.csv`, 477 patients) are on the gated Hugging Face dataset described in [Reproducing the Paper](../reproducibility.md#revised-paper-cmpb-revision-2026), and its audit is `shortcut_detect.audit.conditional_audit`.
+The package ships no sample CSV. Two ways to get arrays:
 
-### Loading CheXpert Embeddings
+From your own CSV in the dashboard's format (`embedding_0` to `embedding_{d-1}`, `task_label`, `group_label`):
 
 ```python
 import numpy as np
 import pandas as pd
 
-# Load sample data (included with the library)
-data = pd.read_csv("data/chexpert_sample.csv")
+data = pd.read_csv("my_chexpert_embeddings.csv")
+embedding_cols = [c for c in data.columns if c.startswith("embedding_")]
+embeddings = data[embedding_cols].to_numpy()
+task_labels = data["task_label"].to_numpy()    # e.g. pneumothorax 0/1
+group_labels = data["group_label"].to_numpy()  # e.g. race
 
-# Extract embeddings
-embedding_cols = [c for c in data.columns if c.startswith('embedding_')]
-embeddings = data[embedding_cols].values
-
-# Labels
-task_labels = data['pathology'].values  # Disease labels
-group_labels = data['race'].values      # Protected attribute
-
-print(f"Samples: {len(data)}")
-print(f"Embedding dim: {embeddings.shape[1]}")
-print(f"Groups: {np.unique(group_labels)}")
+print(f"Samples: {len(data)}, embedding dim: {embeddings.shape[1]}, groups: {np.unique(group_labels)}")
 ```
 
-### Running Detection
+From the paper's arrays, once you have access to the hub dataset (`hf download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir data/`):
 
 ```python
-from shortcut_detect import ShortcutDetector
-
-# Create detector
-detector = ShortcutDetector(
-    methods=['hbac', 'probe', 'statistical', 'geometric'],
-    random_state=42
-)
-
-# Fit
-detector.fit(embeddings, group_labels, task_labels=task_labels)
-
-# Summary
-print(detector.summary())
+embeddings = np.load("data/chexpert_multibackbone/densenet121_embeddings.npy")
+meta = pd.read_csv("data/chexpert_multibackbone/densenet121_metadata.csv")
+task_labels = meta["task_label"].to_numpy()
+group_labels = meta["sex"].to_numpy()          # the file also has "race" and "age_bin"
 ```
 
-### Expected Output
+## The audit
 
-```
-======================================================================
-UNIFIED SHORTCUT DETECTION SUMMARY
-======================================================================
-HIGH RISK: Multiple methods detected shortcuts
+```python
+from shortcut_detect.audit import AuditConfig, conditional_audit
+from shortcut_detect.audit.report import audit_report, summary_text
 
-HBAC Analysis:
-  Purity: 0.78
-  Linearity: 0.72
-  Status: Shortcuts detected
+cfg = AuditConfig(n_permutations=200, n_permutations_probe=500, seed=42)
+result = conditional_audit(embeddings, group_labels, task_labels, config=cfg)   # add groups=patient_ids when patients repeat
 
-Probe Analysis:
-  Accuracy: 83.2%
-  Baseline: 33.3% (3 groups)
-  Status: High risk
-
-Statistical Testing:
-  Significant features: 156 / 512 (30.5%)
-  Status: High risk
-
-Geometric Analysis:
-  Bias effect size: 0.89
-  Subspace overlap: 0.45
-  Status: High risk
-
-RECOMMENDATION: Investigate and mitigate shortcuts before deployment
-======================================================================
+print(summary_text(result, attribute="sex", task="the task label"))
+audit_report(result, "chexpert_audit.html", title="DenseNet-121, sex", attribute="sex", task="the task label")
 ```
 
 ---
 
-## Subgroup Analysis
-
-Analyze shortcuts within specific pathology groups.
+## Running the detector pipeline
 
 ```python
-# Filter to positive pathology cases
+from shortcut_detect import ShortcutDetector
+
+detector = ShortcutDetector(methods=["hbac", "probe", "statistical", "geometric"], seed=42)
+detector.fit(embeddings, task_labels, group_labels=group_labels)
+print(detector.summary())
+```
+
+`summary()` prints one block per method with its risk label and reason, then the overall assessment (`HIGH RISK`, `MODERATE RISK` or `LOW RISK` under the default `indicator_count` condition). The numbers behind it are in `get_results()`:
+
+```python
+results = detector.get_results()
+print(results["probe"]["risk_value"], results["probe"]["results"]["metrics"])
+print(results["hbac"]["report"]["has_shortcut"])
+print({k: len(v or []) for k, v in results["statistical"]["significant_features"].items()})
+print(results["geometric"]["summary"])
+```
+
+---
+
+## Subgroup analysis
+
+Shortcuts within the positive cases only:
+
+```python
 positive_mask = task_labels == 1
 embeddings_pos = embeddings[positive_mask]
 groups_pos = group_labels[positive_mask]
 
-# Detect shortcuts in positive cases only
-detector_pos = ShortcutDetector(methods=['probe', 'statistical'])
+detector_pos = ShortcutDetector(methods=["probe", "statistical"], seed=42)
 detector_pos.fit(embeddings_pos, groups_pos)
-
-print("POSITIVE CASES ONLY:")
 print(detector_pos.summary())
 ```
 
@@ -104,187 +88,129 @@ print(detector_pos.summary())
 
 ## Visualization
 
-### Embedding Space
+### Embedding space
 
 ```python
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
-# Reduce dimensions
 tsne = TSNE(n_components=2, random_state=42, perplexity=30)
 embeddings_2d = tsne.fit_transform(embeddings)
 
-# Plot by group
 fig, ax = plt.subplots(figsize=(10, 8))
 for group in np.unique(group_labels):
     mask = group_labels == group
-    ax.scatter(
-        embeddings_2d[mask, 0],
-        embeddings_2d[mask, 1],
-        label=group,
-        alpha=0.6,
-        s=20
-    )
-
-ax.set_xlabel('t-SNE 1')
-ax.set_ylabel('t-SNE 2')
-ax.set_title('Embedding Space by Race')
+    ax.scatter(embeddings_2d[mask, 0], embeddings_2d[mask, 1], label=group, alpha=0.6, s=20)
+ax.set_xlabel("t-SNE 1")
+ax.set_ylabel("t-SNE 2")
 ax.legend()
 plt.tight_layout()
 plt.savefig("chexpert_tsne.png", dpi=150)
-plt.show()
 ```
 
-### By Pathology and Group
+### By task and by group
 
 ```python
 fig, axes = plt.subplots(1, 2, figsize=(16, 6))
 
-# By pathology
-for path in np.unique(task_labels):
-    mask = task_labels == path
-    axes[0].scatter(
-        embeddings_2d[mask, 0],
-        embeddings_2d[mask, 1],
-        label=f'Pathology {path}',
-        alpha=0.5,
-        s=20
-    )
-axes[0].set_title('By Pathology')
+for label in np.unique(task_labels):
+    mask = task_labels == label
+    axes[0].scatter(embeddings_2d[mask, 0], embeddings_2d[mask, 1], label=f"task {label}", alpha=0.5, s=20)
+axes[0].set_title("By task label")
 axes[0].legend()
 
-# By group
 for group in np.unique(group_labels):
     mask = group_labels == group
-    axes[1].scatter(
-        embeddings_2d[mask, 0],
-        embeddings_2d[mask, 1],
-        label=group,
-        alpha=0.5,
-        s=20
-    )
-axes[1].set_title('By Race')
+    axes[1].scatter(embeddings_2d[mask, 0], embeddings_2d[mask, 1], label=group, alpha=0.5, s=20)
+axes[1].set_title("By group")
 axes[1].legend()
 
 plt.tight_layout()
 plt.savefig("chexpert_comparison.png", dpi=150)
-plt.show()
 ```
 
 ---
 
-## Report Generation
+## Report generation
 
-### HTML Report
+### HTML, PDF and Markdown
 
 ```python
-detector.generate_report(
-    output_path="chexpert_report.html",
-    format="html",
-    include_visualizations=True
-)
-
-print("Report saved to chexpert_report.html")
+detector.generate_report(output_path="chexpert_report.html", format="html", include_visualizations=True)
+detector.generate_report(output_path="chexpert_report.pdf", format="pdf")      # needs the WeasyPrint system libraries
+detector.generate_report(output_path="chexpert_report.md", format="markdown")
 ```
 
-### PDF Report
+### CSV export
 
 ```python
-detector.generate_report(
-    output_path="chexpert_report.pdf",
-    format="pdf"
-)
-```
+from shortcut_detect.reporting import export_to_csv
 
-### CSV Export
-
-```python
-from shortcut_detect.reporting import CSVExporter
-
-exporter = CSVExporter(output_dir="./chexpert_results")
-files = exporter.export_all(detector)
-
-print(f"Exported files: {files}")
+files = export_to_csv(detector, "./chexpert_results")
+print(files)   # {name: path}
 ```
 
 ---
 
-## Intersectional Analysis
+## Intersectional attributes
 
-Analyze shortcuts across multiple protected attributes.
+With `race` and `sex` columns in the CSV:
 
 ```python
-# Create intersectional groups
-intersectional = data['race'] + '_' + data['sex']
-intersectional_labels = intersectional.values
+intersectional_labels = (data["race"].astype(str) + "_" + data["sex"].astype(str)).to_numpy()
 
-# Detect shortcuts
-detector_intersect = ShortcutDetector(methods=['probe', 'statistical'])
-detector_intersect.fit(embeddings, intersectional_labels)
-
-print("INTERSECTIONAL ANALYSIS (Race x Sex):")
+detector_intersect = ShortcutDetector(methods=["probe", "statistical"], seed=42)
+detector_intersect.fit(embeddings, task_labels, group_labels=intersectional_labels)
 print(detector_intersect.summary())
 ```
 
 ---
 
-## Temporal Analysis
+## Temporal analysis
 
-If your data has timestamps, analyze shortcuts over time.
+With a `date` column in the CSV:
 
 ```python
-# Assume 'date' column exists
-dates = pd.to_datetime(data['date'])
+dates = pd.to_datetime(data["date"])
 
-# Split by year
-for year in dates.dt.year.unique():
-    year_mask = dates.dt.year == year
-    X_year = embeddings[year_mask]
-    y_year = group_labels[year_mask]
-
-    if len(np.unique(y_year)) < 2:
+for year in sorted(dates.dt.year.unique()):
+    mask = (dates.dt.year == year).to_numpy()
+    if len(np.unique(group_labels[mask])) < 2:
         continue
-
-    detector_year = ShortcutDetector(methods=['probe'])
-    detector_year.fit(X_year, y_year)
-
-    print(f"Year {year}: Probe accuracy = {detector_year.probe_results_['accuracy']:.2%}")
+    detector_year = ShortcutDetector(methods=["probe"], seed=42)
+    detector_year.fit(embeddings[mask], task_labels[mask], group_labels=group_labels[mask])
+    score = detector_year.get_results()["probe"]["results"]["metrics"]["metric_value"]
+    print(f"{year}: probe f1 {score:.2f}")
 ```
 
 ---
 
-## Using the Dashboard
-
-For interactive exploration:
+## Using the dashboard
 
 ```bash
-# Launch dashboard with CheXpert sample data
 python app.py
 ```
 
-1. Go to [http://127.0.0.1:7860](http://127.0.0.1:7860)
-2. Click "Load Sample Data" (CheXpert)
+1. Open [http://127.0.0.1:7860](http://127.0.0.1:7860)
+2. Keep the sample data or upload a CSV
 3. Select detection methods
-4. Click "Run Analysis"
-5. Download HTML/PDF report
+4. Click **Run Detection**
+5. Download the HTML or PDF report
 
 ---
 
-## Jupyter Notebooks
-
-Full notebooks available:
+## Jupyter notebooks
 
 ```bash
 jupyter lab examples/02_real_data/
 ```
 
-- `medical_imaging_demo.ipynb` - CheXpert demo
-- `embeddings_analysis.ipynb` - Full analysis
+- `medical_imaging_demo.ipynb`: CheXpert demo
 
 ---
 
-## Next Steps
+## Next steps
 
-- [Advanced Analysis](advanced.md) - Model comparison, custom analysis
-- [API Reference](../api/shortcut-detector.md) - Full documentation
-- [Detection Methods](../methods/overview.md) - Method details
+- [Advanced analysis](advanced.md): model comparison, custom analysis
+- [API reference](../api/shortcut-detector.md): full documentation
+- [Detection methods](../methods/overview.md): method details

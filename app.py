@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import datetime
 from html import escape as html_escape
 from pathlib import Path
@@ -56,6 +57,8 @@ from shortcut_detect import (  # noqa: E402
     generate_parametric_shortcut_dataset,
     get_embedding_registry,
 )
+from shortcut_detect.audit import AuditConfig, conditional_audit  # noqa: E402
+from shortcut_detect.audit.report import _figure_png, audit_report, summary_text  # noqa: E402
 from shortcut_detect.reporting.comparison_report import ComparisonReportBuilder  # noqa: E402
 from shortcut_detect.reporting.csv_export import export_comparison_to_csv  # noqa: E402
 
@@ -443,6 +446,195 @@ def load_custom_csv(csv_file, is_raw_data=False):
         attributes = _parse_attr_columns(df, attr_cols)
 
         return embeddings, task_labels, group_labels, extra_labels, attributes, df
+
+
+# Audit tab: the paper's conditional audit (shortcut_detect.audit)
+
+AUDIT_TABLE_COLUMNS = [
+    "detector",
+    "statistic",
+    "ci_low",
+    "ci_high",
+    "null_mean",
+    "null_sd",
+    "p_value",
+    "p_bh",
+    "flag",
+]
+
+
+def _audit_path(file_obj):
+    """Path of a Gradio file object or a plain path string; None when nothing was given."""
+    if file_obj is None:
+        return None
+    return file_obj.name if hasattr(file_obj, "name") else str(file_obj)
+
+
+def _load_audit_embeddings(path, label_cols):
+    """(n, d) float32 matrix from a .npy file or a CSV.
+
+    A CSV uses its ``embedding_*`` columns, else every numeric column that is not a label column.
+    """
+    if path.lower().endswith(".npy"):
+        E = np.load(path)
+    else:
+        df = pd.read_csv(path)
+        cols = [c for c in df.columns if str(c).startswith("embedding_")]
+        if not cols:
+            skip = set(label_cols) | {"task_label", "group_label"}
+            skip |= {c for c in df.columns if str(c).startswith("attr_")}
+            cols = [c for c in df.select_dtypes(include=[np.number]).columns if c not in skip]
+        if not cols:
+            raise ValueError(
+                "No embedding columns found. Expected columns like 'embedding_0', 'embedding_1', etc."
+            )
+        E = df[cols].to_numpy()
+    E = np.asarray(E, dtype=np.float32)
+    if E.ndim != 2:
+        raise ValueError(f"Embeddings must be a 2-D array (n, d); got shape {E.shape}")
+    if not np.isfinite(E).all():
+        raise ValueError("Embedding values must be finite (no NaN or inf)")
+    return E
+
+
+def load_audit_sample(n: int = 1500, seed: int = 0):
+    """Write a CelebA subset for the Audit tab, or a synthetic stand-in when data/celeba is absent.
+
+    Returns the embeddings path, labels path, attribute column, task column, groups column,
+    attribute name, task name and a status line for the summary box.
+    """
+    n = int(n)
+    tmp_dir = tempfile.mkdtemp(prefix="shortkit_audit_sample_")
+    data_dir = find_data_dir()
+    celeba = data_dir / "celeba" if data_dir is not None else None
+    if (
+        celeba is not None
+        and (celeba / "celeba_real_embeddings.npy").exists()
+        and (celeba / "celeba_real_attributes.csv").exists()
+    ):
+        E = np.load(celeba / "celeba_real_embeddings.npy", mmap_mode="r")
+        att = pd.read_csv(celeba / "celeba_real_attributes.csv")
+        n = min(n, len(E))
+        idx = np.sort(np.random.default_rng(seed).choice(len(E), n, replace=False))
+        emb_path = os.path.join(tmp_dir, "celeba_sample_embeddings.npy")
+        labels_path = os.path.join(tmp_dir, "celeba_sample_labels.csv")
+        np.save(emb_path, np.asarray(E[idx], dtype=np.float32))
+        cols = [c for c in ("image_id", "Male", "Blond_Hair") if c in att.columns]
+        att.iloc[idx][cols].to_csv(labels_path, index=False)
+        status = (
+            f"Loaded the CelebA sample: {n} ResNet-50 embeddings ({E.shape[1]} dims), "
+            "attribute `Male`, task `Blond_Hair`. Click **Run audit**."
+        )
+        return emb_path, labels_path, "Male", "Blond_Hair", "", "Male", "Blond_Hair", status
+
+    data = generate_parametric_shortcut_dataset(
+        n_samples=n, embedding_dim=64, shortcut_dims=4, effect_size=0.6, seed=seed
+    )
+    emb_path = os.path.join(tmp_dir, "synthetic_sample_embeddings.npy")
+    labels_path = os.path.join(tmp_dir, "synthetic_sample_labels.csv")
+    np.save(emb_path, data.embeddings)
+    pd.DataFrame({"attribute": data.group_labels, "task": data.labels}).to_csv(
+        labels_path, index=False
+    )
+    status = (
+        f"`data/celeba` not found; loaded a synthetic sample of {n} embeddings "
+        "(64 dims, attribute signal planted in the first 4). Click **Run audit**."
+    )
+    return emb_path, labels_path, "attribute", "task", "", "attribute", "task", status
+
+
+def run_audit_tab(
+    embeddings_file,
+    labels_file=None,
+    attribute_col="group_label",
+    task_col="task_label",
+    groups_col="",
+    n_permutations=200,
+    n_permutations_probe=500,
+    seed=42,
+    attribute_name="",
+    task_name="",
+):
+    """Run the paper's conditional audit on the Audit tab inputs.
+
+    Args:
+        embeddings_file: .npy (n, d) or CSV with embedding columns (Gradio file or path)
+        labels_file: CSV with one row per embedding; None reads the columns from the embeddings CSV
+        attribute_col, task_col, groups_col: column names in the labels CSV (groups optional)
+        n_permutations, n_permutations_probe, seed: AuditConfig settings
+        attribute_name, task_name: names used in the summary and the report (default: the columns)
+
+    Returns:
+        summary markdown, detector table (DataFrame), figure PNG path, HTML report path,
+        PDF report path. On an error the summary holds the message and the rest are None.
+    """
+    try:
+        emb_path = _audit_path(embeddings_file)
+        if emb_path is None:
+            raise ValueError("Upload an embeddings file (.npy or .csv) or load the CelebA sample.")
+        attribute_col = (attribute_col or "").strip()
+        task_col = (task_col or "").strip()
+        groups_col = (groups_col or "").strip()
+        if not attribute_col or not task_col:
+            raise ValueError("Name the attribute column and the task column of the labels CSV.")
+        labels_path = _audit_path(labels_file) or emb_path
+        if not labels_path.lower().endswith(".csv"):
+            raise ValueError(
+                "Labels must come from a CSV with one row per embedding: upload one, "
+                "or upload an embeddings CSV that holds the label columns."
+            )
+        labels = pd.read_csv(labels_path)
+        for col in [attribute_col, task_col] + ([groups_col] if groups_col else []):
+            if col not in labels.columns:
+                shown = ", ".join(str(c) for c in labels.columns[:12])
+                raise ValueError(f"Column '{col}' not found in the labels CSV. Columns: {shown}")
+        E = _load_audit_embeddings(emb_path, [attribute_col, task_col, groups_col])
+        if len(labels) != len(E):
+            raise ValueError(f"Length mismatch: {len(E)} embeddings but {len(labels)} label rows.")
+        A = labels[attribute_col].to_numpy()
+        Y = labels[task_col].to_numpy()
+        groups = labels[groups_col].to_numpy() if groups_col else None
+        attribute_name = (attribute_name or "").strip() or attribute_col
+        task_name = (task_name or "").strip() or task_col
+
+        config = AuditConfig(
+            n_permutations=int(n_permutations),
+            n_permutations_probe=int(n_permutations_probe),
+            seed=int(seed),
+        )
+        t0 = time.perf_counter()
+        result = conditional_audit(E, A, Y, config=config, groups=groups)
+        elapsed = time.perf_counter() - t0
+
+        tmp_dir = tempfile.mkdtemp(prefix="shortkit_audit_")
+        report_kwargs = {
+            "title": f"ShortKit-ML audit: {attribute_name} given {task_name}",
+            "attribute": attribute_name,
+            "task": task_name,
+            "E": E,
+            "A": A,
+            "Y": Y,
+        }
+        html_path = audit_report(result, os.path.join(tmp_dir, "audit_report.html"), **report_kwargs)
+        pdf_path = audit_report(result, os.path.join(tmp_dir, "audit_report.pdf"), **report_kwargs)
+        png_path = os.path.join(tmp_dir, "audit_figure.png")
+        with open(png_path, "wb") as f:
+            f.write(_figure_png(result, E, A, Y, attribute_name))
+
+        table = pd.DataFrame(result.rows())[AUDIT_TABLE_COLUMNS].round(3)
+        probe = result.results["probe"]
+        verdict = "flagged" if probe.flag else "not flagged"
+        summary = (
+            f"### {attribute_name} given {task_name}: shortcut potential {verdict}\n\n"
+            f"{result.n} samples x {E.shape[1]} dims, {result.n_groups} attribute levels, "
+            f"K = {config.n_permutations} (probe {config.n_permutations_probe}), "
+            f"seed {config.seed}, {elapsed:.0f} s.\n\n"
+            + summary_text(result, attribute_name, task_name)
+        )
+        return summary, table, png_path, html_path, pdf_path
+
+    except Exception as e:
+        return f"**Error:** {e}", None, None, None, None
 
 
 def _build_ssa_splits(
@@ -2254,7 +2446,7 @@ def run_comparison(
 
 
 # Create Gradio interface
-with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as demo:
+with gr.Blocks(title="Shortcut Detection Dashboard") as demo:
 
     detection_state = gr.State(value=None)
 
@@ -2267,6 +2459,125 @@ with gr.Blocks(title="Shortcut Detection Dashboard", css=REPORT_CONTRAST_CSS) as
     )
 
     with gr.Tabs():
+        with gr.Tab("Audit"):
+            with gr.Row():
+                # LEFT COLUMN - Results (wider: the detector table has nine columns)
+                with gr.Column(scale=4, min_width=420):
+                    gr.Markdown("### 📊 Audit result")
+                    audit_summary = gr.Markdown(
+                        value="Load the CelebA sample or upload your files, then click **Run audit**.",
+                    )
+                    audit_table = gr.Dataframe(
+                        label="Detectors (the probe decides; the other five describe)",
+                        interactive=False,
+                        elem_id="audit-table",
+                    )
+                    audit_figure = gr.Image(
+                        type="filepath",
+                        show_label=False,  # the figure carries its own title
+                        interactive=False,
+                        elem_id="audit-figure",
+                    )
+
+                    gr.Markdown("### 📥 Download the report")
+
+                    with gr.Row():
+                        audit_html_download = gr.File(label="📄 HTML report", interactive=False)
+
+                        audit_pdf_download = gr.File(label="📄 PDF report", interactive=False)
+
+                # RIGHT COLUMN - Controls
+                with gr.Column(scale=2, min_width=320):
+                    gr.Markdown(
+                        """
+                    The audit of the ShortKit-ML paper: does the embedding carry the attribute
+                    beyond what the task label explains? A conditional probe decides against a
+                    permutation null (the attribute shuffled within task strata); five secondary
+                    detectors describe the signal and do not change the decision.
+                    """
+                    )
+
+                    audit_sample_btn = gr.Button("Load CelebA sample (1500 images)", elem_id="audit-sample")
+
+                    gr.Markdown("### 1️⃣ Data")
+
+                    audit_embeddings = gr.File(
+                        elem_id="audit-embeddings",
+                        label="Embeddings (.npy array or CSV with embedding_* columns)",
+                        file_types=[".npy", ".csv"],
+                    )
+                    audit_labels = gr.File(
+                        elem_id="audit-labels",
+                        label="Labels CSV (one row per embedding; optional when the embeddings CSV holds the columns)",
+                        file_types=[".csv"],
+                    )
+                    with gr.Row():
+                        audit_attribute_col = gr.Textbox(value="group_label", label="Attribute column")
+                        audit_task_col = gr.Textbox(value="task_label", label="Task column")
+                    audit_groups_col = gr.Textbox(
+                        value="",
+                        label="Groups column (optional)",
+                        info="Unit id per row (patient, identity) kept whole in folds and permutations",
+                    )
+
+                    gr.Markdown("### 2️⃣ Settings")
+
+                    with gr.Row():
+                        audit_n_permutations = gr.Number(
+                            value=200, precision=0, label="Permutations (K)"
+                        )
+                        audit_n_permutations_probe = gr.Number(
+                            value=500, precision=0, label="Probe permutations"
+                        )
+                        audit_seed = gr.Number(value=42, precision=0, label="Seed")
+                    with gr.Row():
+                        audit_attribute_name = gr.Textbox(
+                            value="", label="Attribute name (report)", placeholder="sex"
+                        )
+                        audit_task_name = gr.Textbox(
+                            value="", label="Task name (report)", placeholder="pneumothorax"
+                        )
+
+                    audit_run_btn = gr.Button("🚀 Run audit", variant="primary", size="lg")
+
+            audit_sample_btn.click(
+                fn=load_audit_sample,
+                inputs=[],
+                outputs=[
+                    audit_embeddings,
+                    audit_labels,
+                    audit_attribute_col,
+                    audit_task_col,
+                    audit_groups_col,
+                    audit_attribute_name,
+                    audit_task_name,
+                    audit_summary,
+                ],
+            )
+
+            audit_run_btn.click(
+                fn=run_audit_tab,
+                inputs=[
+                    audit_embeddings,
+                    audit_labels,
+                    audit_attribute_col,
+                    audit_task_col,
+                    audit_groups_col,
+                    audit_n_permutations,
+                    audit_n_permutations_probe,
+                    audit_seed,
+                    audit_attribute_name,
+                    audit_task_name,
+                ],
+                outputs=[
+                    audit_summary,
+                    audit_table,
+                    audit_figure,
+                    audit_html_download,
+                    audit_pdf_download,
+                ],
+            )
+
         with gr.Tab("Detection"):
             with gr.Row():
                 # LEFT COLUMN - Results (wider, takes more space)
@@ -3874,4 +4185,6 @@ if __name__ == "__main__":
         server_port=server_port,
         share=False,  # Local only, no public URL
         inbrowser=True,  # Automatically open browser
+        theme=gr.themes.Soft(primary_hue="blue", neutral_hue="slate"),
+        css=REPORT_CONTRAST_CSS,
     )

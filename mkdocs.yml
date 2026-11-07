@@ -1,5 +1,5 @@
 site_name: ShortKit-ML
-site_description: Detect shortcuts and biases in machine learning embedding spaces
+site_description: Measure shortcut potential in machine learning embeddings with one calibrated audit
 site_author: Sebastian Cajas, Aldo Marzullo, Sahil Kapadia, Filipe Santos, Felipe Ocampo Osorio, Qingpeng Kong, Alessandro Quarta, Po-Chih Kuo, Milit Patel, Raul Ignacio Rojas Sillery, Leo Anthony Celi
 site_url: https://criticaldata.github.io/ShortKit-ML/
 
@@ -9,18 +9,19 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
-  logo: assets/shortkit.png
+  custom_dir: overrides
+  logo: assets/shortkit-transparent.png
   favicon: assets/shortkit.png
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -30,8 +31,8 @@ theme:
   features:
     - navigation.tracking
     - navigation.tabs
-    - navigation.sections
-    - navigation.expand
+    - navigation.indexes
+    - navigation.footer
     - navigation.top
     - search.suggest
     - search.highlight
@@ -91,86 +92,87 @@ extra_css:
 
 nav:
   - Home: index.md
-  - Getting Started:
+  - Audit your embeddings:
+      - Walkthrough: getting-started/walkthrough.md
       - Installation: getting-started/installation.md
-      - Quick Start: getting-started/quickstart.md
-      - Interactive Dashboard: getting-started/dashboard.md
-  - Detection Methods:
+      - Quick start: getting-started/quickstart.md
+      - Audit API: api/audit.md
+      - MCP server: mcp-server.md
+  - Reproducing the paper:
+      - Revised pipeline: reproducibility.md
+      - First submission (archived): benchmark_methods.md
+  - Other package methods:
       - Overview: methods/overview.md
-      - HBAC Clustering: methods/hbac.md
-      - Probe-based: methods/probe.md
-      - Statistical Testing: methods/statistical.md
-      - Geometric Analysis: methods/geometric.md
-      - Equalized Odds: methods/equalized-odds.md
-      - Demographic Parity: methods/demographic-parity.md
-      - Intersectional Analysis: methods/intersectional-analysis.md
-      - SIS (Sufficient Input Subsets): methods/sis.md
-      - GroupDRO: methods/groupdro.md
-      - GradCAM: methods/gradcam.md
-      - SpRAy: methods/spray.md
-      - CAV: methods/cav.md
-      - Causal Effect: methods/causal-effect.md
-      - VAE: methods/vae.md
-      - Frequency: methods/frequency.md
-      - GCE: methods/gce.md
-      - Generative CVAE: methods/generative-cvae.md
-      - Bias Direction PCA: methods/bias-direction-pca.md
-      - Early Epoch Clustering: methods/early-epoch-clustering.md
-      - SSA: methods/ssa.md
-      - Shortcut Masking (M01): methods/shortcut-masking.md
-      - Background Randomization (M02): methods/background-randomization.md
-      - Adversarial Debiasing (M04): methods/adversarial-debiasing.md
-      - Explanation Regularization (M05): methods/explanation-regularization.md
-      - Last Layer Retraining (M06): methods/last-layer-retraining.md
-      - Contrastive Debiasing (M07): methods/contrastive-debiasing.md
-  - API Reference:
-      - Detector Base: api/detector-base.md
-      - ShortcutDetector: api/shortcut-detector.md
-      - HBAC Detector: api/hbac.md
-      - Probes: api/probes.md
-      - Statistical Tests: api/statistical.md
-      - Geometric Analyzer: api/geometric.md
-      - Equalized Odds: api/equalized-odds.md
-      - Demographic Parity: api/demographic-parity.md
-      - Intersectional: api/intersectional.md
-      - SIS: api/sis.md
-      - GroupDRO: api/groupdro.md
-      - GradCAM: api/gradcam.md
-      - SpRAy: api/spray.md
-      - CAV: api/cav.md
-      - Causal Effect: api/causal-effect.md
-      - VAE: api/vae.md
-      - Frequency: api/frequency.md
-      - GCE: api/gce.md
-      - Generative CVAE: api/generative-cvae.md
-      - Bias Direction PCA: api/bias-direction-pca.md
-      - Early Epoch Clustering: api/early-epoch-clustering.md
-      - SSA: api/ssa.md
-      - Shortcut Masking (M01): api/shortcut-masking.md
-      - Background Randomization (M02): api/background-randomization.md
-      - Adversarial Debiasing (M04): api/adversarial-debiasing.md
-      - Explanation Regularization (M05): api/explanation-regularization.md
-      - Last Layer Retraining (M06): api/last-layer-retraining.md
-      - Contrastive Debiasing (M07): api/contrastive-debiasing.md
-      - Embedding Sources: api/embedding-sources.md
-      - Reporting: api/reporting.md
-      - Audit (paper): api/audit.md
-  - Examples:
-      - Basic Usage: examples/basic.md
-      - Real Data (CheXpert): examples/real-data.md
-      - Advanced Analysis: examples/advanced.md
-  - Reproducing the Paper:
-      - Paper Results: reproducibility.md
-      - Benchmark Methods: benchmark_methods.md
-  - MCP Server: mcp-server.md
-  - Contributing: contributing.md
-  - Dashboard E2E Tests: testing/playwright-e2e.md
+      - Interactive dashboard: getting-started/dashboard.md
+      - Examples:
+          - Basic Usage: examples/basic.md
+          - Real Data (CheXpert): examples/real-data.md
+          - Advanced Analysis: examples/advanced.md
+      - Method guides:
+          - HBAC Clustering: methods/hbac.md
+          - Probe-based: methods/probe.md
+          - Statistical Testing: methods/statistical.md
+          - Geometric Analysis: methods/geometric.md
+          - Equalized Odds: methods/equalized-odds.md
+          - Demographic Parity: methods/demographic-parity.md
+          - Intersectional Analysis: methods/intersectional-analysis.md
+          - SIS (Sufficient Input Subsets): methods/sis.md
+          - GroupDRO: methods/groupdro.md
+          - GradCAM: methods/gradcam.md
+          - SpRAy: methods/spray.md
+          - CAV: methods/cav.md
+          - Causal Effect: methods/causal-effect.md
+          - VAE: methods/vae.md
+          - Frequency: methods/frequency.md
+          - GCE: methods/gce.md
+          - Generative CVAE: methods/generative-cvae.md
+          - Bias Direction PCA: methods/bias-direction-pca.md
+          - Early Epoch Clustering: methods/early-epoch-clustering.md
+          - SSA: methods/ssa.md
+          - Shortcut Masking (M01): methods/shortcut-masking.md
+          - Background Randomization (M02): methods/background-randomization.md
+          - Adversarial Debiasing (M04): methods/adversarial-debiasing.md
+          - Explanation Regularization (M05): methods/explanation-regularization.md
+          - Last Layer Retraining (M06): methods/last-layer-retraining.md
+          - Contrastive Debiasing (M07): methods/contrastive-debiasing.md
+      - API reference:
+          - Detector Base: api/detector-base.md
+          - ShortcutDetector: api/shortcut-detector.md
+          - HBAC Detector: api/hbac.md
+          - Probes: api/probes.md
+          - Statistical Tests: api/statistical.md
+          - Geometric Analyzer: api/geometric.md
+          - Equalized Odds: api/equalized-odds.md
+          - Demographic Parity: api/demographic-parity.md
+          - Intersectional: api/intersectional.md
+          - SIS: api/sis.md
+          - GroupDRO: api/groupdro.md
+          - GradCAM: api/gradcam.md
+          - SpRAy: api/spray.md
+          - CAV: api/cav.md
+          - Causal Effect: api/causal-effect.md
+          - VAE: api/vae.md
+          - Frequency: api/frequency.md
+          - GCE: api/gce.md
+          - Generative CVAE: api/generative-cvae.md
+          - Bias Direction PCA: api/bias-direction-pca.md
+          - Early Epoch Clustering: api/early-epoch-clustering.md
+          - SSA: api/ssa.md
+          - Shortcut Masking (M01): api/shortcut-masking.md
+          - Background Randomization (M02): api/background-randomization.md
+          - Adversarial Debiasing (M04): api/adversarial-debiasing.md
+          - Explanation Regularization (M05): api/explanation-regularization.md
+          - Last Layer Retraining (M06): api/last-layer-retraining.md
+          - Contrastive Debiasing (M07): api/contrastive-debiasing.md
+          - Embedding Sources: api/embedding-sources.md
+          - Reporting: api/reporting.md
+  - Contributing:
+      - Contributing: contributing.md
+      - Dashboard end-to-end tests: testing/playwright-e2e.md
 
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/criticaldata/ShortKit-ML
-  version:
-    provider: mike
 
 copyright: Copyright &copy; 2026 ShortKit-ML Team

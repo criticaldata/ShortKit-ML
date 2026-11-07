@@ -32,7 +32,7 @@ tags:
 
 # ShortKit-ML Benchmark Data
 
-This folder holds the inputs read by `scripts/revision/common.py`, the loader behind every result in the revised paper. Nothing under `data/` is committed to GitHub except this README, `.gitignore` and `.gitattributes`. The derived files (embeddings, manifests, metadata, `race_mapping.csv`) are hosted on the gated Hugging Face dataset [MITCriticalData/ShortKit-ML-data](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data). Access is granted to users who hold the matching credentials (Stanford for CheXpert, PhysioNet for MIMIC-CXR).
+This folder holds the inputs read by `scripts/revision/common.py`, the loader behind every result in the ShortKit-ML paper. Nothing under `data/` is committed to GitHub except this README, `.gitignore` and `.gitattributes`. The derived files (embeddings, manifests, metadata, `race_mapping.csv`) are hosted on the gated Hugging Face dataset [MITCriticalData/ShortKit-ML-data](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data). Access is granted to users who hold the matching credentials (Stanford for CheXpert, PhysioNet for MIMIC-CXR).
 
 ```bash
 hf download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir data/

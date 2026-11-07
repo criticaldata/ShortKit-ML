@@ -1,10 +1,10 @@
-# Quick Start
+# Quick start
 
-Get started with shortcut detection in under 5 minutes.
+Run the paper's audit in a few minutes, then the other package methods.
 
-## Basic Usage
+## The audit
 
-### Step 1: Prepare Your Data
+### Step 1: prepare your data
 
 The audit used in the paper needs four arrays:
 
@@ -24,7 +24,7 @@ patient_ids = np.load("patients.npy")  # Shape: (1000,)
 
 The width (512 here) is arbitrary: 2, 384, 4096 or any other size works. These four arrays are all the package needs, whatever model or modality (image, text, audio, tabular, multimodal) produced the embeddings.
 
-### Step 2: Run the Conditional Audit
+### Step 2: run the conditional audit
 
 ```python
 from shortcut_detect.audit import AuditConfig, conditional_audit
@@ -35,190 +35,152 @@ result = conditional_audit(E, A, Y, config=cfg, groups=patient_ids)
 probe = result.results["probe"]  # the primary test
 print(f"Conditional probe AUROC: {probe.statistic:.3f} "
       f"(95% CI {probe.ci_low:.3f} to {probe.ci_high:.3f}), "
-      f"permutation p = {probe.p_value:.3f}, BH q = {probe.p_bh:.3f}")
+      f"permutation p = {probe.p_value:.3f}, flag = {probe.flag}")
 print(f"Detectors flagged (descriptive): {result.n_flagged} of {len(result.results)}")
 ```
 
 The probe predicts `A` from `[E, Y]`; its score is the out-of-fold AUROC and its p-value comes from shuffling `A` within strata of `Y`, between patients when `groups` is given. The five secondary detectors (`statistical`, `geometric`, `bias_direction`, `hbac_nmi`, `frequency_topk`) share that null and are reported as diagnostics. A flagged probe means the attribute is recoverable from the embedding given the task; whether a classifier uses it is a separate question. See the [Audit API](../api/audit.md).
 
-!!! note "Legacy interactive detector"
-    `ShortcutDetector(methods=[...]).fit(embeddings, group_labels)` still works and drives the dashboard, the MCP server and the reports below. It compares each method against fixed thresholds (the risk levels at the end of this page) and does not condition on the task label; none of those thresholds decides anything in the paper.
+### Step 3: write the report
+
+`audit_report` writes the audit as a self-contained HTML page or a PDF; the file extension picks the format. `summary_text` returns the one-paragraph verdict the report opens with.
 
 ```python
-from shortcut_detect import ShortcutDetector
+from shortcut_detect.audit.report import audit_report, summary_text
 
-detector = ShortcutDetector(methods=['hbac', 'probe', 'statistical', 'geometric'])
-detector.fit(E, A)
+print(summary_text(result, attribute="sex", task="pneumothorax"))
+
+audit_report(result, "audit.html", title="ViT-B/16, sex given pneumothorax",
+             attribute="sex", task="pneumothorax")
+audit_report(result, "audit.pdf", title="ViT-B/16, sex given pneumothorax",
+             attribute="sex", task="pneumothorax")
+```
+
+The report holds the summary paragraph, the setting (sample size, groups, permutations, alpha), one row per detector (statistic, 95% CI, null mean and SD, p, BH q, flag) and a figure of each statistic against its null. `result.rows()` returns the same table as a list of dicts, ready for a DataFrame or a CSV.
+
+## Other package methods
+
+The `ShortcutDetector` pipeline predates the audit. It runs any of the package's 19 registered methods (`shortcut_detect.discovery.available_method_plugins()`), compares each against a fixed threshold and aggregates the flags into a LOW, MODERATE or HIGH label. It drives the dashboard, the MCP server's detection tools and the HTML, PDF and Markdown reports. It does not condition on the task label, and none of its thresholds decides anything in the paper: use it to explore, and the audit to measure.
+
+### Several methods at once
+
+```python
+from shortcut_detect import ShortcutDetector, generate_linear_shortcut
+
+# 500 embeddings of width 64; the first 5 dimensions separate the two groups
+X, group = generate_linear_shortcut(n_samples=500, embedding_dim=64, shortcut_dims=5, seed=42)
+
+detector = ShortcutDetector(methods=["hbac", "probe", "statistical", "geometric"], seed=42)
+detector.fit(X, group)
 print(detector.summary())
+
+results = detector.get_results()
+print(results["probe"]["risk_value"], results["probe"]["results"]["metrics"]["metric_value"])
+
+detector.generate_report("shortcut_report.html", format="html")   # also "pdf" and "markdown"
 ```
 
-### Step 3: Generate Report
+`fit(embeddings, labels, group_labels=None)` takes the task label as `labels` and the attribute as `group_labels`. When `group_labels` is omitted, the group-based methods use `labels`, which is what the call above does. `generate_no_shortcut(n_samples=500, embedding_dim=64, seed=42)` is the matching negative control.
 
-```python
-# HTML report (recommended)
-detector.generate_report("shortcut_report.html", format="html")
+### One method at a time
 
-# PDF report
-detector.generate_report("shortcut_report.pdf", format="pdf")
-```
+Each method is also a class with `fit`, `shortcut_detected_`, `get_report()` and `summary()`.
 
-## Using Synthetic Data
-
-For testing, use built-in data generators:
-
-```python
-from shortcut_detect import (
-    ShortcutDetector,
-    generate_linear_shortcut,
-    generate_no_shortcut,
-)
-
-# Generate data WITH shortcuts
-X_shortcut, y_task, y_group = generate_linear_shortcut(
-    n_samples=1000,
-    n_features=100,
-    shortcut_strength=0.9,  # Strong shortcut
-    random_state=42
-)
-
-# Detect shortcuts
-detector = ShortcutDetector(methods=['probe', 'statistical'])
-detector.fit(X_shortcut, y_group)
-print(detector.summary())
-```
-
-**Expected Output:**
-```
-======================================================================
-UNIFIED SHORTCUT DETECTION SUMMARY
-======================================================================
-HIGH RISK: Multiple methods detected shortcuts
-  - Probe accuracy 94.2% (high risk)
-  - 45 features show significant group differences
-```
-
-Now test with NO shortcuts:
-
-```python
-# Generate data WITHOUT shortcuts
-X_clean, y_task, y_group = generate_no_shortcut(
-    n_samples=1000,
-    n_features=100,
-    random_state=42
-)
-
-detector_clean = ShortcutDetector(methods=['probe', 'statistical'])
-detector_clean.fit(X_clean, y_group)
-print(detector_clean.summary())
-```
-
-**Expected Output:**
-```
-======================================================================
-UNIFIED SHORTCUT DETECTION SUMMARY
-======================================================================
-LOW RISK: No significant shortcuts detected
-  - Probe accuracy 52.3% (low risk)
-  - 2 features show significant group differences
-```
-
-## Individual Methods
-
-You can also use detection methods individually:
-
-### HBAC Clustering
+HBAC splits the embeddings with k-means a few times, then checks cluster purity and linear separability:
 
 ```python
 from shortcut_detect import HBACDetector
 
-detector = HBACDetector(max_iterations=3, min_cluster_size=0.05)
-detector.fit(embeddings, group_labels)
+hbac = HBACDetector(max_iterations=3, min_cluster_size=0.05, random_state=42)
+hbac.fit(X, group)
 
-print(f"Purity: {detector.purity_:.2f}")
-print(f"Shortcut detected: {detector.shortcut_detected_}")
+verdict = hbac.shortcut_report_["has_shortcut"]
+print(hbac.shortcut_detected_, verdict["confidence"], verdict["types"])
+print(f"linear test accuracy {hbac.shortcut_report_['linearity_score']['test_accuracy']:.2f}")
+print([round(c["purity"], 2) for c in hbac.shortcut_report_["cluster_purities"]])
 ```
 
-### Probe-based Detection
+The probe trains a classifier to predict the group from the embedding and scores it on a held-out split:
 
 ```python
-from shortcut_detect import SKLearnProbe
 from sklearn.linear_model import LogisticRegression
+from shortcut_detect import SKLearnProbe
 
-probe = SKLearnProbe(LogisticRegression(max_iter=1000))
-probe.fit(X_train, y_train)
-accuracy = probe.score(X_test, y_test)
-
-print(f"Probe accuracy: {accuracy:.2%}")
-print(f"Shortcut risk: {'HIGH' if accuracy > 0.7 else 'LOW'}")
+probe = SKLearnProbe(LogisticRegression(max_iter=1000), metric="accuracy",
+                     evaluation="holdout", test_size=0.2, random_state=42)
+probe.fit(X, group)
+print(f"held-out accuracy {probe.metric_value_:.3f}, flagged: {probe.shortcut_detected_}")
 ```
 
-### Statistical Testing
+The statistical test compares the groups dimension by dimension and corrects for multiple testing:
 
 ```python
-from shortcut_detect import GroupDiffTest
 from scipy.stats import mannwhitneyu
+from shortcut_detect import GroupDiffTest
 
 test = GroupDiffTest(test=mannwhitneyu)
-test.fit(embeddings, group_labels)
-
-print(f"Significant features: {test.n_significant_}")
-print(f"Feature indices: {test.significant_features_}")
+test.fit(X, group)
+corrected = test.apply_correction(alpha=0.05, method="fdr_bh", verbose=False)
+comparison, significant = next(iter(corrected["significant_features"].items()))
+print(f"{comparison}: {len(significant or [])} of {X.shape[1]} dimensions differ after BH correction")
 ```
 
-### Geometric Analysis
+The geometric analyzer measures how far the group centroids sit apart and how much the groups' principal subspaces overlap:
 
 ```python
 from shortcut_detect import GeometricShortcutAnalyzer
 
-analyzer = GeometricShortcutAnalyzer(n_components=5)
-analyzer.fit(embeddings, group_labels)
-
-print(analyzer.summary_)
+geo = GeometricShortcutAnalyzer(n_components=5)
+geo.fit(X, group)
+pair = geo.bias_pairs_[0]
+print(geo.summary_["risk_level"], f"effect size {pair.effect_size:.2f} for groups {pair.groups}")
+print(f"mean subspace cosine {geo.subspace_pairs_[0].mean_cosine:.2f}")
 ```
 
-## Embedding-Only Mode
+### Fixed thresholds
 
-For production systems that only expose embeddings (e.g., HuggingFace Inference API):
+These are the rules each class applies; they are heuristics for exploration.
+
+| Method | Flagged when | Default settings |
+|--------|--------------|------------------|
+| HBAC | two or more clusters have purity above 0.8, or few dimensions matter and the linear test accuracy is above 0.85 | `max_iterations=3`, `min_cluster_size=0.01` |
+| Probe | the held-out metric exceeds `threshold` | `metric="f1"`, `threshold=0.70` |
+| Statistical | any dimension stays significant after correction | `apply_correction(alpha=0.05, method="fdr_bh")` |
+| Geometric | a centroid pair has effect size at or above `effect_threshold`, or a subspace pair has mean cosine at or above `subspace_cosine_threshold` | `0.8` and `0.85` |
+
+## Embedding-only mode
+
+For systems that only expose embeddings (for example a Hugging Face inference endpoint), pass the raw inputs and an embedding source:
 
 ```python
 from shortcut_detect import ShortcutDetector, HuggingFaceEmbeddingSource
 
-# Your raw inputs
 texts = ["patient has mild edema", "normal study", ...]
 labels = np.array([1, 0, ...])
 groups = np.array([0, 1, ...])
 
-# Create embedding source
 hf_source = HuggingFaceEmbeddingSource(
     model_name="sentence-transformers/all-MiniLM-L6-v2",
     pooling="mean",
     batch_size=32,
 )
 
-# Detect shortcuts (embeddings generated automatically)
 detector = ShortcutDetector(methods=["probe", "statistical"])
 detector.fit(
-    embeddings=None,  # Triggers embedding-only mode
+    embeddings=None,  # triggers embedding-only mode
     labels=labels,
     group_labels=groups,
     raw_inputs=texts,
     embedding_source=hf_source,
-    embedding_cache_path="embeddings.npy",  # Optional caching
+    embedding_cache_path="embeddings.npy",  # optional cache
 )
 ```
 
-## Interpretation Guide
+This needs the `hf` extra. See the [embedding sources API](../api/embedding-sources.md) for `CallableEmbeddingSource` and caching.
 
-| Method | Metric | Low Risk | Medium Risk | High Risk |
-|--------|--------|----------|-------------|-----------|
-| **HBAC** | Purity | < 60% | 60-80% | > 80% |
-| **Probe** | Accuracy | < 60% | 60-80% | > 80% |
-| **Statistical** | % Significant Features | < 10% | 10-30% | > 30% |
-| **Geometric** | Effect Size | < 0.3 | 0.3-0.7 | > 0.7 |
+## Next steps
 
-## Next Steps
-
-- [Interactive Dashboard](dashboard.md) - Visual exploration
-- [Detection Methods](../methods/overview.md) - Deep dive into each method
-- [API Reference](../api/shortcut-detector.md) - Full API documentation
-- [Examples](../examples/basic.md) - Jupyter notebook examples
+- [Interactive dashboard](dashboard.md): visual exploration
+- [Detection methods](../methods/overview.md): each method in depth
+- [API reference](../api/shortcut-detector.md): full API documentation
+- [Examples](../examples/basic.md): notebook examples

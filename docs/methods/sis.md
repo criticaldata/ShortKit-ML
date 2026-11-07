@@ -5,7 +5,7 @@
 For shortcut detection, small mean SIS size indicates the model may rely on **few dimensions** to predict, a potential shortcut. If those dimensions overlap with group-discriminative dimensions, the shortcut signal is stronger.
 
 !!! warning "Outside the paper's audit score"
-    This implementation searches for subsets sufficient for the **task label**, with a fixed subset fraction of 15%, and has no attribute-aware form. It was removed from the revised paper's audit score and contributes to no result there.
+    This implementation searches for subsets sufficient for the **task label**, with a fixed subset fraction of 15%, and has no attribute-aware form. It is outside the paper's audit score and contributes to no result there.
 
 ---
 

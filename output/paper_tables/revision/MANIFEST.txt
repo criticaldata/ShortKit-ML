@@ -1,4 +1,4 @@
-revision results folder: /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da
+revision results folder: ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da
 tables/figures built at commit 48d43972eba301cfc5f765fbbb89a1981b9e2f56
 
 ===== alignment_check =====
@@ -37,7 +37,7 @@ timings (s):
 run: row alignment across backbones (cosine-structure Spearman)
 commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
-command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML-revision/scripts/revision/run_alignment_check.py
+command: python ~/Desktop/repositories/ShortKit-ML-revision/scripts/revision/run_alignment_check.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-28 09:47:46 GMT
 wall_seconds: 1.8
@@ -112,7 +112,7 @@ notes:
 run: clusters vs metadata, group-size stability, held-out LDA
 commit: 89773dad2273d427cc1c6bf61455c374a2c340e5
 working tree has uncommitted changes: False
-command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML-revision/scripts/revision/run_analyses.py
+command: python ~/Desktop/repositories/ShortKit-ML-revision/scripts/revision/run_analyses.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-28 09:51:00 GMT
 wall_seconds: 193.0
@@ -380,7 +380,7 @@ data files (md5):
 
 timings (s):
 
-note: copied unchanged from /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/extraction_check (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
+note: copied unchanged from ~/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/extraction_check (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
 
 notes (added 28 Oct 15:30):
   - medsiglip google/medsiglip-448 extracted after access was granted (sebasmos env, Python 3.10.16, torch 2.10.0, transformers 4.57.3, CPU, OMP_NUM_THREADS=4; log logs/extract_medsiglip_cpu.log)
@@ -418,7 +418,7 @@ data files (md5):
   6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
   41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
   3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
-  ae9612cb260ebef03b51a75c3b311e76  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  ae9612cb260ebef03b51a75c3b311e76  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
   472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
   9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
   955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
@@ -555,7 +555,7 @@ notes:
 run: head reliance experiment (section 7, items 1 to 3)
 commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_head_experiment.py
+command: python /tmp/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_head_experiment.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-28 05:22:58 GMT
 wall_seconds: 1606.3
@@ -707,7 +707,7 @@ config:
 data files (md5):
   6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
   41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
-  01ac25bee3d022a2393a61e462d294f8  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/head_experiment/head_reliance.csv
+  01ac25bee3d022a2393a61e462d294f8  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/head_experiment/head_reliance.csv
   472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
   9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
   955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
@@ -816,7 +816,7 @@ data files (md5):
   6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
   41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
   3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
-  ae9612cb260ebef03b51a75c3b311e76  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  ae9612cb260ebef03b51a75c3b311e76  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
   472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
   9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
   955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
@@ -837,7 +837,7 @@ notes:
 run: patient-level fake attribute negative control
 commit: 8728cb33ccc7481d59385a4bf94f6fc069b9bb51
 working tree has uncommitted changes: True
-command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML/scripts/revision/run_negative_control.py
+command: python ~/Desktop/repositories/ShortKit-ML/scripts/revision/run_negative_control.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-28 14:50:18 GMT
 wall_seconds: 2712.8
@@ -862,7 +862,7 @@ timings (s):
 run: patient-level fake attribute negative control
 commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_negative_control.py
+command: python /tmp/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_negative_control.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-28 05:09:43 GMT
 wall_seconds: 809.1
@@ -1053,7 +1053,7 @@ notes:
 
 note added after the run (28 Oct 2026): this rerun used the shipped CheXpert metadata, whose sex column is inverted (HF mirror codes 0 = Male). Sex is binary, so detection flags are unaffected; it reproduces the committed CSVs cell for cell (CheXpert 273/273, MIMIC 156/156).
 
-note: copied unchanged from /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/old_pipeline_fixed_flag (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
+note: copied unchanged from ~/Documents/shortkit-ml-results/2026-10-28_revision_7d7716a/old_pipeline_fixed_flag (28 Oct 2026); the section 9 corrections do not touch this stage (it uses the submitted pipeline or re-extraction only).
 
 ===== patient_exchangeability =====
 run: patient exchangeability check (images per patient, positive share) on CheXpert
@@ -1078,7 +1078,7 @@ timings (s):
 run: planted marker (section 7 item 4)
 commit: 1e496704433f759905b184f6c11b50e6db678ba2
 working tree has uncommitted changes: False
-command: python /private/tmp/claude-502/-Users-cajas-sebastian-Desktop-repositories-AnpassenNN/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_planted_marker.py
+command: python /tmp/d2cb1caa-ade9-4b2f-94cb-d34d56c828dc/scratchpad/frozen_1e49670/scripts/revision/run_planted_marker.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-28 05:37:16 GMT
 wall_seconds: 658.2
@@ -1162,7 +1162,7 @@ data files (md5):
   6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
   41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
   3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
-  ae9612cb260ebef03b51a75c3b311e76  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  ae9612cb260ebef03b51a75c3b311e76  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
   472bac56dec9a9ba6602ade724dc82a8  data/chexpert_multibackbone/resnet50_embeddings.npy
   9f6a2200400ab3c9d884a73fe3b0fdef  data/chexpert_multibackbone/densenet121_embeddings.npy
   955492195e6f1201f4281313e110cf56  data/chexpert_multibackbone/vit_b_16_embeddings.npy
@@ -1182,7 +1182,7 @@ notes:
 run: probe run time against sample size (synthetic embeddings)
 commit: 17dc97508455f6a8f722308294b42ee2dd421a02
 working tree has uncommitted changes: True
-command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML/scripts/revision/run_probe_scaling.py
+command: python ~/Desktop/repositories/ShortKit-ML/scripts/revision/run_probe_scaling.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-29 03:19:20 GMT
 wall_seconds: 831.6
@@ -1280,10 +1280,10 @@ data files (md5):
   6e6f0f53a4c4abcb3d65bcefb40f5e2c  data/train.csv
   41fb9cd82642ea49365b1bbdc08b221c  data/chexpert_multibackbone/race_mapping.csv
   3ee2c51acae6984fcbd79e19328a31cd  data/chexpert_multibackbone/chexpert_manifest.csv
-  f437ef5d935ca6585bb05241479b1a20  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
-  11de00f5ea683f9fd76cb78bcfb2d977  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/dinov2_base__facebook_dinov2-base__pooler_output.npy
-  ef33fc49458d223f242b25525bc89c47  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/rad_dino__microsoft_rad-dino__pooler_output.npy
-  ba8c873ea226869dfc52a658dd198014  /Users/cajas.sebastian/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/vit_b_32__vit_b_32__class.npy
+  f437ef5d935ca6585bb05241479b1a20  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/clinical_audit/audit_rows.csv
+  11de00f5ea683f9fd76cb78bcfb2d977  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/dinov2_base__facebook_dinov2-base__pooler_output.npy
+  ef33fc49458d223f242b25525bc89c47  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/rad_dino__microsoft_rad-dino__pooler_output.npy
+  ba8c873ea226869dfc52a658dd198014  ~/Documents/shortkit-ml-results/2026-10-28_revision_89773da/extraction_check/vit_b_32__vit_b_32__class.npy
 
 timings (s):
   all_cells: 115.051
@@ -1297,7 +1297,7 @@ notes:
 run: Audited CheXpert sample against the full train.csv
 commit: d741bf6ecdfaa199db8f01b13c54e66b2af16655
 working tree has uncommitted changes: True
-command: python /Users/cajas.sebastian/Desktop/repositories/ShortKit-ML/scripts/revision/run_sample_vs_full.py
+command: python ~/Desktop/repositories/ShortKit-ML/scripts/revision/run_sample_vs_full.py
 python: 3.10.19  platform: macOS-26.7.1-arm64-arm-64bit
 written: 2026-10-29 02:02:44 GMT
 wall_seconds: 3.6

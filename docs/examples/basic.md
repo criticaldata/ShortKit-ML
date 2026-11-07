@@ -1,284 +1,195 @@
-# Basic Usage Examples
+# Basic usage examples
 
-This guide covers fundamental usage patterns for ShortKit-ML.
+This page walks through the package on synthetic data: the paper's audit first, then the `ShortcutDetector` pipeline and the four classic methods one at a time. Every snippet runs as written.
 
-## Jupyter Notebooks
+## Jupyter notebooks
 
-All examples are available as Jupyter notebooks in the repository:
+The notebooks are in the repository:
 
 ```bash
 cd examples/01_basic_usage/
 jupyter lab
 ```
 
-## Example 1: Unified API Demo
+## Example 1: the audit
 
-The complete workflow using `ShortcutDetector`.
-
-### Setup
+The paper's measurement. `generate_linear_shortcut` plants the group in the first few dimensions; the audit also needs a task label, so we draw one that is correlated with the group.
 
 ```python
 import numpy as np
+from shortcut_detect import generate_linear_shortcut
+from shortcut_detect.audit import AuditConfig, conditional_audit
+from shortcut_detect.audit.report import audit_report, summary_text
+
+X, group = generate_linear_shortcut(n_samples=1000, embedding_dim=128, shortcut_dims=5, seed=42)
+rng = np.random.default_rng(0)
+task = np.where(rng.random(len(group)) < 0.3, 1 - group, group)   # task label correlated with the group
+
+cfg = AuditConfig(n_permutations=200, n_permutations_probe=500, seed=42)
+result = conditional_audit(X, group, task, config=cfg)
+
+probe = result.results["probe"]
+print(f"AUROC {probe.statistic:.3f}, null {probe.null_mean:.3f} (SD {probe.null_sd:.3f}), p = {probe.p_value:.3f}")
+print(summary_text(result, attribute="group", task="task"))
+audit_report(result, "audit.html", title="Synthetic audit", attribute="group", task="task")
+```
+
+## Example 2: the ShortcutDetector pipeline
+
+```python
 from shortcut_detect import ShortcutDetector
 
-# Set random seed for reproducibility
-np.random.seed(42)
-```
-
-### Generate Sample Data
-
-```python
-from shortcut_detect import generate_linear_shortcut
-
-# Create data with shortcuts
-X, y_task, y_group = generate_linear_shortcut(
-    n_samples=1000,
-    n_features=512,
-    shortcut_strength=0.8,
-    random_state=42
-)
-
-print(f"Embeddings shape: {X.shape}")
-print(f"Groups: {np.unique(y_group)}")
-```
-
-### Run Detection
-
-```python
-# Create detector with all methods
-detector = ShortcutDetector(
-    methods=['hbac', 'probe', 'statistical', 'geometric'],
-    random_state=42
-)
-
-# Fit
-detector.fit(X, y_group)
-
-# View summary
+detector = ShortcutDetector(methods=["hbac", "probe", "statistical", "geometric"], seed=42)
+detector.fit(X, group)
 print(detector.summary())
-```
 
-### Generate Report
-
-```python
-# HTML report
 detector.generate_report("basic_report.html", format="html")
-
-# View in browser
-import webbrowser
-webbrowser.open("basic_report.html")
 ```
+
+`fit(embeddings, labels, group_labels=None)` takes the task label as `labels` and the attribute as `group_labels`; with `group_labels` omitted the group-based methods use `labels`. To keep both: `detector.fit(X, task, group_labels=group)`.
 
 ---
 
-## Example 2: HBAC Clustering
-
-Standalone HBAC analysis.
+## Example 3: HBAC clustering
 
 ```python
 from shortcut_detect import HBACDetector
-import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram
 
-# Create detector
-hbac = HBACDetector(
-    max_iterations=3,
-    min_cluster_size=0.05
-)
+hbac = HBACDetector(max_iterations=3, min_cluster_size=0.05, random_state=42)
+hbac.fit(X, group)
 
-# Fit
-hbac.fit(X, y_group)
+verdict = hbac.shortcut_report_["has_shortcut"]
+print(f"Shortcut detected: {hbac.shortcut_detected_} ({verdict['confidence']} confidence, {verdict['types']})")
+print(f"Linear test accuracy: {hbac.shortcut_report_['linearity_score']['test_accuracy']:.2f}")
+for cluster in hbac.shortcut_report_["cluster_purities"]:
+    print(f"  cluster {cluster['cluster_id']}: {cluster['size']} rows, purity {cluster['purity']:.2f}")
 
-# Results
-print(f"Purity: {hbac.purity_:.2f}")
-print(f"Linearity: {hbac.linearity_:.2f}")
-print(f"Shortcut detected: {hbac.shortcut_detected_}")
-
-# Visualize dendrogram
-fig, ax = plt.subplots(figsize=(12, 6))
-dendrogram(hbac.dendrogram_, ax=ax, leaf_rotation=90)
-plt.title(f"HBAC Dendrogram (Purity: {hbac.purity_:.2f})")
-plt.tight_layout()
-plt.savefig("hbac_dendrogram.png", dpi=150)
-plt.show()
+hbac.visualize(method="pca", save_path="hbac_pca.png")
 ```
 
 ---
 
-## Example 3: Probe-based Detection
+## Example 4: probe-based detection
 
-Classifier-based information leakage testing.
+The probe splits the data itself (`evaluation="holdout"`), trains on one part and scores the other.
 
 ```python
-from shortcut_detect import SKLearnProbe
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+from shortcut_detect import SKLearnProbe
 
-# Split data
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y_group, test_size=0.2, random_state=42
-)
+probe = SKLearnProbe(LogisticRegression(max_iter=1000), metric="accuracy",
+                     evaluation="holdout", test_size=0.2, random_state=42)
+probe.fit(X, group)
 
-# Create and train probe
-probe = SKLearnProbe(LogisticRegression(max_iter=1000))
-probe.fit(X_train, y_train)
-
-# Evaluate
-accuracy = probe.score(X_test, y_test)
-print(f"Probe accuracy: {accuracy:.2%}")
-
-# Risk assessment
-if accuracy > 0.8:
-    print("HIGH RISK: Strong shortcuts detected")
-elif accuracy > 0.6:
-    print("MEDIUM RISK: Some shortcuts present")
-else:
-    print("LOW RISK: Minimal shortcuts")
+print(f"Held-out accuracy: {probe.metric_value_:.2%}")
+print(f"Flagged: {probe.shortcut_detected_}, risk {probe.get_report()['risk_level']}")
 ```
 
-### Compare Multiple Classifiers
+### Compare several classifiers
 
 ```python
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 
 classifiers = {
-    'Logistic Regression': LogisticRegression(max_iter=1000),
-    'Linear SVM': SVC(kernel='linear'),
-    'RBF SVM': SVC(kernel='rbf'),
-    'Random Forest': RandomForestClassifier(n_estimators=100),
+    "Logistic Regression": LogisticRegression(max_iter=1000),
+    "Linear SVM": SVC(kernel="linear"),
+    "RBF SVM": SVC(kernel="rbf"),
+    "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
 }
 
-print("Classifier Comparison:")
-print("-" * 40)
 for name, clf in classifiers.items():
-    probe = SKLearnProbe(clf)
-    probe.fit(X_train, y_train)
-    acc = probe.score(X_test, y_test)
-    print(f"{name:25s}: {acc:.2%}")
+    probe = SKLearnProbe(clf, metric="accuracy", evaluation="holdout", random_state=42)
+    probe.fit(X, group)
+    print(f"{name:20s}: {probe.metric_value_:.2%}")
 ```
 
 ---
 
-## Example 4: Statistical Testing
-
-Feature-wise hypothesis testing.
+## Example 5: statistical testing
 
 ```python
-from shortcut_detect import GroupDiffTest
-from scipy.stats import mannwhitneyu
 import matplotlib.pyplot as plt
+from scipy.stats import mannwhitneyu
+from shortcut_detect import GroupDiffTest
 
-# Create test
-test = GroupDiffTest(
-    test=mannwhitneyu,
-    alpha=0.05,
-    correction='fdr_bh'
-)
+test = GroupDiffTest(test=mannwhitneyu)
+test.fit(X, group)
+corrected = test.apply_correction(alpha=0.05, method="fdr_bh", verbose=False)
 
-# Fit
-test.fit(X, y_group)
+comparison = next(iter(corrected["significant_features"]))
+significant = corrected["significant_features"][comparison] or []
+q = corrected["corrected_pvalues"][comparison]
+print(f"{comparison}: {len(significant)} of {X.shape[1]} dimensions significant after BH "
+      f"({len(significant) / X.shape[1]:.1%})")
+print("first significant dimensions:", significant[:10])
 
-# Results
-print(f"Significant features: {test.n_significant_} / {X.shape[1]}")
-print(f"Percentage: {test.n_significant_ / X.shape[1]:.1%}")
-
-# Volcano plot
-fig, ax = plt.subplots(figsize=(10, 6))
-x = test.effect_sizes_
-y = -np.log10(test.pvalues_corrected_ + 1e-300)
-
-colors = ['red' if i in test.significant_features_ else 'gray'
-          for i in range(len(x))]
-
-ax.scatter(x, y, c=colors, alpha=0.5, s=20)
-ax.axhline(-np.log10(0.05), color='blue', linestyle='--',
-           label='p=0.05 threshold')
-ax.set_xlabel('Effect Size (Cohen\'s d)')
-ax.set_ylabel('-log10(corrected p-value)')
-ax.set_title(f'Statistical Testing: {test.n_significant_} significant features')
+fig, ax = plt.subplots(figsize=(10, 4))
+colors = ["red" if i in set(significant) else "gray" for i in range(len(q))]
+ax.bar(range(len(q)), -np.log10(q + 1e-300), color=colors)
+ax.axhline(-np.log10(0.05), color="blue", linestyle="--", label="q = 0.05")
+ax.set_xlabel("dimension")
+ax.set_ylabel("-log10(BH-adjusted p)")
 ax.legend()
 plt.tight_layout()
-plt.savefig("volcano_plot.png", dpi=150)
-plt.show()
+plt.savefig("significant_dimensions.png", dpi=150)
 ```
 
 ---
 
-## Example 5: Geometric Analysis
-
-Subspace and bias direction analysis.
+## Example 6: geometric analysis
 
 ```python
 from shortcut_detect import GeometricShortcutAnalyzer
-import matplotlib.pyplot as plt
 
-# Create analyzer
 analyzer = GeometricShortcutAnalyzer(n_components=5)
-analyzer.fit(X, y_group)
-
-# Results
+analyzer.fit(X, group)
 print(analyzer.summary_)
 
-# Visualize bias direction projections
-projections = analyzer.transform(X)
+pair = analyzer.bias_pairs_[0]
+print(f"effect size {pair.effect_size:.2f} between groups {pair.groups}")
+
+# project onto the direction between the two centroids
+g0, g1 = pair.groups
+c0, c1 = analyzer.group_stats_[g0]["centroid"], analyzer.group_stats_[g1]["centroid"]
+direction = (c1 - c0) / np.linalg.norm(c1 - c0)
+projections = X @ direction
 
 fig, ax = plt.subplots(figsize=(10, 4))
-for group in np.unique(y_group):
-    mask = y_group == group
-    ax.hist(projections[mask], bins=50, alpha=0.5, label=f'Group {group}')
-
-ax.set_xlabel('Projection onto Bias Direction')
-ax.set_ylabel('Frequency')
-ax.set_title(f'Bias Direction (Effect Size: {analyzer.bias_effect_size_:.2f})')
+for g in (g0, g1):
+    ax.hist(projections[analyzer.group_stats_[g]["mask"]], bins=50, alpha=0.5, label=f"group {g}")
+ax.set_xlabel("projection onto the bias direction")
+ax.set_ylabel("count")
+ax.set_title(f"effect size {pair.effect_size:.2f}")
 ax.legend()
 plt.tight_layout()
 plt.savefig("bias_projections.png", dpi=150)
-plt.show()
 ```
 
 ---
 
-## Example 6: Comparison - With vs Without Shortcuts
-
-Compare detection results on clean vs biased data.
+## Example 7: with and without a shortcut
 
 ```python
-from shortcut_detect import (
-    ShortcutDetector,
-    generate_linear_shortcut,
-    generate_no_shortcut
-)
+from shortcut_detect import ShortcutDetector, generate_linear_shortcut, generate_no_shortcut
 
-# Data WITH shortcuts
-X_biased, _, y_biased = generate_linear_shortcut(
-    n_samples=500, shortcut_strength=0.9
-)
+X_biased, g_biased = generate_linear_shortcut(n_samples=500, embedding_dim=64, shortcut_dims=5, seed=42)
+X_clean, g_clean = generate_no_shortcut(n_samples=500, embedding_dim=64, seed=42)
 
-# Data WITHOUT shortcuts
-X_clean, _, y_clean = generate_no_shortcut(n_samples=500)
-
-# Detect on both
-detector_biased = ShortcutDetector(methods=['probe', 'statistical'])
-detector_biased.fit(X_biased, y_biased)
-
-detector_clean = ShortcutDetector(methods=['probe', 'statistical'])
-detector_clean.fit(X_clean, y_clean)
-
-# Compare
-print("=" * 50)
-print("BIASED DATA:")
-print(detector_biased.summary())
-
-print("\n" + "=" * 50)
-print("CLEAN DATA:")
-print(detector_clean.summary())
+for name, (X_, g_) in {"biased": (X_biased, g_biased), "clean": (X_clean, g_clean)}.items():
+    detector = ShortcutDetector(methods=["probe", "statistical"], seed=42)
+    detector.fit(X_, g_)
+    results = detector.get_results()
+    score = results["probe"]["results"]["metrics"]["metric_value"]
+    n_sig = sum(len(v or []) for v in results["statistical"]["significant_features"].values())
+    print(f"{name}: probe f1 {score:.2f} ({results['probe']['risk_value']}), "
+          f"{n_sig} significant dimensions ({results['statistical']['risk_value']})")
 ```
 
 ---
 
-## Next Steps
+## Next steps
 
-- [Real Data Examples](real-data.md) - CheXpert medical imaging
-- [Advanced Analysis](advanced.md) - Model comparison, intersectionality
-- [API Reference](../api/shortcut-detector.md) - Full documentation
+- [Real data examples](real-data.md): chest X-ray embeddings
+- [Advanced analysis](advanced.md): model comparison, intersectional attributes, debiasing
+- [API reference](../api/shortcut-detector.md): full documentation

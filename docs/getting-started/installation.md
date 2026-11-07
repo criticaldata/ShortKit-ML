@@ -1,168 +1,75 @@
 # Installation
 
-This guide covers different installation options for ShortKit-ML.
+ShortKit-ML is the Python package `shortcut_detect`. Install it from source: the PyPI release 0.1.0 predates the `shortcut_detect.audit` module that the ShortKit-ML paper uses.
 
 ## Requirements
 
-- Python 3.9, 3.10, or 3.11
-- pip or uv package manager
-- PyTorch (torch) and torchvision (included in core install; see [PyTorch with CUDA](#pytorch-with-cuda) for GPU)
+- Python 3.10, 3.11 or 3.12 (`requires-python = ">=3.10,<3.13"` in `pyproject.toml`)
+- pip or [uv](https://github.com/astral-sh/uv)
+- PyTorch 2.2 and torchvision 0.17 are core dependencies and come with the install; see [PyTorch with CUDA](#pytorch-with-cuda) for a GPU build
 
-## Quick Install
-
-### From PyPI (Recommended)
-
-```bash
-pip install shortkit-ml
-```
-
-### From Source
+## Install from source
 
 ```bash
 git clone https://github.com/criticaldata/ShortKit-ML.git
 cd ShortKit-ML
+uv venv --python 3.10
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+uv pip install -e .
+```
+
+Without uv:
+
+```bash
+git clone https://github.com/criticaldata/ShortKit-ML.git
+cd ShortKit-ML
+python -m venv .venv
+source .venv/bin/activate
 pip install -e .
 ```
 
-## Installation Options
+The editable install (`-e`) means a later `git pull` updates the package in place.
 
-The library has several optional dependency groups for different use cases:
+## Optional extras
 
-### Basic Installation
+The base install covers the audit (`shortcut_detect.audit`), the 19 registered detectors, the Gradio dashboard and the HTML, PDF and Markdown reports. Extras add:
 
-Core functionality with all detection methods:
-
-```bash
-pip install shortkit-ml
-```
-
-### With Dashboard
-
-For the interactive Gradio web interface:
-
-```bash
-pip install "shortkit-ml[dashboard]"
-```
-
-### With Jupyter Support
-
-For running examples in Jupyter notebooks:
+| Extra | Adds |
+|-------|------|
+| `hf` | `transformers`, to embed raw text with Hugging Face models |
+| `mcp` | the MCP server (`shortkit-ml-mcp`) |
+| `jupyter` | JupyterLab, ipykernel and widgets for the example notebooks |
+| `reporting` | `umap-learn`, for UMAP projections in reports |
+| `docs` | MkDocs and the Material theme, to build this site |
+| `dev` | pytest, black, ruff, mypy, pre-commit |
+| `all` | everything above |
 
 ```bash
-pip install "shortkit-ml[jupyter]"
+uv pip install -e ".[all]"       # or: pip install -e ".[all]"
+uv pip install -e ".[hf,mcp]"
 ```
 
-### With Reporting
-
-For PDF/HTML report generation:
-
-```bash
-pip install "shortkit-ml[reporting]"
-```
-
-### With Hugging Face
-
-For embedding generation from HuggingFace models:
-
-```bash
-pip install "shortkit-ml[hf]"
-```
-
-### With VAE
-
-VAE shortcut detection requires `torch` and `torchvision`; both are core dependencies and included in the default install. To explicitly install VAE support:
-
-```bash
-pip install "shortkit-ml[vae]"
-```
-
-### Full Installation
-
-Install everything (recommended for development):
-
-```bash
-pip install "shortkit-ml[all]"
-```
-
-## Using uv (Faster)
-
-[uv](https://github.com/astral-sh/uv) is a fast Python package installer:
-
-```bash
-# Install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Create virtual environment
-uv venv --python 3.10
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# Install with all dependencies
-uv pip install -e ".[all]"
-```
+PyPI: `pip install shortkit-ml` installs release 0.1.0, which has the detectors and the dashboard but not the audit module. Use the source install until the next release.
 
 ## PyTorch with CUDA
 
-For GPU acceleration (optional):
+The package pins `torch>=2.2.0,<2.3.0` and `torchvision>=0.17.0,<0.18.0`. For a GPU build, install the matching wheels from the PyTorch index:
 
 ```bash
 # CUDA 12.1
-pip install torch==2.1.0+cu121 torchvision==0.16.0+cu121 \
+uv pip install torch==2.2.0+cu121 torchvision==0.17.0+cu121 \
   --index-url https://download.pytorch.org/whl/cu121
 
 # CUDA 11.8
-pip install torch==2.1.0+cu118 torchvision==0.16.0+cu118 \
+uv pip install torch==2.2.0+cu118 torchvision==0.17.0+cu118 \
   --index-url https://download.pytorch.org/whl/cu118
 ```
 
-## Jupyter Kernel Setup
+Replace `uv pip` with `pip` if you do not use uv.
 
-To use the library in Jupyter notebooks:
+## PDF export
 
-```bash
-# Install Jupyter support
-pip install "shortkit-ml[jupyter]"
-
-# Register the kernel
-python -m ipykernel install --user --name=shortcut_detect --display-name="Python (Shortcut_Detect)"
-
-# Launch Jupyter
-jupyter lab
-```
-
-## Verify Installation
-
-```python
-import shortcut_detect
-print(shortcut_detect.__version__)  # Should print: 0.1.0
-
-# Test imports
-from shortcut_detect import ShortcutDetector, HBACDetector, SKLearnProbe
-print("All imports successful!")
-```
-
-## Troubleshooting
-
-### Import Errors
-
-If you get import errors, ensure all dependencies are installed:
-
-```bash
-pip install -e ".[all]" --force-reinstall
-```
-
-### CUDA Issues
-
-If PyTorch doesn't detect your GPU:
-
-```python
-import torch
-print(torch.cuda.is_available())  # Should be True
-print(torch.cuda.device_count())  # Number of GPUs
-```
-
-### WeasyPrint Issues (PDF Generation)
-
-WeasyPrint requires system dependencies:
+PDF reports from `ShortcutDetector.generate_report(..., format="pdf")` go through WeasyPrint, which needs system libraries:
 
 === "Ubuntu/Debian"
 
@@ -178,10 +85,48 @@ WeasyPrint requires system dependencies:
 
 === "Windows"
 
-    Install GTK3 runtime from [gtk.org](https://www.gtk.org/docs/installations/windows/)
+    Install the GTK3 runtime from [gtk.org](https://www.gtk.org/docs/installations/windows/)
 
-## Next Steps
+The audit report, `shortcut_detect.audit.report.audit_report(result, "audit.pdf")`, writes its PDF with matplotlib and does not need these.
 
-- [Quick Start Guide](quickstart.md) - Run your first shortcut detection
-- [Interactive Dashboard](dashboard.md) - Launch the web interface
-- [Detection Methods](../methods/overview.md) - Learn about each method
+## Jupyter kernel
+
+```bash
+uv pip install -e ".[jupyter]"
+python -m ipykernel install --user --name=shortcut_detect --display-name="Python (Shortcut_Detect)"
+jupyter lab
+```
+
+## Check the install
+
+```python
+from shortcut_detect.audit import AuditConfig, conditional_audit
+from shortcut_detect.audit.report import audit_report, summary_text
+from shortcut_detect import ShortcutDetector, HBACDetector, SKLearnProbe
+```
+
+If the `shortcut_detect.audit` import fails, the installed copy is the PyPI 0.1.0 release rather than the source checkout.
+
+## Troubleshooting
+
+### Import errors
+
+Reinstall with all extras:
+
+```bash
+uv pip install -e ".[all]" --force-reinstall
+```
+
+### CUDA not found
+
+```python
+import torch
+print(torch.cuda.is_available())
+print(torch.cuda.device_count())
+```
+
+## Next steps
+
+- [Quick start](quickstart.md): run the audit, then the other methods
+- [Interactive dashboard](dashboard.md): launch the web interface
+- [Detection methods](../methods/overview.md): what each method does

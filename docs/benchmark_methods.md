@@ -1,16 +1,16 @@
-# Benchmark Methods: Decision Log & Reproducibility Guide
+# Benchmark methods
 
-This document records the method selection of the **first submission** (13 methods compared against fixed thresholds) and how to replay it. The revised paper scores six calibrated detectors instead, with the conditional probe as the single primary test; see [Results](#results) below and [Paper Results](reproducibility.md#revised-paper-cmpb-revision-2026).
+This document records the method selection of the earlier fixed-threshold benchmark (13 methods compared against fixed thresholds) and how to replay it. The paper scores six calibrated detectors instead, with the conditional probe as the single primary test; see [Results](#results) below and [the paper's pipeline](reproducibility.md#paper-pipeline).
 
-## What the revised paper scores
+## What the paper scores
 
-Of the 20 implemented detection methods, six need only the embedding, the attribute and the task label and are calibrated by the conditional permutation null: the conditional probe (primary) and the statistical, geometric, bias direction PCA, HBAC and frequency detectors (secondary, same null, reported as diagnostics). The number of flagged detectors in a cell is descriptive only; no agreement threshold is used. SIS is outside the score (it fits on the task label with a fixed 15% subset and has no attribute-aware form). Demographic parity, equalized odds and intersectional gaps are computed only for the trained heads of the classification-head experiment, and GroupDRO, GCE, SSA, early-epoch clustering, CAV, SpRAy, GradCAM, causal effect, the CVAE and the VAE contribute to no result in the paper.
+Of the 19 registered detection methods, six need only the embedding, the attribute and the task label and are calibrated by the conditional permutation null: the conditional probe (primary) and the statistical, geometric, bias direction PCA, HBAC and frequency detectors (secondary, same null, reported as diagnostics). The number of flagged detectors in a cell is descriptive only; no agreement threshold is used. SIS is outside the score (it fits on the task label with a fixed 15% subset and has no attribute-aware form). Demographic parity, equalized odds and intersectional gaps are computed only for the trained heads of the classification-head experiment, and GroupDRO, GCE, SSA, early-epoch clustering, CAV, SpRAy, GradCAM, causal effect, the CVAE and the VAE contribute to no result in the paper.
 
-## First-submission method selection
+## Earlier benchmark method selection
 
-Of the 19 detection methods counted in the first submission, **13 were benchmarked** there. The remaining 6 require raw images, concept sets, or specialized data loaders that are incompatible with the embedding-only evaluation protocol.
+Of the 19 registered detection methods, **13 were benchmarked** in the earlier fixed-threshold benchmark. The remaining 6 require raw images, concept sets, or specialized data loaders that are incompatible with the embedding-only evaluation protocol.
 
-### Benchmarked Methods (13, first submission)
+### Benchmarked methods (13, earlier benchmark)
 
 | # | Method | Key | Tier | Paradigm | What It Detects | Detection Logic |
 |---|--------|-----|------|----------|-----------------|-----------------|
@@ -28,7 +28,7 @@ Of the 19 detection methods counted in the first submission, **13 were benchmark
 | 12 | GCE | `gce` | 3 | Training Dynamics | High-loss minority/bias-conflicting samples | `report.risk_level ∈ {moderate, high}` |
 | 13 | SSA | `ssa` | 3 | Training Dynamics | Spurious attribute spread | `shortcut_detected == True` |
 
-### Tiers Explained
+### Tiers explained
 
 | Tier | Name | Requirements | Methods |
 |------|------|-------------|---------|
@@ -38,7 +38,7 @@ Of the 19 detection methods counted in the first submission, **13 were benchmark
 
 **All 13 methods** work with the `ShortcutDetector.fit(embeddings, labels, group_labels=g)` API. No raw images, model weights, or external data required.
 
-### Excluded Methods (6) and Why
+### Excluded methods (6) and why
 
 | Method | Key | Why Excluded | Could Be Included? |
 |--------|-----|-------------|-------------------|
@@ -49,7 +49,7 @@ Of the 19 detection methods counted in the first submission, **13 were benchmark
 | Generative CVAE | `generative_cvae` | Trains a CVAE counterfactual generator | Possible but very slow |
 | Causal Effect | `causal_effect` | Requires interventional data via `fit_from_loaders()` | Only with causal/interventional data |
 
-### Special Cases
+### Special cases
 
 - **Intersectional**: Requires `extra_labels` with 2+ demographic attributes. Skipped in synthetic benchmarks (1 attribute only) and in CheXpert per-diagnosis (single attribute tested). Works on MIMIC-CXR (sex + race + age_bin) and CelebA (40 attributes).
 - **GroupDRO**: Detection threshold is `avg_acc - worst_group_acc > 0.10` (10% gap). In practice, GroupDRO reports `success=False` on most benchmark runs because its internal training doesn't converge or produce a meaningful gap with pre-extracted embeddings. It was designed for end-to-end training scenarios. **Effectively 0 detections in benchmarks.**
@@ -57,7 +57,7 @@ Of the 19 detection methods counted in the first submission, **13 were benchmark
 - **SSA**: Requires a `splits` parameter (labeled/unlabeled split indices) that the benchmark scripts don't provide. Fails with "splits parameter required for SSA analysis". **Effectively 0 detections in benchmarks.**
 - **Net effect of Tier 3 methods**: GroupDRO, GCE, and SSA are included for completeness (the Gradio demo runs them) but they add 0 detections in the embedding-only benchmark protocol. The effective detection count is X/13 where the 3 Tier 3 methods always report "not flagged." This is documented honestly: these methods were designed for training-time scenarios, not post-hoc embedding analysis.
 
-## Datasets & Backbones
+## Datasets and backbones
 
 | Dataset | Backbones | Samples | Attributes | Methods Run |
 |---------|-----------|---------|------------|-------------|
@@ -67,9 +67,9 @@ Of the 19 detection methods counted in the first submission, **13 were benchmark
 | **CelebA** | ResNet-50 | 10,000 | Male + 39 binary attrs | 13 |
 | **Cross-dataset** | ResNet-50 (CheXpert) + RAD-DINO (MIMIC) | varies by diagnosis | sex, race | 13 (intersectional fails on single-attr CheXpert) |
 
-## Replaying the first-submission benchmark
+## Replaying the earlier benchmark
 
-The commands below rerun the 13-method protocol. The `old` stage of `scripts/revision/run_all.sh` reruns its clinical tables with the fixed flag reader for the comparison in the revised paper.
+The commands below rerun the 13-method protocol. The `old` stage of `scripts/revision/run_all.sh` reruns its clinical tables with the fixed flag reader for the comparison in the paper.
 
 ### Prerequisites
 
@@ -78,12 +78,12 @@ git clone https://github.com/criticaldata/ShortKit-ML.git
 cd ShortKit-ML
 pip install -e ".[all]"
 
-# Download embeddings (gated: request access on the dataset page, then email your
-# PhysioNet username and proof of MIMIC-CXR access to sebasmos@mit.edu)
+# Download embeddings (gated: request access on the dataset page with your PhysioNet
+# username; proof of MIMIC-CXR access is required before approval)
 huggingface-cli download MITCriticalData/ShortKit-ML-data --repo-type dataset --local-dir data/
 ```
 
-### Run Benchmarks (one at a time for best performance)
+### Run benchmarks (one at a time)
 
 ```bash
 # 1. CheXpert: 7 backbones × 3 attributes × 13 methods + per-diagnosis
@@ -107,7 +107,7 @@ python -m shortcut_detect.benchmark.paper_runner --config examples/paper_benchma
 # Output: output/paper_benchmark/synthetic_10methods/
 ```
 
-### Expected Runtimes (Apple M-series, single process)
+### Expected runtimes (Apple M-series, single process)
 
 | Benchmark | Methods | Combos | Approx. Time |
 |-----------|---------|--------|-------------|
@@ -119,7 +119,7 @@ python -m shortcut_detect.benchmark.paper_runner --config examples/paper_benchma
 | Synthetic (smoke) | 12 | ~100 | ~5 min |
 | Synthetic (full) | 12 | ~12K | ~2-4 hrs |
 
-### Reproducibility Guarantees
+### Reproducibility guarantees
 
 - **Seed**: All runs use `seed=42`
 - **Data**: Pre-extracted embeddings on HuggingFace (no GPU needed)
@@ -128,9 +128,9 @@ python -m shortcut_detect.benchmark.paper_runner --config examples/paper_benchma
 
 ## Results
 
-The 13-method detection-rate summary from the first submission is superseded. The revised paper reports a conditional audit (the conditional probe as primary test, five secondary detectors sharing its permutation null, BH correction within a cell) instead; its tables and figures are built by the pipeline in [Paper Results](reproducibility.md#revised-paper-cmpb-revision-2026) and written to `output/paper_tables/revision/`, with the resolved numbers in `numbers.json` there.
+The 13-method detection-rate summary from the earlier benchmark is superseded. The paper reports a conditional audit (the conditional probe as primary test, five secondary detectors sharing its permutation null, BH correction within a cell) instead; its tables and figures are built by [the paper's pipeline](reproducibility.md#paper-pipeline) and written to `output/paper_tables/revision/`, with the resolved numbers in `numbers.json` there.
 
-## File Locations
+## File locations
 
 | File | Purpose |
 |------|---------|

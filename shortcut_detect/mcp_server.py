@@ -4,6 +4,10 @@ ShortKit-ML MCP Server
 Exposes ShortKit-ML shortcut detection capabilities as MCP tools so that
 AI assistants (Claude, Cursor, etc.) can run analyses directly from chat.
 
+``run_audit`` wraps the paper's calibrated audit
+(``shortcut_detect.audit.conditional_audit``). The other tools expose the
+exploratory ``ShortcutDetector`` pipeline (19 methods, fixed thresholds).
+
 Usage:
     uv run python -m shortcut_detect.mcp_server
     # or via entry point:
@@ -18,12 +22,12 @@ import contextlib
 import hashlib
 import json
 import os
-from pathlib import Path
 import sys
 import tempfile
 import threading
 import traceback
 import uuid
+from pathlib import Path
 from typing import Any
 
 import joblib
@@ -246,6 +250,54 @@ def _prepare_inputs(
     if grp is not None:
         grp = grp.astype(int)
     return emb, lbl, grp
+
+
+def _nan_to_none(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {k: _nan_to_none(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_nan_to_none(v) for v in obj]
+    if isinstance(obj, float) and np.isnan(obj):
+        return None
+    return obj
+
+
+def _load_label_array(path: str, name: str) -> np.ndarray:
+    """One label per row from a file; numeric labels become int, strings stay strings."""
+    arr = _load_array_from_path(path, name)
+    if arr.ndim == 2 and arr.shape[1] == 1:
+        arr = arr[:, 0]
+    if arr.ndim != 1:
+        raise ValueError(f"{name} file must hold one value per row, got shape {arr.shape}")
+    if np.issubdtype(arr.dtype, np.number):
+        return arr.astype(int)
+    return arr.astype(str)
+
+
+def _encode_task(task: np.ndarray) -> tuple[np.ndarray, list[str]]:
+    """Integer codes for the task label plus the level names in code order."""
+    if np.issubdtype(task.dtype, np.integer):
+        return task, [str(v) for v in np.unique(task)]
+    levels, codes = np.unique(task, return_inverse=True)
+    return codes.astype(int), [str(v) for v in levels]
+
+
+def _prepare_audit_inputs(
+    *,
+    embeddings_path: str,
+    attribute_path: str,
+    task_path: str,
+    groups_path: str | None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray | None]:
+    if not embeddings_path or not attribute_path or not task_path:
+        raise ValueError("run_audit needs embeddings_path, attribute_path and task_path.")
+    emb = _load_array_from_path(embeddings_path, "embeddings")
+    if emb.ndim != 2:
+        raise ValueError(f"embeddings must be a 2-D array (n, d), got shape {emb.shape}")
+    attr = _load_label_array(attribute_path, "attribute")
+    task = _load_label_array(task_path, "task")
+    grp = _load_label_array(groups_path, "groups") if groups_path else None
+    return emb, attr, task, grp
 
 
 def _build_aggregate_detector(
@@ -800,6 +852,74 @@ def _run_benchmark_impl(
     )
 
 
+def _run_audit_impl(
+    *,
+    embeddings_path: str,
+    attribute_path: str,
+    task_path: str,
+    groups_path: str | None,
+    n_permutations: int,
+    n_permutations_probe: int | None,
+    seed: int,
+    attribute: str | None,
+    task: str | None,
+    report_path: str | None,
+) -> str:
+    from shortcut_detect.audit import PRIMARY, AuditConfig, conditional_audit
+    from shortcut_detect.audit.report import audit_report, summary_text
+
+    if report_path and Path(report_path).suffix.lower() not in {".html", ".htm", ".pdf"}:
+        raise ValueError("report_path must end in .html or .pdf")
+    emb, attr, task_labels, grp = _prepare_audit_inputs(
+        embeddings_path=embeddings_path,
+        attribute_path=attribute_path,
+        task_path=task_path,
+        groups_path=groups_path,
+    )
+    task_codes, task_levels = _encode_task(task_labels)
+    config = AuditConfig(
+        n_permutations=n_permutations,
+        n_permutations_probe=n_permutations_probe,
+        seed=seed,
+    )
+    attribute_name = attribute or "the attribute"
+    task_name = task or "the task label"
+    with contextlib.redirect_stdout(sys.stderr):
+        result = conditional_audit(emb, attr, task_codes, config=config, groups=grp)
+    probe = result.results[PRIMARY]
+    response: dict[str, Any] = {
+        "attribute": attribute,
+        "task": task,
+        "n": result.n,
+        "n_groups": result.n_groups,
+        "attribute_levels": result.groups,
+        "task_levels": task_levels,
+        "group_sizes": result.group_sizes,
+        "n_permutations": config.n_permutations,
+        "n_permutations_probe": config.n_permutations_probe or config.n_permutations,
+        "seed": config.seed,
+        "probe": {
+            "statistic": probe.statistic,
+            "ci_low": probe.ci_low,
+            "ci_high": probe.ci_high,
+            "null_mean": probe.null_mean,
+            "null_sd": probe.null_sd,
+            "p_value": probe.p_value,
+            "flag": probe.flag,
+            "n_permutations": probe.n_permutations,
+        },
+        "detectors": result.rows(),
+        "n_flagged": result.n_flagged,
+        "summary": summary_text(result, attribute_name, task_name),
+        "report_path": None,
+    }
+    if report_path:
+        response["report_path"] = audit_report(
+            result, report_path, attribute=attribute_name, task=task_name, E=emb, A=attr, Y=task_codes
+        )
+    return json.dumps(_nan_to_none(_safe_serialize(response)), indent=2)
+
+
 # ---------------------------------------------------------------------------
 # Public sync API (used in tests and direct Python examples)
 # ---------------------------------------------------------------------------
@@ -1015,17 +1135,93 @@ def run_benchmark(
         return json.dumps({"error": traceback.format_exc()})
 
 
+def run_audit(
+    embeddings_path: str,
+    attribute_path: str,
+    task_path: str,
+    groups_path: str | None = None,
+    n_permutations: int = 200,
+    n_permutations_probe: int | None = None,
+    seed: int = 0,
+    attribute: str | None = None,
+    task: str | None = None,
+    report_path: str | None = None,
+) -> str:
+    try:
+        return _run_audit_impl(
+            embeddings_path=embeddings_path,
+            attribute_path=attribute_path,
+            task_path=task_path,
+            groups_path=groups_path,
+            n_permutations=n_permutations,
+            n_permutations_probe=n_permutations_probe,
+            seed=seed,
+            attribute=attribute,
+            task=task,
+            report_path=report_path,
+        )
+    except Exception:
+        return json.dumps({"error": traceback.format_exc()})
+
+
 # ---------------------------------------------------------------------------
 # MCP tool wrappers
 # ---------------------------------------------------------------------------
 
 
-@mcp.tool(name="list_methods", description="List all available shortcut detection methods with short descriptions.")
+@mcp.tool(
+    name="run_audit",
+    description=(
+        "Run the calibrated shortcut-potential audit of the ShortKit-ML paper on files holding "
+        "the embeddings E (n x d), the attribute A and the task label Y (one value per row, "
+        "strings or integers), with optional group ids such as patient ids. The conditional "
+        "probe decides at p < 0.05 against a permutation null of A within levels of Y; five "
+        "secondary detectors are descriptive. Optionally writes an .html or .pdf report."
+    ),
+)
+async def run_audit_tool(
+    embeddings_path: str,
+    attribute_path: str,
+    task_path: str,
+    groups_path: str | None = None,
+    n_permutations: int = 200,
+    n_permutations_probe: int | None = None,
+    seed: int = 0,
+    attribute: str | None = None,
+    task: str | None = None,
+    report_path: str | None = None,
+    ctx: Context | None = None,
+) -> str:
+    try:
+        if ctx is not None:
+            await ctx.info(f"Running the conditional audit with {n_permutations} permutations")
+            await ctx.report_progress(0, 100, "Running conditional audit")
+        result = await asyncio.to_thread(
+            _run_audit_impl,
+            embeddings_path=embeddings_path,
+            attribute_path=attribute_path,
+            task_path=task_path,
+            groups_path=groups_path,
+            n_permutations=n_permutations,
+            n_permutations_probe=n_permutations_probe,
+            seed=seed,
+            attribute=attribute,
+            task=task,
+            report_path=report_path,
+        )
+        if ctx is not None:
+            await ctx.report_progress(100, 100, "Audit complete")
+        return result
+    except Exception:
+        return json.dumps({"error": traceback.format_exc()})
+
+
+@mcp.tool(name="list_methods", description="List the 19 methods of the exploratory ShortcutDetector pipeline (not the paper's audit, see run_audit) with short descriptions.")
 def list_methods_tool() -> str:
     return list_methods()
 
 
-@mcp.tool(name="generate_synthetic_data", description="Generate synthetic shortcut detection data with configurable type, strength, and size.")
+@mcp.tool(name="generate_synthetic_data", description="Generate synthetic shortcut detection data with configurable type, strength, and size, as inline arrays for the exploratory run_detector and compare_methods tools.")
 def generate_synthetic_data_tool(
     n_samples: int = 200,
     n_features: int = 32,
@@ -1044,7 +1240,7 @@ def generate_synthetic_data_tool(
     )
 
 
-@mcp.tool(name="run_detector", description="Run one or more shortcut detection methods on embeddings and return a summary result.")
+@mcp.tool(name="run_detector", description="Run one or more methods of the exploratory 19-method pipeline (fixed thresholds and risk levels, not the paper's calibrated audit, see run_audit) on embeddings and return a summary result.")
 async def run_detector_tool(
     embeddings: list[list[float]] | None = None,
     labels: list[int] | None = None,
@@ -1076,7 +1272,7 @@ async def run_detector_tool(
         return json.dumps({"error": traceback.format_exc()})
 
 
-@mcp.tool(name="get_summary", description="Retrieve a human-readable summary for a previous shortcut detection session.")
+@mcp.tool(name="get_summary", description="Retrieve a human-readable summary for a previous run_detector session of the exploratory pipeline.")
 async def get_summary_tool(
     session_id: str = "default",
     ctx: Context | None = None,
@@ -1093,7 +1289,7 @@ async def get_summary_tool(
     return str(session["summary"])
 
 
-@mcp.tool(name="get_method_detail", description="Get detailed raw results for a specific detection method from a stored session.")
+@mcp.tool(name="get_method_detail", description="Get detailed raw results for a specific method from a stored run_detector session of the exploratory pipeline.")
 async def get_method_detail_tool(
     method: str,
     session_id: str = "default",
@@ -1112,7 +1308,7 @@ async def get_method_detail_tool(
     return json.dumps(_safe_serialize(raw[method]), indent=2)
 
 
-@mcp.tool(name="compare_methods", description="Compare multiple shortcut detection methods side-by-side and return a consensus summary.")
+@mcp.tool(name="compare_methods", description="Compare multiple methods of the exploratory pipeline side-by-side and return a majority-vote consensus (not the paper's calibrated audit, see run_audit).")
 async def compare_methods_tool(
     embeddings: list[list[float]] | None = None,
     labels: list[int] | None = None,
@@ -1140,7 +1336,7 @@ async def compare_methods_tool(
         return json.dumps({"error": traceback.format_exc()})
 
 
-@mcp.tool(name="generate_report", description="Generate an HTML/PDF/Markdown report for a saved session and optionally return encoded content.")
+@mcp.tool(name="generate_report", description="Generate an HTML/PDF/Markdown report for a saved run_detector session of the exploratory pipeline (run_audit writes its own report through report_path) and optionally return encoded content.")
 async def generate_report_tool(
     session_id: str = "default",
     output_path: str | None = None,
@@ -1173,7 +1369,7 @@ async def generate_report_tool(
         return json.dumps({"error": traceback.format_exc()})
 
 
-@mcp.tool(name="run_benchmark", description="Run the full synthetic benchmark suite or a provided benchmark configuration.")
+@mcp.tool(name="run_benchmark", description="Run the synthetic benchmark grid of the exploratory pipeline (first-submission method comparison, not the paper's audit) or a provided benchmark configuration.")
 async def run_benchmark_tool(
     config: dict[str, Any] | None = None,
     config_path: str | None = None,

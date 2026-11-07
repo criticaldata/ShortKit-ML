@@ -1,8 +1,8 @@
 # Probes API
 
-The probes module provides classifier-based shortcut detection.
+The probes module trains a classifier to predict the group from the embeddings. Both probes subclass `DetectorBase` and do their own train/test split or cross-validation inside `fit`.
 
-## Class Reference
+## Class reference
 
 ### SKLearnProbe
 
@@ -20,14 +20,19 @@ The probes module provides classifier-based shortcut detection.
 
 ## SKLearnProbe
 
-Probe using scikit-learn classifiers.
-
 ### Constructor
 
 ```python
 SKLearnProbe(
-    classifier: sklearn.base.ClassifierMixin = None,
-    cv: int = 5
+    estimator: BaseEstimator | None = None,
+    *,
+    metric: str = "f1",
+    threshold: float = 0.70,
+    average: str = "macro",
+    evaluation: str = "holdout",
+    test_size: float = 0.2,
+    cv_folds: int = 5,
+    random_state: int = 0,
 )
 ```
 
@@ -35,26 +40,24 @@ SKLearnProbe(
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `classifier` | ClassifierMixin | LogisticRegression | sklearn classifier |
-| `cv` | int | 5 | Cross-validation folds |
+| `estimator` | sklearn estimator | standardised `LogisticRegression` | Any estimator with `fit` and `predict` |
+| `metric` | str | `"f1"` | `"accuracy"`, `"f1"`, `"precision"`, `"recall"` or `"roc_auc"` |
+| `threshold` | float | 0.70 | Shortcut when the metric exceeds it |
+| `average` | str | `"macro"` | Averaging for multiclass f1, precision, recall |
+| `evaluation` | str | `"holdout"` | `"holdout"`, `"cv"` or `"train"` |
+| `test_size` | float | 0.2 | Held-out share for `"holdout"` |
+| `cv_folds` | int | 5 | Folds for `"cv"` |
+| `random_state` | int | 0 | Seed for the split |
 
 ### Methods
 
 #### fit()
 
 ```python
-def fit(X: np.ndarray, y: np.ndarray) -> SKLearnProbe
+def fit(embeddings: np.ndarray, target: np.ndarray) -> SKLearnProbe
 ```
 
-Train the probe classifier.
-
-#### score()
-
-```python
-def score(X: np.ndarray, y: np.ndarray) -> float
-```
-
-Evaluate accuracy on test data.
+Splits (or cross-validates), trains the estimator, scores it and fills `results_`.
 
 #### predict()
 
@@ -62,58 +65,61 @@ Evaluate accuracy on test data.
 def predict(X: np.ndarray) -> np.ndarray
 ```
 
-Predict group labels.
+Labels from the fitted estimator.
 
-#### predict_proba()
+#### get_report(), summary()
 
-```python
-def predict_proba(X: np.ndarray) -> np.ndarray
-```
-
-Predict class probabilities.
+The standard detector schema and its one-line summary.
 
 ### Attributes
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `accuracy_` | float | Training accuracy |
-| `cv_scores_` | ndarray | Cross-validation scores |
-| `classifier` | object | Fitted classifier |
+| `metric_value_` | float | Held-out or cross-validated score |
+| `shortcut_detected_` | bool | `metric_value_ > threshold` |
+| `estimator_` | estimator | Fitted estimator |
+| `y_true_eval_`, `y_pred_eval_` | ndarray | Held-out labels and predictions (holdout and train evaluation) |
+| `results_` | dict | Standard schema; `results_["report"]` holds `fold_scores`, `mean_score`, `std_score` under `evaluation="cv"` |
 
 ### Usage
 
 ```python
-from shortcut_detect import SKLearnProbe
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+from shortcut_detect import SKLearnProbe
 
-X_train, X_test, y_train, y_test = train_test_split(
-    embeddings, group_labels, test_size=0.2
-)
+probe = SKLearnProbe(LogisticRegression(max_iter=1000), metric="accuracy",
+                     evaluation="holdout", test_size=0.2, random_state=42)
+probe.fit(embeddings, group_labels)
 
-probe = SKLearnProbe(LogisticRegression(max_iter=1000))
-probe.fit(X_train, y_train)
-
-accuracy = probe.score(X_test, y_test)
-print(f"Accuracy: {accuracy:.2%}")
+print(f"Accuracy: {probe.metric_value_:.2%}, flagged: {probe.shortcut_detected_}")
 ```
 
 ---
 
 ## TorchProbe
 
-Probe using PyTorch models with GPU support.
-
 ### Constructor
 
 ```python
 TorchProbe(
-    model: torch.nn.Module = None,
-    device: str = 'cpu',
-    epochs: int = 100,
-    learning_rate: float = 1e-3,
-    batch_size: int = 64,
-    early_stopping: int = 10
+    model: nn.Module,
+    loss_fn,
+    *,
+    optimizer_class=torch.optim.Adam,
+    optimizer_kwargs: dict | None = None,   # {"lr": 1e-3}
+    device: str | None = None,
+    metric: str = "accuracy",
+    threshold: float = 0.70,
+    test_size: float = 0.2,
+    random_state: int = 0,
+    epochs: int = 10,
+    batch_size: int = 128,
+    num_workers: int = 0,
+    early_stopping: int | None = None,
+    use_amp: bool = False,
+    verbose: bool = False,
+    loader_factory=None,
+    stage_loader_overrides=None,
 )
 ```
 
@@ -121,31 +127,41 @@ TorchProbe(
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model` | nn.Module | MLP | PyTorch model |
-| `device` | str | 'cpu' | Device ('cpu' or 'cuda') |
-| `epochs` | int | 100 | Training epochs |
-| `learning_rate` | float | 1e-3 | Learning rate |
-| `batch_size` | int | 64 | Batch size |
-| `early_stopping` | int | 10 | Early stopping patience |
-| `loader_factory` | callable or None | None | Optional hook to build loaders by stage |
-| `stage_loader_overrides` | dict or None | None | Per-stage DataLoader kwargs overrides |
+| `model` | nn.Module | required | The probe network |
+| `loss_fn` | callable | required | For example `nn.CrossEntropyLoss()` |
+| `optimizer_class` | class | `torch.optim.Adam` | Optimizer |
+| `optimizer_kwargs` | dict | `{"lr": 1e-3}` | Optimizer arguments |
+| `device` | str or None | None | `"cuda"` when available, else `"cpu"` |
+| `metric` | str | `"accuracy"` | Score reported in `metric_value_` |
+| `threshold` | float | 0.70 | Shortcut when the metric exceeds it |
+| `test_size` | float | 0.2 | Held-out share |
+| `epochs` | int | 10 | Training epochs |
+| `batch_size` | int | 128 | Batch size |
+| `early_stopping` | int or None | None | Patience in epochs |
+| `loader_factory` | callable or None | None | Builds a DataLoader per stage |
+| `stage_loader_overrides` | dict or None | None | Per-stage DataLoader kwargs |
 
 ### Methods
 
-Same as SKLearnProbe: `fit()`, `score()`, `predict()`, `predict_proba()`
+- `fit(embeddings, target)`: in-memory arrays
+- `fit_dataset(dataset, ...)`: a map-style or iterable `torch.utils.data.Dataset` yielding `{"embeddings": x, "labels": y}`
+- `fit_loaders(...)`: pre-built DataLoaders; see the class reference
+- `predict(X)`: labels from the trained network
 
-### Additional Attributes
+### Attributes
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `train_losses_` | list | Training loss history |
-| `val_losses_` | list | Validation loss history |
+| `metric_value_` | float | Held-out score |
+| `shortcut_detected_` | bool | `metric_value_ > threshold` |
+| `n_features_in_` | int | Input width seen in `fit` |
+| `results_` | dict | Standard schema |
 
 ### Usage
 
 ```python
-from shortcut_detect import TorchProbe
 import torch.nn as nn
+from shortcut_detect import TorchProbe
 
 class CustomProbe(nn.Module):
     def __init__(self, input_dim, n_classes):
@@ -154,7 +170,7 @@ class CustomProbe(nn.Module):
             nn.Linear(input_dim, 128),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(128, n_classes)
+            nn.Linear(128, n_classes),
         )
 
     def forward(self, x):
@@ -162,37 +178,15 @@ class CustomProbe(nn.Module):
 
 probe = TorchProbe(
     model=CustomProbe(512, 3),
-    device='cuda',
-    epochs=50
+    loss_fn=nn.CrossEntropyLoss(),
+    device="cuda",
+    epochs=50,
 )
-probe.fit(X_train, y_train)
-accuracy = probe.score(X_test, y_test)
+probe.fit(embeddings, group_labels)
+print(probe.metric_value_, probe.shortcut_detected_)
 ```
 
-## Base Probe Class
+## See also
 
-### Probe
-
-Abstract base class for all probes.
-
-```python
-from shortcut_detect.probes import Probe
-
-class MyCustomProbe(Probe):
-    def fit(self, X, y):
-        # Training logic
-        return self
-
-    def score(self, X, y):
-        # Evaluation logic
-        return accuracy
-
-    def predict(self, X):
-        # Prediction logic
-        return predictions
-```
-
-## See Also
-
-- [Probe Method Guide](../methods/probe.md)
+- [Probe method guide](../methods/probe.md)
 - [ShortcutDetector API](shortcut-detector.md)

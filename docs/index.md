@@ -1,151 +1,100 @@
-<p align="center">
-  <img src="assets/shortkit.png" alt="ShortKit-ML Logo" width="400"/>
-</p>
-
-**ShortKit-ML**: Detect and mitigate shortcuts and biases in machine learning embedding spaces. 20+ detection and mitigation methods with a unified API. **Multi-attribute support** tests multiple sensitive attributes simultaneously. Model Comparison mode for benchmarking multiple embedding models.
-
-- **Input-agnostic: any embedding width, any modality.** The package only sees a 2-D float matrix `(n_samples, embedding_dim)` plus 1-D label arrays, so image, text, audio, tabular or multimodal encoders of any output size all work the same way.
-
-[![PyPI version](https://img.shields.io/pypi/v/shortkit-ml.svg)](https://pypi.org/project/shortkit-ml/)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.2+-ee4c2c.svg)](https://pytorch.org/)
-[![CI](https://github.com/criticaldata/ShortKit-ML/actions/workflows/tests.yml/badge.svg)](https://github.com/criticaldata/ShortKit-ML/actions/workflows/tests.yml)
-[![Dataset on HF](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-ShortKIT--ML--data-yellow.svg)](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data)
-[![Docs](https://img.shields.io/badge/docs-criticaldata.github.io-blue.svg)](https://criticaldata.github.io/ShortKit-ML/)
-
+---
+hide:
+  - navigation
+  - toc
 ---
 
-## What is Shortcut Detection?
+<p align="center" class="home-logo">
+  <video autoplay muted loop playsinline controls preload="metadata" style="width:100%;border-radius:12px;border:1px solid #d9deea;box-shadow:0 8px 28px rgba(31,39,51,.10)" poster="assets/walkthrough/dashboard-audit-poster.jpg" src="assets/walkthrough/dashboard-audit.mp4"></video>
+</p>
 
-Machine learning models often learn **shortcuts** - spurious correlations between input features and labels that don't generalize. For example, a medical imaging model might learn to predict disease based on hospital equipment watermarks rather than actual pathology.
+*Ninety seconds: install, bring your embeddings (any encoder, any modality), the dashboard from `python app.py` to the downloaded PDF, and the MCP call for agents.*
 
-This library helps you detect such shortcuts in your model's embedding space before they cause real-world harm.
+[![PyPI version](https://img.shields.io/pypi/v/shortkit-ml.svg)](https://pypi.org/project/shortkit-ml/)
+[![CI](https://github.com/criticaldata/ShortKit-ML/actions/workflows/tests.yml/badge.svg)](https://github.com/criticaldata/ShortKit-ML/actions/workflows/tests.yml)
+[![Docs](https://img.shields.io/badge/docs-criticaldata.github.io-blue.svg)](https://criticaldata.github.io/ShortKit-ML/)
+[![Paper](https://img.shields.io/badge/paper-medRxiv-red.svg)](https://doi.org/10.64898/2026.04.29.26352053)
+{ .home-badges }
 
-## Key Features
+ShortKit-ML measures the shortcut potential of a machine learning embedding with one calibrated audit and writes the result as an HTML or PDF report.
+{ .home-lead }
 
-<div class="grid cards" markdown>
+The audit answers one question: does the embedding carry a sensitive attribute (sex, age group, race, site, scanner) beyond what the task label explains? A conditional probe is the primary test, five secondary detectors are reported as diagnostics, and all six are calibrated by a permutation null that shuffles the attribute within task-label strata, so the probe decides at p < 0.05 and nothing else does.
 
--   :dna: **HBAC Clustering**
+## Start here
 
-    ---
+<div class="grid cards home-cards" markdown>
 
-    Hierarchical Bias-Aware Clustering detects if embeddings cluster by protected attributes.
-
-    [:octicons-arrow-right-24: Learn more](methods/hbac.md)
-
--   :microscope: **Probe-based Detection**
-
-    ---
-
-    Tests if sensitive group information can be recovered from embeddings using classifiers.
-
-    [:octicons-arrow-right-24: Learn more](methods/probe.md)
-
--   :bar_chart: **Statistical Testing**
+-   :material-play-circle-outline:{ .home-icon .dot-blue } __Walkthrough__
 
     ---
 
-    Identifies embedding dimensions with significant group differences using hypothesis tests.
+    The whole audit on one public data set, from a fresh install to the PDF report, in five terminal recordings and a dashboard video, all replayable on your own data.
 
-    [:octicons-arrow-right-24: Learn more](methods/statistical.md)
+    [:octicons-arrow-right-24: Walkthrough](getting-started/walkthrough.md)
 
--   :compass: **Geometric Analysis**
+-   :material-download-outline:{ .home-icon .dot-teal } __Installation__
 
     ---
 
-    Finds bias directions and prototype subspaces in embedding geometry.
+    Clone and install from source with `uv` or `pip`. The audit module is newer than the PyPI release, so source is the way in for now.
 
-    [:octicons-arrow-right-24: Learn more](methods/geometric.md)
+    [:octicons-arrow-right-24: Installation](getting-started/installation.md)
+
+-   :material-robot-outline:{ .home-icon .dot-purple } __MCP server for agents__
+
+    ---
+
+    Nine tools over stdio. `run_audit` runs the audit on files you name in chat, from Claude Code, Claude Desktop or any other MCP client.
+
+    [:octicons-arrow-right-24: MCP server](mcp-server.md)
+
+-   :material-file-document-outline:{ .home-icon .dot-green } __The paper__
+
+    ---
+
+    ShortKit-ML: an open toolkit for measuring shortcut potential in medical imaging embeddings. Preprint on medRxiv, with the method, the synthetic calibration and the clinical audits.
+
+    [:octicons-arrow-right-24: Read the preprint](https://doi.org/10.64898/2026.04.29.26352053)
 
 </div>
 
-## Quick Example
+## What the audit needs
+
+| Array | Shape | Meaning |
+|---|---|---|
+| `E` | `(n, d)` float | one embedding per row, from any encoder, any width `d` |
+| `A` | `(n,)` | the sensitive attribute |
+| `Y` | `(n,)` | the task label the classifier would learn |
+| `groups` | `(n,)`, optional | a unit id (patient, identity) when one unit has several rows |
+
+## Run it
 
 ```python
-from shortcut_detect import ShortcutDetector
 import numpy as np
+from shortcut_detect.audit import AuditConfig, conditional_audit
+from shortcut_detect.audit.report import audit_report
 
-# Load your embeddings and labels
-embeddings = np.load("embeddings.npy")  # (n_samples, embedding_dim)
-labels = np.load("labels.npy")          # (n_samples,)
-
-# Detect shortcuts using all methods
-detector = ShortcutDetector(methods=['hbac', 'probe', 'statistical', 'geometric'])
-detector.fit(embeddings, labels)
-
-# Generate comprehensive report
-detector.generate_report("report.html", format="html")
-print(detector.summary())
+E = np.load("embeddings.npy")   # (n, d), any encoder
+A = np.load("attribute.npy")    # (n,)
+Y = np.load("labels.npy")       # (n,)
+result = conditional_audit(E, A, Y, config=AuditConfig(seed=42))  # groups=patient_ids when needed
+print(result.results["probe"].p_value)
+audit_report(result, "audit.pdf", attribute="sex", task="pneumonia")
 ```
 
-**Output:**
-```
-======================================================================
-UNIFIED SHORTCUT DETECTION SUMMARY
-======================================================================
-HIGH RISK: Multiple methods detected shortcuts
-  - HBAC detected shortcuts (high confidence)
-  - Probe accuracy 94.2% (high risk)
-  - 3 group comparisons show significant differences
-```
+The dashboard, the 19 exploratory detectors and the mitigation methods are documented under [Other package methods](methods/overview.md).
 
-## Interactive Dashboard
+## Cite
 
-Launch the Gradio web interface for interactive analysis:
-
-```bash
-python app.py
+```bibtex
+@article{cajas2026shortkit,
+  title={ShortKit-ML: an open toolkit for measuring shortcut potential in medical imaging embeddings},
+  author={Cajas, Sebastian and Marzullo, Aldo and Kapadia, Sahil and Santos, Filipe and Ocampo Osorio, Felipe and Kong, Qingpeng and Quarta, Alessandro and Kuo, Po-Chih and Patel, Milit and Rojas Sillery, Raul Ignacio and Celi, Leo Anthony},
+  journal={medRxiv},
+  year={2026},
+  doi={10.64898/2026.04.29.26352053}
+}
 ```
 
-![Dashboard Preview](assets/dashboard-preview.png)
-
-**Features:**
-
-- Sample data: 2,000 CheXpert records with real metadata and synthetic 512-dim embeddings (real arrays with a checkbox)
-- Custom CSV upload
-- PDF/HTML report export
-- Interactive visualizations
-
-## Installation
-
-```bash
-pip install shortkit-ml
-```
-
-Or install from source:
-
-```bash
-git clone https://github.com/criticaldata/ShortKit-ML.git
-cd ShortKit-ML
-pip install -e ".[all]"
-```
-
-[:octicons-arrow-right-24: Full installation guide](getting-started/installation.md)
-
-## Detection Methods Overview
-
-| Method | What it detects | Speed | GPU Required |
-|--------|----------------|-------|--------------|
-| **HBAC** | Clustering by protected attributes | Fast | No |
-| **Probe** | Information leakage via classifiers | Medium | Optional |
-| **Statistical** | Dimension-wise group differences | Fast | No |
-| **Geometric** | Bias directions & subspaces | Fast | No |
-| **GradCAM** | Attention overlap with shortcuts | Slow | Yes |
-| **SpRAy** | Heatmap clustering (Clever Hans) | Medium | Optional |
-
-## The paper's audit
-
-The accompanying paper (under revision at *Computer Methods and Programs in Biomedicine*; [preprint](https://www.medrxiv.org/content/10.64898/2026.04.29.26352053v1)) does not use the risk levels above. It runs `shortcut_detect.audit.conditional_audit`: a conditional probe, calibrated by permuting the attribute within task-label strata and at patient level, is the single primary test, and five secondary detectors share that null as diagnostics. See [Reproducing the Paper](reproducibility.md#revised-paper-cmpb-revision-2026).
-
-## Who Uses This?
-
-This library is designed for:
-
-- **ML Researchers** studying fairness and bias
-- **Healthcare AI Teams** validating medical imaging models
-- **ML Engineers** auditing production models
-- **Data Scientists** exploring embedding quality
-
-## License
-
-MIT License - see [LICENSE](https://github.com/criticaldata/ShortKit-ML/blob/main/LICENSE) for details.
+MIT licence, see [LICENSE](https://github.com/criticaldata/ShortKit-ML/blob/main/LICENSE).

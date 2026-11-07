@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# End-to-end revision pipeline (CMPB-D-26-02542). Called by
+# End-to-end pipeline of the ShortKit-ML paper. Called by
 # `scripts/reproduce_paper.sh revision`; can also run selected stages:
 #   scripts/revision/run_all.sh [stage ...]
 # Stages: old clinical negctl exchange synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full nlprobe nlprobe_clinical scaling tables (default: all, in order)

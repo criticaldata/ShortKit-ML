@@ -1,8 +1,8 @@
-# Detection Methods Overview
+# Detection methods overview
 
-ShortKit-ML provides multiple complementary methods for detecting shortcuts in embedding spaces. Each method has different strengths and is sensitive to different types of biases.
+ShortKit-ML provides several complementary methods for detecting shortcuts in embedding spaces; 19 are registered as `ShortcutDetector` keys. Each method has different strengths and is sensitive to different types of biases.
 
-## Why Multiple Methods?
+## Why several methods?
 
 Each method reads a different property of the embedding (cluster structure, per-dimension differences, centroid distance, a fitted direction), and the secondary scores are on interpretable scales. Agreement between methods is reported as a description. It is not a decision rule: in the paper's synthetic benchmark the detectors' flags were strongly correlated, and requiring several to agree lowered sensitivity without a useful gain in specificity.
 
@@ -10,14 +10,14 @@ Each method reads a different property of the embedding (cluster structure, per-
 
 The accompanying paper runs `shortcut_detect.audit.conditional_audit`. The risk levels on these pages play no part in it. Its single primary test is the conditional probe: an L2 logistic regression predicting the attribute from the embedding concatenated with the task label, scored by out-of-fold AUROC (5-fold CV stratified on attribute and task, grouped by patient when `groups` is given). The null is a conditional permutation: the attribute is shuffled within task-label strata, between patients where patient ids exist, K times; the p-value is (1 + number of null statistics at or above the observed) / (K + 1). The five secondary detectors (statistical, geometric, bias direction PCA, HBAC, frequency) share that null, and the six p-values of a cell are Benjamini-Hochberg adjusted. The number of flagged detectors is reported as a description only. `AuditConfig` defaults: `C=1.0`, `n_clusters=8`, `top_k_fraction=0.05`, `n_permutations=200`; the clinical audits set `n_permutations_probe=500`. SIS, the fairness gaps and the training-dynamics methods are outside the score. The audit measures shortcut potential, whether the attribute is recoverable from the embedding given the task; a positive result does not show that a classifier trained on the embedding uses the attribute. Reference: [Audit API](../api/audit.md).
 
-## Methods Comparison
+## Methods comparison
 
 | Method | What It Detects | Strengths | Limitations |
 |--------|----------------|-----------|-------------|
-| **HBAC** | Clustering by protected attributes | Fast, interpretable dendrograms | Assumes hierarchical structure |
+| **HBAC** | Clustering by protected attributes | Fast, interpretable cluster purities | Assumes cluster structure |
 | **Probe** | Information leakage | Direct measurement of predictability | Requires train/test split |
 | **Statistical** | Dimension-wise differences | Identifies specific features | May miss non-linear patterns |
-| **Geometric** | Bias directions in subspace | Works without labels | Requires sufficient samples per group |
+| **Geometric** | Bias directions in subspace | Needs only group labels | Requires sufficient samples per group |
 | **Equalized Odds** | TPR/FPR disparities across groups | Interpretable fairness metric | Requires binary labels |
 | **Demographic Parity** | Positive rate gaps across groups | Interpretable fairness metric | Requires binary labels |
 | **Intersectional** | Fairness across demographic intersections | Catches compounded disparities (Buolamwini & Gebru 2018) | Requires 2+ attributes in extra_labels |
@@ -38,7 +38,7 @@ The accompanying paper runs `shortcut_detect.audit.conditional_audit`. The risk 
 | **Last Layer Retraining (M06)** | Mitigation: retrain last layer on balanced subset | DFR (Kirichenko et al. 2023) | Requires task + group labels; sklearn |
 | **Contrastive Debiasing (M07)** | Mitigation: contrastive learning to separate shortcuts | Correct-n-Contrast (Zhang et al. 2022) | Requires task + group labels; PyTorch |
 
-## Decision Matrix
+## Decision matrix
 
 Choose methods based on your use case:
 
@@ -51,11 +51,11 @@ graph TD
     C -->|No| F[Use: HBAC, Probe, Statistical, Geometric]
 ```
 
-## Quick Recommendations
+## Quick recommendations
 
-### For Production Audits
+### For production audits
 
-Use all methods for comprehensive coverage:
+Use the paper's audit (`conditional_audit`) for the measurement. To explore alongside it, run several methods:
 
 ```python
 detector = ShortcutDetector(
@@ -63,7 +63,7 @@ detector = ShortcutDetector(
 )
 ```
 
-### For Quick Screening
+### For quick screening
 
 Use fast methods for initial assessment:
 
@@ -73,7 +73,7 @@ detector = ShortcutDetector(
 )
 ```
 
-### For Deep Analysis
+### For deep analysis
 
 Use all methods plus GradCAM for visual insights:
 
@@ -85,19 +85,25 @@ detector = ShortcutDetector(
 gradcam = GradCAMHeatmapGenerator(model, target_layer)
 ```
 
-## Interpretation Framework
+## Interpretation framework
 
-### Risk Assessment
+### Risk assessment
 
-Each method produces risk indicators:
+Each method applies a fixed rule to decide whether it flags a shortcut (the defaults, from the code):
 
-| Risk Level | HBAC Purity | Probe Accuracy | Statistical % | Geometric Effect | Equalized Odds Gap | GroupDRO Gap |
-|------------|-------------|----------------|---------------|------------------|-------------------|--------------|
-| **Low** | < 60% | < 60% | < 10% | < 0.3 | < 10% | < 5% |
-| **Medium** | 60-80% | 60-80% | 10-30% | 0.3-0.7 | 10-20% | 5-10% |
-| **High** | > 80% | > 80% | > 30% | > 0.7 | > 20% | > 10% |
+| Method | Flagged when |
+|--------|--------------|
+| **HBAC** | two or more clusters have purity above 0.8, or few dimensions matter and the held-out linear accuracy is above 0.85 |
+| **Probe** | the held-out metric (`f1` by default) exceeds `threshold=0.70`; risk `high` from 0.85 |
+| **Statistical** | any dimension stays significant after the multiple-testing correction (`fdr_bh`, alpha 0.05) |
+| **Geometric** | a centroid pair has effect size at or above 0.8, or a subspace pair has mean cosine at or above 0.85 |
+| **Equalized odds** | the TPR or FPR gap between groups is at or above 0.1 |
+| **Demographic parity** | the positive-rate gap between groups is at or above 0.1 |
+| **GroupDRO** | average accuracy minus worst-group accuracy exceeds 0.10 |
 
-### Aggregated Risk
+These rules are heuristics for exploration. The paper's audit calibrates each statistic against a permutation null instead and reads nothing off these thresholds.
+
+### Aggregated risk
 
 The unified `ShortcutDetector` provides an aggregated assessment via the `summary()` method.
 The aggregation strategy is controlled by the `condition_name` parameter:
@@ -126,11 +132,12 @@ print(detector.summary())
 
 # Access individual method results
 results = detector.get_results()
-print(results['probe']['accuracy'])  # Probe accuracy
-print(results['hbac']['shortcut_detected'])  # HBAC detection result
+print(results['probe']['results']['metrics']['metric_value'])   # probe score (f1 by default)
+print(results['hbac']['report']['has_shortcut']['exists'])      # HBAC decision
+print(results['probe']['risk_value'], results['hbac']['risk_value'])
 ```
 
-## Detailed Method Guides
+## Detailed method guides
 
 Learn more about each method:
 
@@ -157,7 +164,7 @@ Learn more about each method:
 - [Last Layer Retraining (M06)](last-layer-retraining.md) - Model mitigation: retrain last layer on group-balanced subset
 - [Contrastive Debiasing (M07)](contrastive-debiasing.md) - Model mitigation: contrastive learning to separate shortcuts
 
-## Method Limitations
+## Method limitations
 
 All methods have limitations you should be aware of:
 

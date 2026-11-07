@@ -9,11 +9,12 @@ import numpy as np
 import shortcut_detect.mcp_server as mcp_server
 from shortcut_detect.mcp_server import (
     compare_methods,
-    generate_synthetic_data,
     generate_report,
+    generate_synthetic_data,
     get_method_detail,
     get_summary,
     list_methods,
+    run_audit,
     run_benchmark,
     run_detector,
 )
@@ -618,3 +619,50 @@ def test_compare_methods_async_does_not_rerun_methods(monkeypatch):
 
     assert calls == ["probe", "statistical", "geometric"]
     assert result["votes"] == {"detected": 1, "not_detected": 2}
+
+
+# ---------------------------------------------------------------------------
+# run_audit (the paper's calibrated audit)
+# ---------------------------------------------------------------------------
+
+
+def test_run_audit_from_files_writes_report(tmp_path):
+    rng = np.random.default_rng(3)
+    n, d = 300, 16
+    attribute = rng.integers(0, 2, n)
+    task = rng.integers(0, 2, n)
+    embeddings = rng.standard_normal((n, d))
+    embeddings[:, 0] += 1.5 * attribute  # the attribute is recoverable given the task
+
+    embeddings_path = tmp_path / "E.npy"
+    attribute_path = tmp_path / "A.csv"
+    task_path = tmp_path / "Y.csv"
+    report_path = tmp_path / "audit.html"
+    np.save(embeddings_path, embeddings)
+    np.savetxt(attribute_path, np.where(attribute == 1, "female", "male"), fmt="%s", header="sex", comments="")
+    np.savetxt(task_path, task, fmt="%d", header="pneumothorax", comments="")
+
+    result = json.loads(
+        run_audit(
+            embeddings_path=str(embeddings_path),
+            attribute_path=str(attribute_path),
+            task_path=str(task_path),
+            n_permutations=20,
+            n_permutations_probe=20,
+            seed=0,
+            attribute="sex",
+            task="pneumothorax",
+            report_path=str(report_path),
+        )
+    )
+
+    assert "error" not in result, result.get("error")
+    for key in ("statistic", "ci_low", "ci_high", "null_mean", "null_sd", "p_value", "flag"):
+        assert key in result["probe"]
+    assert result["attribute_levels"] == ["female", "male"]
+    assert len(result["detectors"]) == 6
+    assert result["n_flagged"] == sum(row["flag"] for row in result["detectors"])
+    assert "sex" in result["summary"]
+    assert result["report_path"] == str(report_path)
+    assert report_path.exists()
+    assert "sex" in report_path.read_text(encoding="utf-8")

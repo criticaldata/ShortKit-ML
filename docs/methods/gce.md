@@ -142,7 +142,7 @@ $$L_i = \frac{1 - p_i^q}{q}$$
 
 where $p_i$ is the predicted probability for the true class of sample $i$. When $q \to 0$, this recovers the standard cross-entropy loss. For $q \approx 0.7$, the loss downweights easy (high-confidence) samples and emphasizes hard ones.
 
-A biased classifier trained with GCE loss tends to memorize majority patterns first. Samples with persistently high loss are those that conflict with the majority pattern -- these are the minority or bias-conflicting examples that may indicate shortcut reliance.
+A biased classifier trained with GCE loss tends to memorize majority patterns first. Samples with persistently high loss are those that conflict with the majority pattern: the minority or bias-conflicting examples that may indicate shortcut reliance.
 
 ## See Also
 

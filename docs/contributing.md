@@ -2,28 +2,28 @@
 
 We welcome contributions to ShortKit-ML! This guide explains how to get started.
 
-## Table of Contents
+## Table of contents
 
-- [Development Setup](#development-setup)
-- [Code Style](#code-style)
+- [Development setup](#development-setup)
+- [Code style](#code-style)
 - [Testing](#testing)
 - [Documentation](#documentation)
-- [Pull Request Process](#pull-request-process)
-- [Adding New Detection Methods](#adding-new-detection-methods)
-- [Reporting Issues](#reporting-issues)
+- [Pull request process](#pull-request-process)
+- [Adding new detection methods](#adding-new-detection-methods)
+- [Reporting issues](#reporting-issues)
 
 ---
 
-## Development Setup
+## Development setup
 
-### Clone the Repository
+### Clone the repository
 
 ```bash
 git clone https://github.com/criticaldata/ShortKit-ML.git
 cd ShortKit-ML
 ```
 
-### Create Virtual Environment
+### Create a virtual environment
 
 ```bash
 # Using uv (recommended)
@@ -35,7 +35,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### Install Development Dependencies
+### Install development dependencies
 
 ```bash
 # Install all dependencies including dev tools
@@ -45,7 +45,7 @@ pip install -e ".[all]"
 uv pip install -e ".[all]"
 ```
 
-### System Dependencies (Optional Features)
+### System dependencies (optional features)
 
 Some features require system libraries that cannot be installed via pip:
 
@@ -64,13 +64,13 @@ sudo dnf install pango gdk-pixbuf2 libffi-devel
 
 If you don't need PDF export, you can skip this: HTML and Markdown reports work without these dependencies.
 
-### Install Pre-commit Hooks
+### Install pre-commit hooks
 
 ```bash
 pre-commit install
 ```
 
-## Code Style
+## Code style
 
 We use the following tools for code quality:
 
@@ -78,7 +78,7 @@ We use the following tools for code quality:
 - **Ruff** - Linting
 - **MyPy** - Type checking
 
-### Running Formatters
+### Running formatters
 
 ```bash
 # Format code
@@ -95,7 +95,7 @@ mypy shortcut_detect/
 
 See `pyproject.toml` for tool configurations.
 
-### Method Implementation Conventions
+### Method implementation conventions
 
 To keep detection methods consistent across contributors, follow these project conventions:
 
@@ -108,7 +108,7 @@ If a method needs a deviation from these rules, document the reason in the modul
 
 ## Testing
 
-### Running Tests
+### Running tests
 
 ```bash
 # Run all tests
@@ -128,7 +128,7 @@ pytest tests/test_probes.py -v
 pytest tests/test_probes.py::TestSKLearnProbe::test_sklearn_probe_basic_shortcut_detected -v
 ```
 
-### Writing Tests
+### Writing tests
 
 Tests are in the `tests/` directory. Use pytest fixtures for common setup:
 
@@ -156,7 +156,7 @@ def test_detector_fit(sample_data):
 
 ## Documentation
 
-### Building Docs Locally
+### Building docs locally
 
 You can build docs in a separate virtual environment to avoid conflicts with your main development environment:
 
@@ -186,7 +186,7 @@ pip install -e ".[docs]"
 mkdocs serve
 ```
 
-### Writing Documentation
+### Writing documentation
 
 - Documentation is in `docs/` using Markdown
 - API docs auto-generated from docstrings via mkdocstrings
@@ -217,21 +217,21 @@ def fit(self, embeddings: np.ndarray, group_labels: np.ndarray) -> "ShortcutDete
     """
 ```
 
-## Pull Request Process
+## Pull request process
 
-### 1. Create a Branch
+### 1. Create a branch
 
 ```bash
 git checkout -b feature/my-new-feature
 ```
 
-### 2. Make Changes
+### 2. Make changes
 
 - Write code
 - Add tests
 - Update documentation
 
-### 3. Commit and Push
+### 3. Commit and push
 
 ```bash
 git add .
@@ -241,7 +241,7 @@ git push origin feature/my-new-feature
 
 Pre-commit hooks will automatically run **Black** (formatting) and **Ruff** (linting) on your staged files.
 
-### 4. Create a Pull Request
+### 4. Create a pull request
 
 Open a Pull Request on GitHub. The following will happen automatically:
 
@@ -249,7 +249,7 @@ Open a Pull Request on GitHub. The following will happen automatically:
 - **Status Checks**: PR must pass all CI checks before merge
 - **Code Review**: PRs require approval from a team member
 
-### 5. Address Feedback
+### 5. Address feedback
 
 - Fix any CI failures
 - Respond to review comments
@@ -257,7 +257,7 @@ Open a Pull Request on GitHub. The following will happen automatically:
 
 Once approved and all checks pass, your PR can be merged.
 
-## Adding New Detection Methods
+## Adding new detection methods
 
 > **Start from the template.** Copy `shortcut_detect/detector_template.py`
 > into your method's package and rename the classes.  The template contains
@@ -301,11 +301,11 @@ is:
 
 Guidelines:
 
-- **metrics** -- keep small and scalar (floats, ints, short strings).
+- **metrics**: keep small and scalar (floats, ints, short strings).
   Arrays, tables, and large objects belong in `report` or `details`.
-- **risk_level** -- use `"unknown"` if the method cannot assess risk.
+- **risk_level**: use `"unknown"` if the method cannot assess risk.
   The legacy value `"medium"` is automatically mapped to `"moderate"`.
-- **shortcut_detected** -- use `None` if detection logic is not yet
+- **shortcut_detected**: use `None` if detection logic is not yet
   implemented.
 
 ### Step-by-step process
@@ -411,15 +411,15 @@ def test_my_method_basic():
 
 #### 7. Add documentation
 
-- Create `docs/methods/my-method.md` -- conceptual overview and usage
+- Create `docs/methods/my-method.md`: conceptual overview and usage
   examples.
-- Create `docs/api/my-method.md` -- API reference (auto-generated from
+- Create `docs/api/my-method.md`: API reference (auto-generated from
   docstrings via mkdocstrings).
 - Update `mkdocs.yml` navigation to include both pages.
 
-## Reporting Issues
+## Reporting issues
 
-### Bug Reports
+### Bug reports
 
 Include:
 
@@ -429,7 +429,7 @@ Include:
 - Full error traceback
 - Expected vs actual behavior
 
-### Feature Requests
+### Feature requests
 
 Include:
 
@@ -437,7 +437,7 @@ Include:
 - Proposed API design
 - Any relevant papers/references
 
-## Code of Conduct
+## Code of conduct
 
 - Be respectful and inclusive
 - Provide constructive feedback

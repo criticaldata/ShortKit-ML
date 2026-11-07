@@ -1,6 +1,6 @@
-# Reproducing Paper Results
+# Reproducing the paper's results
 
-This guide explains how to reproduce the results of the ShortKit-ML paper (under revision at *Computer Methods and Programs in Biomedicine*; [preprint](https://www.medrxiv.org/content/10.64898/2026.04.29.26352053v1)). The revised paper's pipeline is in [Revised paper](#revised-paper-cmpb-revision-2026) below. The `smoke`, `default` and `full` profiles in the next sections run the first-submission synthetic benchmark (fixed-threshold detectors) and do not produce the revised paper's tables.
+This guide explains how to reproduce the results of the [ShortKit-ML paper](https://doi.org/10.64898/2026.04.29.26352053). The paper's pipeline is in [The paper's pipeline](#paper-pipeline) below. The `smoke`, `default` and `full` profiles in the next sections run the earlier synthetic benchmark (fixed-threshold detectors) and do not produce the paper's tables.
 
 ## Prerequisites
 
@@ -8,7 +8,7 @@ This guide explains how to reproduce the results of the ShortKit-ML paper (under
 - pip or uv package manager
 - (Optional) Docker for fully isolated runs
 
-## Quick Start
+## Quick start
 
 ### 1. Install the package
 
@@ -27,7 +27,7 @@ pip install -e ".[dev]"
 # Moderate run (recommended first attempt)
 ./scripts/reproduce_paper.sh default
 
-# Full paper reproduction
+# Full synthetic grid
 ./scripts/reproduce_paper.sh full
 ```
 
@@ -76,7 +76,7 @@ For custom runs, copy the config and modify as needed, then call:
 python -m shortcut_detect.benchmark.paper_runner --config your_config.json
 ```
 
-## Expected Output Files
+## Expected output files
 
 After a successful run, the timestamped output directory contains:
 
@@ -88,13 +88,13 @@ After a successful run, the timestamped output directory contains:
 | `correction_comparison.csv` | Multiple testing correction comparison |
 | `benchmark_meta.json` | Run metadata (config, timing, environment) |
 
-## CheXpert (Dataset 2)
+## CheXpert (dataset 2)
 
 The CheXpert real-data benchmark requires access to the CheXpert dataset. Set `chexpert.enabled: true` and provide `chexpert.manifest_path` in the config. See `scripts/extract_chexpert_embeddings.py` for embedding extraction.
 
-## Revised paper (CMPB revision, 2026)
+## The paper's pipeline { #paper-pipeline }
 
-Every table, figure and number of the revised paper comes from one pipeline:
+Every table, figure and number of the paper comes from one pipeline:
 
 ```bash
 ./scripts/reproduce_paper.sh revision          # all stages
@@ -103,7 +103,7 @@ scripts/revision/run_all.sh head mlp tables    # selected stages
 
 Stages, in order: `old clinical negctl synthetic nullcheck head dfr mlp race analyses umap marker extraction alignment overlap sensitivity sample_vs_full nlprobe nlprobe_clinical scaling tables`. The `race` stage repeats the head experiment with race (White against non-White) as the attribute, logistic head only. The `sensitivity` stage runs the probe checks `C`, `frontal` and `labelled`. The `sample_vs_full` stage compares the audited CheXpert sample with the full `train.csv` on sex, age, view and race. The `nlprobe` stage runs the conditional probe on squared and pairwise-product features of the synthetic embeddings, under the same permutation null, at one small setting (`nonlinear_probe/`). The `nlprobe_clinical` stage fits the probe on `[E, E^2]` for every primary cell of the clinical audit (CheXpert and MIMIC-CXR, not CelebA) with the audit's seed, K = 500, patient-grouped folds and permutation draws, and joins the linear probe's AUROC and decision from `clinical_audit/` (`nonlinear_probe_clinical/`); the pairwise-product design is not run at d up to 2048. The `scaling` stage times the probe alone (K = 500, patient-grouped folds) on synthetic 768-dimensional embeddings at 2,000 to 50,000 images and fits a log-log slope (`probe_scaling/`). One more stage runs only when named: `prepare_mimic` rebuilds `data/mimic_cxr/vit32_cls_embeddings_realigned.npy` and `mimic_race_raw.csv` from the coreset parquet files in `mimic_cxr/source/` of the ShortKit-ML-data dataset (downloaded from the hub, or a local copy through `QML_DIR`; needs `pyarrow`). The `Stored array` column of the sensitivity table reads `clinical_audit_stored_arrays/`, which no stage writes: it is a frozen output of the `clinical` stage from before the CheXpert switch to the `public/` arrays. Results go to `~/Documents/shortkit-ml-results/2026-10-28_revision_<commit>/` unless `SHORTKIT_REVISION_DIR` is set; each stage writes a `MANIFEST.txt` with the commit, data hashes and settings. `tables` writes the LaTeX tables, figures and `numbers.tex` to `output/paper_tables/revision/`.
 
-The embeddings come from the gated dataset [MITCriticalData/ShortKit-ML-data](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data). To get access, click **Request access** on the dataset page, then email your PhysioNet username and proof of current MIMIC-CXR access (never your password) to sebasmos@mit.edu. Requests are approved by hand.
+The embeddings come from the gated dataset [MITCriticalData/ShortKit-ML-data](https://huggingface.co/datasets/MITCriticalData/ShortKit-ML-data). To get access, click **Request access** on the dataset page and include your PhysioNet username; proof of current MIMIC-CXR access is required (never share your password). Requests are approved by hand.
 
 The audit in every stage is `shortcut_detect.audit.conditional_audit`: the conditional probe (L2 logistic regression predicting the attribute from the embedding and the task label, out-of-fold AUROC) is the single primary test, calibrated by permuting the attribute within task-label strata and between patients (K=500 in the clinical audits, 200 for the secondary detectors, the synthetic grid and the audits after mitigation). The five secondary detectors share that null; the six p-values of a cell are Benjamini-Hochberg adjusted, and the count of flagged detectors is descriptive only. The audit reports shortcut potential; the classification-head experiment (`head`, `mlp`, `race`, `dfr` stages) tests separately whether a head trained on confounded data uses the attribute.
 

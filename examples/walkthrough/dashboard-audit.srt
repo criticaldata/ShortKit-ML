@@ -1,0 +1,60 @@
+1
+00:00:01,081 --> 00:00:03,087
+The dashboard opens in the browser
+
+2
+00:00:03,087 --> 00:00:05,443
+Start in the Audit tab
+
+3
+00:00:05,443 --> 00:00:08,794
+Use the built-in example
+
+4
+00:00:08,794 --> 00:00:13,137
+Or load your own embeddings and labels
+
+5
+00:00:13,137 --> 00:00:14,945
+Click to load the example
+
+6
+00:00:14,945 --> 00:00:21,082
+Loaded: 1,500 face embeddings, attribute Male, task Blond hair
+
+7
+00:00:21,082 --> 00:00:25,484
+Fewer permutations for a quick demo
+
+8
+00:00:25,484 --> 00:00:26,817
+Run the audit
+
+9
+00:00:26,817 --> 00:00:29,484
+It takes about half a minute
+
+10
+00:00:29,484 --> 00:00:35,294
+The verdict: the embedding carries the attribute
+
+11
+00:00:35,294 --> 00:00:40,438
+One row per detector; the probe decides
+
+12
+00:00:40,438 --> 00:00:48,918
+Red dots above the grey band: signal found
+
+13
+00:00:48,918 --> 00:00:50,553
+Download the PDF report
+
+14
+00:00:50,553 --> 00:00:53,555
+The report: setting, verdict, table
+
+15
+00:00:53,555 --> 00:01:01,318
+And the figure
+

@@ -1,47 +1,39 @@
-# Advanced Analysis
+# Advanced analysis
 
-This guide covers advanced usage patterns including model comparison, custom analysis, and debiasing.
+Model comparison, intersectional attributes, custom probes, debiasing experiments, custom tests, bootstraps and batch runs. Snippets that need your own files say so.
 
-## Model Comparison
-
-Compare shortcut detection across multiple models.
+## Model comparison
 
 ```python
 import numpy as np
+import pandas as pd
 from shortcut_detect import ShortcutDetector
 
-# Load embeddings from different models
 models = {
-    'ResNet50': np.load('embeddings_resnet50.npy'),
-    'DenseNet121': np.load('embeddings_densenet121.npy'),
-    'ViT-B/16': np.load('embeddings_vit.npy'),
-    'CLIP': np.load('embeddings_clip.npy'),
+    "ResNet50": np.load("embeddings_resnet50.npy"),
+    "DenseNet121": np.load("embeddings_densenet121.npy"),
+    "ViT-B/16": np.load("embeddings_vit.npy"),
 }
+task_labels = np.load("task_labels.npy")
+group_labels = np.load("group_labels.npy")
 
-# Same labels for all models
-group_labels = np.load('group_labels.npy')
-
-# Compare
-results = {}
+rows = {}
 for name, embeddings in models.items():
-    detector = ShortcutDetector(
-        methods=['probe', 'statistical', 'geometric'],
-        random_state=42
-    )
-    detector.fit(embeddings, group_labels)
-
+    detector = ShortcutDetector(methods=["probe", "statistical", "geometric"], seed=42)
+    detector.fit(embeddings, task_labels, group_labels=group_labels)
     res = detector.get_results()
-    results[name] = {
-        'probe_accuracy': res['probe']['accuracy'],
-        'n_significant': len(res['statistical']['significant_features'].get('0_vs_1', [])),
-        'effect_size': res['geometric']['effect_size'],
+    rows[name] = {
+        "probe_score": res["probe"]["results"]["metrics"]["metric_value"],
+        "n_significant": sum(len(v or []) for v in res["statistical"]["significant_features"].values()),
+        "effect_size": res["geometric"]["bias_pairs"][0].effect_size,
+        "risk": res["probe"]["risk_value"],
     }
 
-# Display comparison
-import pandas as pd
-df = pd.DataFrame(results).T
+df = pd.DataFrame(rows).T
 print(df)
 ```
+
+For the paper's measurement per model, call `conditional_audit(embeddings, group_labels, task_labels, config=cfg)` in the same loop and compare `result.results["probe"].statistic` and its confidence interval. `shortcut_detect.comparison.ModelComparisonRunner` runs the detector loop above for the dashboard's comparison tab.
 
 ### Visualization
 
@@ -50,90 +42,63 @@ import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
-# Probe accuracy
-axes[0].bar(results.keys(), [r['probe_accuracy'] for r in results.values()])
-axes[0].axhline(0.7, color='red', linestyle='--', label='High risk threshold')
-axes[0].set_ylabel('Probe Accuracy')
-axes[0].set_title('Probe-based Detection')
-axes[0].tick_params(axis='x', rotation=45)
+axes[0].bar(df.index, df["probe_score"].astype(float))
+axes[0].axhline(0.7, color="red", linestyle="--", label="threshold")
+axes[0].set_title("probe score")
 
-# Significant features %
-total_features = embeddings.shape[1]
-axes[1].bar(results.keys(),
-            [r['n_significant']/total_features*100 for r in results.values()])
-axes[1].axhline(30, color='red', linestyle='--', label='High risk threshold')
-axes[1].set_ylabel('% Significant Features')
-axes[1].set_title('Statistical Testing')
-axes[1].tick_params(axis='x', rotation=45)
+axes[1].bar(df.index, df["n_significant"].astype(int))
+axes[1].set_title("significant dimensions")
 
-# Effect size
-axes[2].bar(results.keys(), [r['effect_size'] for r in results.values()])
-axes[2].axhline(0.7, color='red', linestyle='--', label='High risk threshold')
-axes[2].set_ylabel('Effect Size')
-axes[2].set_title('Geometric Analysis')
-axes[2].tick_params(axis='x', rotation=45)
+axes[2].bar(df.index, df["effect_size"].astype(float))
+axes[2].axhline(0.8, color="red", linestyle="--", label="threshold")
+axes[2].set_title("geometric effect size")
 
+for ax in axes:
+    ax.tick_params(axis="x", rotation=45)
 plt.tight_layout()
 plt.savefig("model_comparison.png", dpi=150)
-plt.show()
 ```
 
 ---
 
-## Intersectional Analysis
-
-Analyze shortcuts across multiple protected attributes simultaneously.
+## Intersectional attributes
 
 ```python
-from itertools import product
+race = data["race"].to_numpy()
+sex = data["sex"].to_numpy()
+age_group = data["age_group"].to_numpy()
 
-# Define protected attributes
-race = data['race'].values
-sex = data['sex'].values
-age_group = data['age_group'].values
-
-# All combinations
 attributes = {
-    'race': race,
-    'sex': sex,
-    'age': age_group,
-    'race_sex': np.array([f"{r}_{s}" for r, s in zip(race, sex)]),
-    'race_age': np.array([f"{r}_{a}" for r, a in zip(race, age_group)]),
-    'all': np.array([f"{r}_{s}_{a}" for r, s, a in zip(race, sex, age_group)]),
+    "race": race,
+    "sex": sex,
+    "age": age_group,
+    "race_sex": np.array([f"{r}_{s}" for r, s in zip(race, sex)]),
+    "race_age": np.array([f"{r}_{a}" for r, a in zip(race, age_group)]),
+    "all": np.array([f"{r}_{s}_{a}" for r, s, a in zip(race, sex, age_group)]),
 }
 
-# Analyze each
-intersectional_results = {}
 for name, labels in attributes.items():
     n_groups = len(np.unique(labels))
     if n_groups < 2:
         continue
-
-    detector = ShortcutDetector(methods=['probe'])
-    detector.fit(embeddings, labels)
-
-    res = detector.get_results()
-    intersectional_results[name] = {
-        'n_groups': n_groups,
-        'probe_accuracy': res['probe']['accuracy'],
-    }
-
-    print(f"{name:15s} ({n_groups} groups): {res['probe']['accuracy']:.2%}")
+    detector = ShortcutDetector(methods=["probe"], seed=42)
+    detector.fit(embeddings, task_labels, group_labels=labels)
+    score = detector.get_results()["probe"]["results"]["metrics"]["metric_value"]
+    print(f"{name:10s} ({n_groups} groups): probe f1 {score:.2f}")
 ```
+
+The `intersectional` method computes fairness gaps across the intersections directly; see [Intersectional analysis](../methods/intersectional-analysis.md).
 
 ---
 
-## Custom Probe Architectures
-
-Create specialized probe classifiers.
+## Custom probe architectures
 
 ```python
-import torch
 import torch.nn as nn
 from shortcut_detect import TorchProbe
 
 class AttentionProbe(nn.Module):
-    """Probe with self-attention for interpretability."""
+    """Probe with self-attention over the embedding."""
 
     def __init__(self, input_dim, n_classes, n_heads=4):
         super().__init__()
@@ -142,239 +107,180 @@ class AttentionProbe(nn.Module):
             nn.Linear(input_dim, 128),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(128, n_classes)
+            nn.Linear(128, n_classes),
         )
 
     def forward(self, x):
-        # Add sequence dimension
-        x = x.unsqueeze(1)  # (batch, 1, dim)
-        attn_out, attn_weights = self.attention(x, x, x)
-        x = attn_out.squeeze(1)  # (batch, dim)
-        return self.classifier(x)
+        x = x.unsqueeze(1)                       # (batch, 1, dim)
+        attn_out, _ = self.attention(x, x, x)
+        return self.classifier(attn_out.squeeze(1))
 
-# Use custom probe
 probe = TorchProbe(
     model=AttentionProbe(512, 3),
-    device='cuda',
-    epochs=100
+    loss_fn=nn.CrossEntropyLoss(),
+    device="cuda",      # None picks cuda when available, else cpu
+    epochs=100,
 )
-probe.fit(X_train, y_train)
-print(f"Accuracy: {probe.score(X_test, y_test):.2%}")
+probe.fit(embeddings, group_labels)
+print(f"Held-out accuracy: {probe.metric_value_:.2%}")
 ```
 
 ---
 
-## Debiasing Experiments
+## Debiasing experiments
 
-Test debiasing techniques and measure their effectiveness.
+### Linear debiasing
 
-### Linear Debiasing
+Project the direction between the two group centroids out of the embeddings, then measure again:
 
 ```python
 from shortcut_detect import GeometricShortcutAnalyzer, ShortcutDetector
 
-# Original analysis
 analyzer = GeometricShortcutAnalyzer()
 analyzer.fit(embeddings, group_labels)
-print(f"Original effect size: {analyzer.bias_effect_size_:.2f}")
+pair = analyzer.bias_pairs_[0]
+print(f"Original effect size: {pair.effect_size:.2f}")
 
-# Apply debiasing
-embeddings_debiased = analyzer.debias(embeddings)
+g0, g1 = pair.groups
+c0, c1 = analyzer.group_stats_[g0]["centroid"], analyzer.group_stats_[g1]["centroid"]
+direction = (c1 - c0) / np.linalg.norm(c1 - c0)
+embeddings_debiased = embeddings - np.outer(embeddings @ direction, direction)
 
-# Re-analyze
 analyzer_after = GeometricShortcutAnalyzer()
 analyzer_after.fit(embeddings_debiased, group_labels)
-print(f"Debiased effect size: {analyzer_after.bias_effect_size_:.2f}")
+print("After:", analyzer_after.summary_)   # the centroids now coincide, so bias_pairs_ is empty
 
-# Full comparison
-detector_before = ShortcutDetector(methods=['probe', 'statistical'])
-detector_before.fit(embeddings, group_labels)
+def probe_and_count(X):
+    detector = ShortcutDetector(methods=["probe", "statistical"], seed=42)
+    detector.fit(X, group_labels)
+    res = detector.get_results()
+    return (res["probe"]["results"]["metrics"]["metric_value"],
+            sum(len(v or []) for v in res["statistical"]["significant_features"].values()))
 
-detector_after = ShortcutDetector(methods=['probe', 'statistical'])
-detector_after.fit(embeddings_debiased, group_labels)
-
-print("\nBefore debiasing:")
-print(f"  Probe accuracy: {detector_before.probe_results_['accuracy']:.2%}")
-print(f"  Significant features: {detector_before.statistical_results_['n_significant']}")
-
-print("\nAfter debiasing:")
-print(f"  Probe accuracy: {detector_after.probe_results_['accuracy']:.2%}")
-print(f"  Significant features: {detector_after.statistical_results_['n_significant']}")
+print("before (probe score, significant dims):", probe_and_count(embeddings))
+print("after: ", probe_and_count(embeddings_debiased))
 ```
 
-### INLP (Iterative Null-space Projection)
+The package's own mitigations (`AdversarialDebiasing`, `LastLayerRetraining`, `ContrastiveDebiasing` in `shortcut_detect.mitigation`) have their own method pages.
+
+### INLP (iterative null-space projection)
 
 ```python
+from sklearn.linear_model import LogisticRegression
+
 def inlp_debias(embeddings, group_labels, n_iterations=10):
-    """Iterative Null-space Projection for debiasing."""
-    from sklearn.linear_model import LogisticRegression
-
     X = embeddings.copy()
-
-    for i in range(n_iterations):
-        # Train classifier
-        clf = LogisticRegression(max_iter=1000)
-        clf.fit(X, group_labels)
-
-        # Get direction
-        w = clf.coef_[0]
-        w = w / np.linalg.norm(w)
-
-        # Project out
-        X = X - (X @ w.reshape(-1, 1)) @ w.reshape(1, -1)
-
-        # Check if still predictable
-        clf_check = LogisticRegression(max_iter=1000)
-        clf_check.fit(X, group_labels)
-        acc = clf_check.score(X, group_labels)
-
-        if acc < 0.55:  # Near random
+    for _ in range(n_iterations):
+        clf = LogisticRegression(max_iter=1000).fit(X, group_labels)
+        w = clf.coef_[0] / np.linalg.norm(clf.coef_[0])
+        X = X - np.outer(X @ w, w)                     # project the direction out
+        if LogisticRegression(max_iter=1000).fit(X, group_labels).score(X, group_labels) < 0.55:
             break
-
     return X
 
-# Apply INLP
 embeddings_inlp = inlp_debias(embeddings, group_labels)
 
-# Evaluate
-detector_inlp = ShortcutDetector(methods=['probe'])
+detector_inlp = ShortcutDetector(methods=["probe"], seed=42)
 detector_inlp.fit(embeddings_inlp, group_labels)
-print(f"After INLP: {detector_inlp.probe_results_['accuracy']:.2%}")
+print(f"After INLP: probe f1 {detector_inlp.get_results()['probe']['results']['metrics']['metric_value']:.2f}")
 ```
 
 ---
 
-## Custom Statistical Tests
+## Custom statistical tests
 
-Use domain-specific statistical tests.
+`GroupDiffTest` calls `test(x1, x2)` on each dimension and reads the p-value from the return value: a float, or a tuple whose second element is the p-value.
 
 ```python
+from scipy.stats import ks_2samp, f
 from shortcut_detect import GroupDiffTest
-from scipy.stats import ks_2samp, anderson_ksamp
 
-# Kolmogorov-Smirnov test
-test_ks = GroupDiffTest(
-    test=lambda x, y: ks_2samp(x, y),
-    correction='fdr_bh'
-)
+test_ks = GroupDiffTest(test=ks_2samp)
 test_ks.fit(embeddings, group_labels)
-print(f"KS test: {test_ks.n_significant_} significant features")
+ks = test_ks.apply_correction(alpha=0.05, method="fdr_bh", verbose=False)
+print("KS:", {k: len(v or []) for k, v in ks["significant_features"].items()})
 
-# Custom test function
-def custom_test(group1, group2):
-    """Custom test: compare variance ratio."""
-    var_ratio = group1.var() / (group2.var() + 1e-10)
-    # Approximate p-value (simplified)
-    from scipy.stats import f
-    p_value = 2 * min(
-        f.cdf(var_ratio, len(group1)-1, len(group2)-1),
-        1 - f.cdf(var_ratio, len(group1)-1, len(group2)-1)
-    )
-    return type('Result', (), {'pvalue': p_value})()
+def variance_ratio_test(group1, group2):
+    """Two-sided F test on the variance ratio; returns (statistic, p-value)."""
+    ratio = group1.var(ddof=1) / (group2.var(ddof=1) + 1e-10)
+    df1, df2 = len(group1) - 1, len(group2) - 1
+    p = 2 * min(f.cdf(ratio, df1, df2), 1 - f.cdf(ratio, df1, df2))
+    return ratio, p
 
-test_custom = GroupDiffTest(test=custom_test)
-test_custom.fit(embeddings, group_labels)
-print(f"Variance test: {test_custom.n_significant_} significant features")
+test_var = GroupDiffTest(test=variance_ratio_test)
+test_var.fit(embeddings, group_labels)
+var = test_var.apply_correction(alpha=0.05, method="fdr_bh", verbose=False)
+print("variance ratio:", {k: len(v or []) for k, v in var["significant_features"].items()})
 ```
 
 ---
 
-## Bootstrapped Confidence Intervals
-
-Get uncertainty estimates for metrics.
+## Bootstrapped confidence intervals
 
 ```python
+from sklearn.linear_model import LogisticRegression
 from sklearn.utils import resample
+from shortcut_detect import SKLearnProbe
 
-def bootstrap_probe_accuracy(X, y, n_bootstrap=100):
-    """Bootstrap confidence interval for probe accuracy."""
-    accuracies = []
+def bootstrap_probe_accuracy(X, y, n_bootstrap=100, seed=0):
+    scores = []
+    for i in range(n_bootstrap):
+        X_boot, y_boot = resample(X, y, random_state=seed + i)
+        probe = SKLearnProbe(LogisticRegression(max_iter=1000), metric="accuracy",
+                             evaluation="holdout", test_size=0.2, random_state=seed + i)
+        probe.fit(X_boot, y_boot)
+        scores.append(probe.metric_value_)
+    return np.mean(scores), np.percentile(scores, [2.5, 97.5])
 
-    for _ in range(n_bootstrap):
-        # Bootstrap sample
-        X_boot, y_boot = resample(X, y, random_state=None)
-
-        # Train/test split
-        n_train = int(0.8 * len(X_boot))
-        X_train, X_test = X_boot[:n_train], X_boot[n_train:]
-        y_train, y_test = y_boot[:n_train], y_boot[n_train:]
-
-        # Fit probe
-        from shortcut_detect import SKLearnProbe
-        from sklearn.linear_model import LogisticRegression
-        probe = SKLearnProbe(LogisticRegression(max_iter=1000))
-        probe.fit(X_train, y_train)
-        accuracies.append(probe.score(X_test, y_test))
-
-    return np.mean(accuracies), np.percentile(accuracies, [2.5, 97.5])
-
-mean_acc, (ci_low, ci_high) = bootstrap_probe_accuracy(embeddings, group_labels)
-print(f"Probe accuracy: {mean_acc:.2%} (95% CI: {ci_low:.2%} - {ci_high:.2%})")
+mean_acc, (lo, hi) = bootstrap_probe_accuracy(embeddings, group_labels)
+print(f"Probe accuracy {mean_acc:.2%} (95% interval {lo:.2%} to {hi:.2%})")
 ```
+
+The audit computes a bias-corrected bootstrap interval for every detector statistic itself (`ci_low` and `ci_high` on each `DetectorResult`), so the paper's probe needs no extra loop.
 
 ---
 
-## Batch Processing
-
-Process multiple datasets efficiently.
+## Batch processing
 
 ```python
 from pathlib import Path
 import json
 
 def process_dataset(path):
-    """Process a single dataset and return results."""
     data = np.load(path)
-    embeddings = data['embeddings']
-    group_labels = data['groups']
-
-    detector = ShortcutDetector(methods=['probe', 'statistical'])
-    detector.fit(embeddings, group_labels)
-
+    detector = ShortcutDetector(methods=["probe", "statistical"], seed=42)
+    detector.fit(data["embeddings"], data["groups"])
     res = detector.get_results()
     return {
-        'path': str(path),
-        'n_samples': len(embeddings),
-        'probe_accuracy': float(res['probe']['accuracy']),
-        'n_significant': len(res['statistical']['significant_features'].get('0_vs_1', [])),
+        "path": str(path),
+        "n_samples": int(len(data["embeddings"])),
+        "probe_score": float(res["probe"]["results"]["metrics"]["metric_value"]),
+        "n_significant": sum(len(v or []) for v in res["statistical"]["significant_features"].values()),
+        "risk": res["probe"]["risk_value"],
     }
 
-# Process all datasets
-dataset_dir = Path("datasets/")
-results = []
-
-for path in dataset_dir.glob("*.npz"):
-    print(f"Processing {path.name}...")
-    result = process_dataset(path)
-    results.append(result)
-
-# Save results
-with open("batch_results.json", 'w') as f:
-    json.dump(results, f, indent=2)
-
-# Summary
-df = pd.DataFrame(results)
-print(df.to_string())
+results = [process_dataset(p) for p in sorted(Path("datasets/").glob("*.npz"))]
+with open("batch_results.json", "w") as fh:
+    json.dump(results, fh, indent=2)
+print(pd.DataFrame(results).to_string())
 ```
 
 ---
 
-## Jupyter Notebooks
-
-Notebooks in the repository:
+## Jupyter notebooks
 
 ```bash
 jupyter lab examples/
 ```
 
-- `01_basic_usage/` - unified API, HBAC clustering, statistical testing
-- `02_real_data/` - medical imaging demo, embeddings analysis
-- `04_risk_recommendations.ipynb` - risk conditions and recommendations
+- `01_basic_usage/`: unified API, HBAC clustering, statistical testing
+- `02_real_data/`: medical imaging demo, embeddings analysis
+- `04_risk_recommendations.ipynb`: risk conditions and recommendations
 
 ---
 
-## Next Steps
+## Next steps
 
-- [API Reference](../api/shortcut-detector.md) - Full documentation
-- [Detection Methods](../methods/overview.md) - Method details
-- [Contributing](../contributing.md) - How to contribute
+- [API reference](../api/shortcut-detector.md): full documentation
+- [Detection methods](../methods/overview.md): method details
+- [Contributing](../contributing.md): how to contribute
