@@ -1,0 +1,102 @@
+{
+  "method": "shortkit-shortcut-masking",
+  "track": "image-mitigation",
+  "benchmark_version": "1.0",
+  "suite": "full",
+  "seed_offset": 0,
+  "primary_metric": "worst_group_acc",
+  "metrics": {
+    "worst_group_acc": 0.529481,
+    "mean_acc": 0.77223,
+    "gain_over_erm": 0.283989
+  },
+  "seconds_per_dataset": 8.846956,
+  "total_seconds": 53.476696,
+  "environment": {
+    "shortkit_ml": "0.2.1",
+    "python": "3.11.18"
+  },
+  "details": {
+    "n_settings": 6,
+    "per_setting": [
+      {
+        "rho": 0.9,
+        "seed": 90000,
+        "worst_group_acc": 0.549495,
+        "mean_acc": 0.799498,
+        "erm_worst_group_acc": 0.146617,
+        "groups": {
+          "y0_a0": 0.549495,
+          "y0_a1": 0.648496,
+          "y1_a0": 1.0,
+          "y1_a1": 1.0
+        }
+      },
+      {
+        "rho": 0.9,
+        "seed": 90010,
+        "worst_group_acc": 0.313869,
+        "mean_acc": 0.661461,
+        "erm_worst_group_acc": 0.315693,
+        "groups": {
+          "y0_a0": 1.0,
+          "y0_a1": 1.0,
+          "y1_a0": 0.313869,
+          "y1_a1": 0.331976
+        }
+      },
+      {
+        "rho": 0.9,
+        "seed": 90020,
+        "worst_group_acc": 0.794677,
+        "mean_acc": 0.896837,
+        "erm_worst_group_acc": 0.216162,
+        "groups": {
+          "y0_a0": 0.794677,
+          "y0_a1": 0.800805,
+          "y1_a0": 0.993939,
+          "y1_a1": 0.997925
+        }
+      },
+      {
+        "rho": 0.97,
+        "seed": 91000,
+        "worst_group_acc": 0.932018,
+        "mean_acc": 0.960012,
+        "erm_worst_group_acc": 0.028791,
+        "groups": {
+          "y0_a0": 0.985859,
+          "y0_a1": 0.986564,
+          "y1_a0": 0.932018,
+          "y1_a1": 0.935606
+        }
+      },
+      {
+        "rho": 0.97,
+        "seed": 91010,
+        "worst_group_acc": 0.186373,
+        "mean_acc": 0.598409,
+        "erm_worst_group_acc": 0.497863,
+        "groups": {
+          "y0_a0": 0.186373,
+          "y0_a1": 0.207265,
+          "y1_a0": 1.0,
+          "y1_a1": 1.0
+        }
+      },
+      {
+        "rho": 0.97,
+        "seed": 91020,
+        "worst_group_acc": 0.400452,
+        "mean_acc": 0.717165,
+        "erm_worst_group_acc": 0.267823,
+        "groups": {
+          "y0_a0": 0.400452,
+          "y0_a1": 0.468208,
+          "y1_a0": 1.0,
+          "y1_a1": 1.0
+        }
+      }
+    ]
+  }
+}

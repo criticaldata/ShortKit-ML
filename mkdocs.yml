@@ -98,6 +98,10 @@ nav:
       - Quick start: getting-started/quickstart.md
       - Audit API: api/audit.md
       - MCP server: mcp-server.md
+  - Leaderboard:
+      - Leaderboard: leaderboard/index.md
+      - Submit a method: leaderboard/submit.md
+      - Tracks and metrics: leaderboard/tracks.md
   - Reproducing the paper:
       - Revised pipeline: reproducibility.md
       - First submission (archived): benchmark_methods.md

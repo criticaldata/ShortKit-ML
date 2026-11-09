@@ -24,6 +24,17 @@
 - **An MCP server.** Agents (Claude Code, Claude Desktop, GitHub Copilot, DOJO-style evaluation platforms) call the audit on files and get back the result, the summary and the report.
 - **Your data, your detectors.** Nothing is tied to chest X-rays: the same call audits any embedding you can load. New detectors subclass `DetectorBase` (template in `shortcut_detect/detector_template.py`) and run under the same permutation null; contributions are welcome, see [docs/contributing.md](https://criticaldata.github.io/ShortKit-ML/contributing/).
 
+## Leaderboard: add your method
+
+Have a shortcut detection or mitigation method? Put it on the [leaderboard](https://criticaldata.github.io/ShortKit-ML/leaderboard/). Every entry is scored by the same code on the same benchmark with planted shortcuts of known strength, in four separate tracks: embedding detection, embedding mitigation, image detection and image mitigation. Your entry is listed with your name and a link to your paper.
+
+```bash
+python -m shortcut_detect.leaderboard new my-method --track image-detection   # scaffold contrib/my-method/method.py
+python -m shortcut_detect.leaderboard score contrib/my-method                   # full benchmark, writes results.json
+```
+
+One folder, one pull request; CI checks the scores reproduce. [How to submit](https://criticaldata.github.io/ShortKit-ML/leaderboard/submit/) · [tracks and metrics](https://criticaldata.github.io/ShortKit-ML/leaderboard/tracks/) · [propose a method without code](https://github.com/criticaldata/ShortKit-ML/issues/new?template=method-proposal.yml). The leaderboard is separate from the calibrated audit below and does not change what it reports.
+
 ## Install
 
 ```bash

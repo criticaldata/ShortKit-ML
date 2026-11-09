@@ -1,0 +1,325 @@
+{
+  "method": "inlp-projection",
+  "track": "embedding-mitigation",
+  "benchmark_version": "1.0",
+  "suite": "full",
+  "seed_offset": 0,
+  "primary_metric": "worst_group_acc",
+  "metrics": {
+    "worst_group_acc": 0.479418,
+    "mean_acc": 0.674023,
+    "gain_over_erm": 0.110327,
+    "leakage_auroc": 0.762555
+  },
+  "seconds_per_dataset": 0.100147,
+  "total_seconds": 7.797696,
+  "environment": {
+    "shortkit_ml": "0.2.1",
+    "python": "3.11.18"
+  },
+  "details": {
+    "n_settings": 20,
+    "per_setting": [
+      {
+        "delta": 1.0,
+        "rho": 0.9,
+        "seed": 50000,
+        "worst_group_acc": 0.496951,
+        "mean_acc": 0.644996,
+        "erm_worst_group_acc": 0.527664,
+        "groups": {
+          "y0_a0": 0.496951,
+          "y0_a1": 0.734631,
+          "y1_a0": 0.771964,
+          "y1_a1": 0.576436
+        },
+        "leakage_auroc": 0.704034
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.9,
+        "seed": 50010,
+        "worst_group_acc": 0.478084,
+        "mean_acc": 0.683276,
+        "erm_worst_group_acc": 0.550149,
+        "groups": {
+          "y0_a0": 0.478084,
+          "y0_a1": 0.793446,
+          "y1_a0": 0.862802,
+          "y1_a1": 0.598772
+        },
+        "leakage_auroc": 0.75347
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.9,
+        "seed": 50020,
+        "worst_group_acc": 0.496503,
+        "mean_acc": 0.661592,
+        "erm_worst_group_acc": 0.5,
+        "groups": {
+          "y0_a0": 0.572301,
+          "y0_a1": 0.81665,
+          "y1_a0": 0.760913,
+          "y1_a1": 0.496503
+        },
+        "leakage_auroc": 0.724337
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.9,
+        "seed": 50030,
+        "worst_group_acc": 0.491508,
+        "mean_acc": 0.664924,
+        "erm_worst_group_acc": 0.514344,
+        "groups": {
+          "y0_a0": 0.615385,
+          "y0_a1": 0.823293,
+          "y1_a0": 0.729508,
+          "y1_a1": 0.491508
+        },
+        "leakage_auroc": 0.699187
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.9,
+        "seed": 50040,
+        "worst_group_acc": 0.536885,
+        "mean_acc": 0.657912,
+        "erm_worst_group_acc": 0.502075,
+        "groups": {
+          "y0_a0": 0.563619,
+          "y0_a1": 0.770771,
+          "y1_a0": 0.760373,
+          "y1_a1": 0.536885
+        },
+        "leakage_auroc": 0.702256
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.97,
+        "seed": 51000,
+        "worst_group_acc": 0.501927,
+        "mean_acc": 0.674527,
+        "erm_worst_group_acc": 0.428144,
+        "groups": {
+          "y0_a0": 0.501927,
+          "y0_a1": 0.797405,
+          "y1_a0": 0.816116,
+          "y1_a1": 0.582661
+        },
+        "leakage_auroc": 0.759366
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.97,
+        "seed": 51010,
+        "worst_group_acc": 0.451,
+        "mean_acc": 0.660352,
+        "erm_worst_group_acc": 0.398398,
+        "groups": {
+          "y0_a0": 0.451,
+          "y0_a1": 0.737738,
+          "y1_a0": 0.848643,
+          "y1_a1": 0.604027
+        },
+        "leakage_auroc": 0.768274
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.97,
+        "seed": 51020,
+        "worst_group_acc": 0.408952,
+        "mean_acc": 0.650436,
+        "erm_worst_group_acc": 0.42042,
+        "groups": {
+          "y0_a0": 0.408952,
+          "y0_a1": 0.695146,
+          "y1_a0": 0.847848,
+          "y1_a1": 0.649798
+        },
+        "leakage_auroc": 0.75697
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.97,
+        "seed": 51030,
+        "worst_group_acc": 0.349362,
+        "mean_acc": 0.671391,
+        "erm_worst_group_acc": 0.381944,
+        "groups": {
+          "y0_a0": 0.349362,
+          "y0_a1": 0.718254,
+          "y1_a0": 0.914807,
+          "y1_a1": 0.703141
+        },
+        "leakage_auroc": 0.774112
+      },
+      {
+        "delta": 1.0,
+        "rho": 0.97,
+        "seed": 51040,
+        "worst_group_acc": 0.438806,
+        "mean_acc": 0.635137,
+        "erm_worst_group_acc": 0.417191,
+        "groups": {
+          "y0_a0": 0.438806,
+          "y0_a1": 0.720126,
+          "y1_a0": 0.80878,
+          "y1_a1": 0.572835
+        },
+        "leakage_auroc": 0.768953
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.9,
+        "seed": 52000,
+        "worst_group_acc": 0.548583,
+        "mean_acc": 0.704453,
+        "erm_worst_group_acc": 0.391919,
+        "groups": {
+          "y0_a0": 0.555877,
+          "y0_a1": 0.843434,
+          "y1_a0": 0.869919,
+          "y1_a1": 0.548583
+        },
+        "leakage_auroc": 0.7689
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.9,
+        "seed": 52010,
+        "worst_group_acc": 0.518849,
+        "mean_acc": 0.724967,
+        "erm_worst_group_acc": 0.383168,
+        "groups": {
+          "y0_a0": 0.620825,
+          "y0_a1": 0.89505,
+          "y1_a0": 0.865145,
+          "y1_a1": 0.518849
+        },
+        "leakage_auroc": 0.788629
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.9,
+        "seed": 52020,
+        "worst_group_acc": 0.498039,
+        "mean_acc": 0.67392,
+        "erm_worst_group_acc": 0.354904,
+        "groups": {
+          "y0_a0": 0.498039,
+          "y0_a1": 0.789687,
+          "y1_a0": 0.839286,
+          "y1_a1": 0.568667
+        },
+        "leakage_auroc": 0.739912
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.9,
+        "seed": 52030,
+        "worst_group_acc": 0.526263,
+        "mean_acc": 0.706109,
+        "erm_worst_group_acc": 0.330685,
+        "groups": {
+          "y0_a0": 0.526263,
+          "y0_a1": 0.817279,
+          "y1_a0": 0.891283,
+          "y1_a1": 0.589613
+        },
+        "leakage_auroc": 0.757991
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.9,
+        "seed": 52040,
+        "worst_group_acc": 0.488753,
+        "mean_acc": 0.638992,
+        "erm_worst_group_acc": 0.358472,
+        "groups": {
+          "y0_a0": 0.583746,
+          "y0_a1": 0.814516,
+          "y1_a0": 0.668952,
+          "y1_a1": 0.488753
+        },
+        "leakage_auroc": 0.725083
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.97,
+        "seed": 53000,
+        "worst_group_acc": 0.453237,
+        "mean_acc": 0.699099,
+        "erm_worst_group_acc": 0.198836,
+        "groups": {
+          "y0_a0": 0.554545,
+          "y0_a1": 0.922465,
+          "y1_a0": 0.866149,
+          "y1_a1": 0.453237
+        },
+        "leakage_auroc": 0.835325
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.97,
+        "seed": 53010,
+        "worst_group_acc": 0.493347,
+        "mean_acc": 0.676848,
+        "erm_worst_group_acc": 0.15736,
+        "groups": {
+          "y0_a0": 0.493347,
+          "y0_a1": 0.840447,
+          "y1_a0": 0.851777,
+          "y1_a1": 0.521822
+        },
+        "leakage_auroc": 0.809904
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.97,
+        "seed": 53020,
+        "worst_group_acc": 0.488488,
+        "mean_acc": 0.675025,
+        "erm_worst_group_acc": 0.220323,
+        "groups": {
+          "y0_a0": 0.488488,
+          "y0_a1": 0.848697,
+          "y1_a0": 0.8566,
+          "y1_a1": 0.506316
+        },
+        "leakage_auroc": 0.811294
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.97,
+        "seed": 53030,
+        "worst_group_acc": 0.49848,
+        "mean_acc": 0.705986,
+        "erm_worst_group_acc": 0.159606,
+        "groups": {
+          "y0_a0": 0.49848,
+          "y0_a1": 0.84532,
+          "y1_a0": 0.907278,
+          "y1_a1": 0.572864
+        },
+        "leakage_auroc": 0.804396
+      },
+      {
+        "delta": 2.0,
+        "rho": 0.97,
+        "seed": 53040,
+        "worst_group_acc": 0.424332,
+        "mean_acc": 0.670528,
+        "erm_worst_group_acc": 0.186207,
+        "groups": {
+          "y0_a0": 0.623469,
+          "y0_a1": 0.896378,
+          "y1_a0": 0.737931,
+          "y1_a1": 0.424332
+        },
+        "leakage_auroc": 0.798709
+      }
+    ]
+  }
+}
