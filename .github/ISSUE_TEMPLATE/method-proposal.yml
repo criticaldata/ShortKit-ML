@@ -1,0 +1,58 @@
+name: Method proposal
+description: Propose a shortcut detection or mitigation method for the leaderboard (no code needed)
+title: "[method] "
+labels: ["leaderboard", "method-proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Want your method on the [leaderboard](https://criticaldata.github.io/ShortKit-ML/leaderboard/) but
+        not ready to write the adapter? Describe it here; someone can port it, with you credited as an author.
+        If you can write the code, a pull request is faster: see [Submit a method](https://criticaldata.github.io/ShortKit-ML/leaderboard/submit/).
+  - type: input
+    id: name
+    attributes:
+      label: Method name
+    validations:
+      required: true
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      options:
+        - embedding-detection
+        - embedding-mitigation
+        - image-detection
+        - image-mitigation
+        - none fits (say why below)
+    validations:
+      required: true
+  - type: input
+    id: paper
+    attributes:
+      label: Paper
+      description: Link to the paper, preprint or DOI.
+  - type: input
+    id: code
+    attributes:
+      label: Reference implementation
+      description: Link to existing code, if any.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What the method does
+      description: A few sentences; what inputs it needs (embeddings, images, a model, group labels).
+    validations:
+      required: true
+  - type: textarea
+    id: track-gap
+    attributes:
+      label: Missing benchmark?
+      description: If no track fits (text, audio, a different kind of shortcut), describe the benchmark that would.
+  - type: checkboxes
+    id: who
+    attributes:
+      label: Porting
+      options:
+        - label: I plan to open the pull request myself
+        - label: I am an author of this method

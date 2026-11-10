@@ -9,6 +9,7 @@ We welcome contributions to ShortKit-ML! This guide explains how to get started.
 - [Testing](#testing)
 - [Documentation](#documentation)
 - [Pull request process](#pull-request-process)
+- [Adding a method to the leaderboard](#adding-a-method-to-the-leaderboard)
 - [Adding new detection methods](#adding-new-detection-methods)
 - [Reporting issues](#reporting-issues)
 
@@ -256,6 +257,13 @@ Open a Pull Request on GitHub. The following will happen automatically:
 - Push additional commits as needed
 
 Once approved and all checks pass, your PR can be merged.
+
+## Adding a method to the leaderboard
+
+The quickest way to contribute a detection or mitigation method, from any modality the
+benchmark covers, is a leaderboard submission: one folder under `contrib/` with a `method.py`,
+no changes to the package. See [Submit a method](leaderboard/submit.md). The section below is
+for methods that should also become part of the `ShortcutDetector` API.
 
 ## Adding new detection methods
 

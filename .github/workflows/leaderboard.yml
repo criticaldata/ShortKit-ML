@@ -1,0 +1,139 @@
+name: Leaderboard
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "contrib/**"
+      - "shortcut_detect/leaderboard/**"
+      - "shortcut_detect/benchmark/conditional_synthetic.py"
+      - "docs/leaderboard/**"
+      - ".github/workflows/leaderboard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "contrib/**"
+      - "shortcut_detect/leaderboard/**"
+
+permissions:
+  contents: read
+
+# The reference environment: scores are reproduced here, not on submitters' machines.
+# Versions come from uv.lock. GitHub's runners mix Intel and AMD processors, and torch's
+# math libraries pick per-CPU code paths that round differently, which is enough to train
+# a different CNN from the same seed. MKL's COMPATIBLE mode and oneDNN capped at SSE4.1
+# take the same path on every x86 CPU, at some cost in speed.
+env:
+  PYTHONHASHSEED: "0"
+  OMP_NUM_THREADS: "4"
+  MKL_NUM_THREADS: "4"
+  MKL_CBWR: "COMPATIBLE,STRICT"
+  ONEDNN_MAX_CPU_ISA: "SSE41"
+  OPENBLAS_CORETYPE: "Haswell"
+
+jobs:
+  targets:
+    runs-on: ubuntu-latest
+    outputs:
+      by_track: ${{ steps.find.outputs.by_track }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Find the submissions to score
+        id: find
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            changed=$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD)
+          else
+            changed=$(git diff --name-only HEAD~1 HEAD || true)
+          fi
+          if echo "$changed" | grep -qE '^(shortcut_detect/leaderboard/|shortcut_detect/benchmark/conditional_synthetic.py|\.github/workflows/leaderboard.yml)'; then
+            # the benchmark or its environment changed: every entry is rescored
+            dirs=$(ls -d contrib/*/ | grep -v '/_' | sed 's#/$##')
+          else
+            dirs=$(echo "$changed" | grep '^contrib/' | cut -d/ -f1-2 | sort -u | while read d; do [ -f "$d/method.py" ] && echo "$d"; done)
+          fi
+          # group by track, read from METADATA without importing the method
+          by_track=$(python - $dirs <<'PY'
+          import ast, json, sys
+          out = {}
+          for d in sys.argv[1:]:
+              tree = ast.parse(open(f"{d}/method.py").read())
+              track = "invalid"
+              for node in tree.body:
+                  if isinstance(node, ast.Assign) and any(getattr(t, "id", "") == "METADATA" for t in node.targets):
+                      try:
+                          track = ast.literal_eval(node.value).get("track", "invalid")
+                      except ValueError:
+                          pass
+              out.setdefault(track, []).append(d)
+          print(json.dumps({k: " ".join(v) for k, v in out.items()}))
+          PY
+          )
+          echo "by_track=$by_track" >> "$GITHUB_OUTPUT"
+          echo "Submissions by track: $by_track"
+
+  score:
+    needs: targets
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [embedding-detection, embedding-mitigation, image-detection, image-mitigation, invalid]
+    env:
+      DIRS: ${{ fromJSON(needs.targets.outputs.by_track)[matrix.track] }}
+    steps:
+      - uses: actions/checkout@v4
+        if: env.DIRS != ''
+      - uses: actions/setup-python@v5
+        if: env.DIRS != ''
+        with:
+          python-version: "3.11"
+      - name: Install (versions from uv.lock)
+        if: env.DIRS != ''
+        run: |
+          python -m pip install --upgrade pip uv
+          uv export --frozen --no-hashes --no-dev --no-emit-project -o constraints.txt
+          pip install torch==2.2.2 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cpu
+          pip install -c constraints.txt -e .
+      - name: Install submission requirements
+        if: env.DIRS != ''
+        run: |
+          for d in $DIRS; do
+            if [ -f "$d/requirements.txt" ]; then pip install -c constraints.txt -r "$d/requirements.txt"; fi
+          done
+      - name: Validate (quick suite)
+        if: env.DIRS != ''
+        run: python -m shortcut_detect.leaderboard validate $DIRS
+      - name: Verify results.json (full suite)
+        if: env.DIRS != ''
+        run: |
+          python -m shortcut_detect.leaderboard verify $DIRS \
+            --report verify.json --markdown "$GITHUB_STEP_SUMMARY" --write-dir scored
+      - name: Upload the scores computed here
+        if: always() && env.DIRS != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: scored-results-${{ matrix.track }}
+          path: scored/
+          if-no-files-found: ignore
+
+  page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch==2.2.2 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cpu
+          pip install -e .
+      - name: Leaderboard page is up to date
+        run: python -m shortcut_detect.leaderboard build --check
