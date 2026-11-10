@@ -1,0 +1,404 @@
+:root {
+  --contrast-text: #0f172a;
+  --contrast-muted: rgba(15, 23, 42, 0.7);
+  --contrast-bg: #f7fbff;
+  --contrast-border: rgba(15, 23, 42, 0.18);
+  --contrast-slate-text: #e2e8f0;
+  --contrast-slate-border: rgba(226, 232, 240, 0.3);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-fg-color: var(--contrast-text);
+  --md-default-fg-color--light: rgba(15, 23, 42, 0.83);
+  --md-default-fg-color--lighter: rgba(15, 23, 42, 0.63);
+  --md-default-bg-color: var(--contrast-bg);
+  --md-default-bg-color--light: #ffffff;
+  --md-default-bg-color--lighter: #f1f5f9;
+  --md-typeset-color: var(--md-default-fg-color);
+  --md-typeset-border-color: var(--contrast-border);
+  --md-typeset-a-color: #1d4ed8;
+  --md-admonition-title-color: var(--md-default-fg-color);
+  --md-primary-fg-color: #1d4ed8;
+  --md-code-bg-color: rgba(15, 23, 42, 0.05);
+  --md-code-fg-color: var(--contrast-text);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-fg-color: var(--contrast-slate-text);
+  --md-default-fg-color--light: rgba(226, 232, 240, 0.9);
+  --md-default-fg-color--lighter: rgba(226, 232, 240, 0.65);
+  --md-default-bg-color: #020617;
+  --md-default-bg-color--light: #0b1224;
+  --md-default-bg-color--lighter: #111b2f;
+  --md-typeset-color: var(--md-default-fg-color);
+  --md-typeset-border-color: var(--contrast-slate-border);
+  --md-typeset-a-color: #38bdf8;
+  --md-primary-fg-color: #38bdf8;
+  --md-code-bg-color: rgba(15, 23, 42, 0.65);
+}
+
+body {
+  background-color: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+}
+
+.md-nav__link,
+.md-nav__title {
+  color: var(--md-default-fg-color);
+}
+
+.md-nav__link::before,
+.md-nav__link:focus-visible {
+  border-color: var(--md-primary-fg-color);
+}
+
+.md-typeset a {
+  color: var(--md-typeset-a-color);
+}
+
+.md-typeset table {
+  border-color: var(--md-typeset-border-color);
+}
+
+.md-typeset pre,
+.md-typeset code {
+  background-color: var(--md-code-bg-color);
+}
+
+.md-footer {
+  background-color: var(--md-default-bg-color--lighter);
+}
+
+/* Hide site name text in header, the logo image replaces it */
+.md-header__title .md-ellipsis,
+.md-nav__title .md-ellipsis {
+  display: none;
+}
+
+/* Below 76.25em (1220px) Material hides the header logo and shows the site name
+   instead; the rule above hides that name too, which left the header bar empty on
+   phones and tablets. Keep the logo visible at every width. */
+@media screen and (max-width: 76.1875em) {
+  .md-header__button.md-logo {
+    display: block;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Site palette, taken from the logo (docs/assets/shortkit.png): slate text
+   #2d3340, blue #0066f0, and the dot row #0066f0 #00b0b0 #30a020 #8050e0
+   #f0b000 used only as small accents. mkdocs.yml sets primary and accent to
+   "custom", so every --md-primary-* and --md-accent-* value comes from here.
+   Everything below overrides the earlier rules in this file on purpose.
+   ------------------------------------------------------------------------ */
+
+:root {
+  --sk-blue: #0066f0;
+  --sk-blue-dark: #0050c0;
+  --sk-blue-light: #3385f3;
+  --sk-slate: #2d3340;
+  --sk-teal: #00b0b0;
+  --sk-green: #30a020;
+  --sk-purple: #8050e0;
+  --sk-orange: #f0b000;
+}
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--sk-blue);
+  --md-primary-fg-color--light: var(--sk-blue-light);
+  --md-primary-fg-color--dark: var(--sk-blue-dark);
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-accent-fg-color: var(--sk-blue-dark);
+  --md-accent-fg-color--transparent: rgba(0, 80, 192, 0.1);
+  --md-accent-bg-color: #ffffff;
+  --md-accent-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-default-fg-color: var(--sk-slate);
+  --md-default-fg-color--light: rgba(45, 51, 64, 0.82);
+  --md-default-fg-color--lighter: rgba(45, 51, 64, 0.6);
+  --md-default-fg-color--lightest: rgba(45, 51, 64, 0.12);
+  --md-default-bg-color: #ffffff;
+  --md-default-bg-color--light: #ffffff;
+  --md-default-bg-color--lighter: #f4f6fa;
+  --md-typeset-color: var(--sk-slate);
+  --md-typeset-a-color: var(--sk-blue);
+  --md-typeset-border-color: rgba(45, 51, 64, 0.14);
+  --md-code-bg-color: #f4f6fa;
+  --md-code-fg-color: var(--sk-slate);
+  --md-footer-bg-color: var(--sk-slate);
+  --md-footer-bg-color--dark: #232833;
+  --md-footer-fg-color: #ffffff;
+  --md-footer-fg-color--light: rgba(255, 255, 255, 0.75);
+  --md-footer-fg-color--lighter: rgba(255, 255, 255, 0.5);
+  --sk-header-bg: #ffffff;
+  --sk-header-fg: var(--sk-slate);
+  --sk-header-fg-muted: rgba(45, 51, 64, 0.6);
+  --sk-header-border: rgba(45, 51, 64, 0.12);
+  --sk-search-bg: #eef2f7;
+  --sk-search-bg-hover: #e4e9f1;
+  --sk-card-bg: #ffffff;
+  --sk-card-border: rgba(45, 51, 64, 0.14);
+  --sk-logo-filter: none;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #4f94ff;
+  --md-primary-fg-color--light: #7ab4ff;
+  --md-primary-fg-color--dark: #2f6fd0;
+  --md-primary-bg-color: #0b1224;
+  --md-primary-bg-color--light: rgba(11, 18, 36, 0.7);
+  --md-accent-fg-color: #8fbfff;
+  --md-accent-fg-color--transparent: rgba(143, 191, 255, 0.12);
+  --md-accent-bg-color: #0b1224;
+  --md-accent-bg-color--light: rgba(11, 18, 36, 0.7);
+  --md-default-fg-color--lightest: rgba(226, 232, 240, 0.12);
+  --md-typeset-a-color: #6aa9ff;
+  --md-code-bg-color: #0f172a;
+  --md-footer-bg-color: #0b1224;
+  --md-footer-bg-color--dark: #070d1c;
+  --md-footer-fg-color: #e2e8f0;
+  --md-footer-fg-color--light: rgba(226, 232, 240, 0.75);
+  --md-footer-fg-color--lighter: rgba(226, 232, 240, 0.5);
+  --sk-header-bg: #0b1224;
+  --sk-header-fg: #e2e8f0;
+  --sk-header-fg-muted: rgba(226, 232, 240, 0.6);
+  --sk-header-border: rgba(226, 232, 240, 0.12);
+  --sk-search-bg: rgba(226, 232, 240, 0.08);
+  --sk-search-bg-hover: rgba(226, 232, 240, 0.14);
+  --sk-card-bg: #0b1224;
+  --sk-card-border: rgba(226, 232, 240, 0.14);
+  /* keeps every hue of the logo, flips its lightness so slate text reads on dark */
+  --sk-logo-filter: invert(1) hue-rotate(180deg);
+}
+
+/* Header and tabs: white (or deep navy in dark), so the logo keeps its own
+   colours. The blue stays for links, active items and buttons. */
+.md-header {
+  background-color: var(--sk-header-bg);
+  color: var(--sk-header-fg);
+}
+
+.md-tabs {
+  background-color: var(--sk-header-bg);
+  color: var(--sk-header-fg);
+  border-bottom: 1px solid var(--sk-header-border);
+}
+
+.md-tabs__link {
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+.md-tabs__item {
+  position: relative;
+}
+
+.md-tabs__item--active .md-tabs__link {
+  color: var(--md-primary-fg-color);
+  opacity: 1;
+}
+
+.md-tabs__item--active .md-tabs__link::after {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background-color: var(--md-primary-fg-color);
+}
+
+@media screen and (max-width: 76.1875em) {
+  .md-header {
+    border-bottom: 1px solid var(--sk-header-border);
+  }
+}
+
+/* Header logo: 28 px on desktop, 24 px on phones and tablets */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.4rem;
+  width: auto;
+  filter: var(--sk-logo-filter);
+}
+
+@media screen and (max-width: 76.1875em) {
+  .md-header__button.md-logo img,
+  .md-header__button.md-logo svg {
+    height: 1.2rem;
+  }
+}
+
+/* Search box on the light header (Material assumes a coloured header here) */
+@media screen and (min-width: 60em) {
+  .md-search__form {
+    background-color: var(--sk-search-bg);
+    border-radius: 0.3rem;
+  }
+
+  .md-search__form:hover {
+    background-color: var(--sk-search-bg-hover);
+  }
+
+  .md-search__input::placeholder {
+    color: var(--sk-header-fg-muted);
+  }
+
+  .md-search__input + .md-search__icon {
+    color: var(--sk-header-fg-muted);
+  }
+}
+
+/* Mobile drawer title carries the same header colours and the logo */
+.md-nav--primary .md-nav__title[for="__drawer"] {
+  background-color: var(--sk-header-bg);
+  color: var(--sk-header-fg);
+  border-bottom: 1px solid var(--sk-header-border);
+}
+
+.md-nav--primary .md-nav__title .md-logo img,
+.md-nav--primary .md-nav__title .md-logo svg {
+  filter: var(--sk-logo-filter);
+}
+
+/* Type */
+.md-typeset {
+  line-height: 1.7;
+}
+
+.md-typeset h1 {
+  color: var(--md-default-fg-color);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h2 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h3 {
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) {
+  font-size: 0.7rem;
+  border-radius: 0.4rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-default-bg-color--lighter);
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset pre > code,
+.md-typeset .highlight > pre {
+  border-radius: 0.4rem;
+}
+
+/* Content images: soft corners and a hairline border. Badges are SVG and the
+   logo opts out, so neither is framed. */
+.md-typeset img[src$=".png"],
+.md-typeset img[src$=".gif"],
+.md-typeset img[src$=".jpg"],
+.md-typeset img[src$=".jpeg"] {
+  border: 1px solid var(--md-typeset-border-color);
+  border-radius: 8px;
+}
+
+.md-typeset .home-logo img {
+  border: 0;
+  border-radius: 0;
+  filter: var(--sk-logo-filter);
+}
+
+/* Footer: slate in light, navy in dark (the earlier .md-footer rule above
+   pointed at the page background, which left white text on a light bar) */
+.md-footer {
+  background-color: var(--md-footer-bg-color);
+  color: var(--md-footer-fg-color);
+}
+
+.md-footer-meta {
+  background-color: var(--md-footer-bg-color--dark);
+}
+
+/* Home page */
+.md-content__inner:has(.home-logo) {
+  max-width: 52rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Material inserts <h1>Home</h1> when a page has no heading; the logo is the title */
+.md-content__inner:has(.home-logo) > h1 {
+  display: none;
+}
+
+.md-typeset .home-logo {
+  margin: 1.2rem 0 0.6rem;
+}
+
+.md-typeset .home-badges {
+  text-align: center;
+  margin: 0 0 1.6rem;
+}
+
+.md-typeset .home-badges img {
+  vertical-align: middle;
+  margin: 0.1rem 0.05rem;
+}
+
+.md-typeset .home-lead {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  text-align: center;
+  max-width: 38rem;
+  margin: 0 auto 1.2rem;
+  color: var(--md-default-fg-color);
+}
+
+/* Card grid (Material "grid cards" through attr_list + md_in_html) */
+.md-typeset .grid.cards.home-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0.6rem;
+}
+
+.md-typeset .grid.cards > ul > li {
+  background-color: var(--sk-card-bg);
+  border: 1px solid var(--sk-card-border);
+  border-radius: 12px;
+  padding: 1rem 1rem 0.8rem;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ul > li:focus-within {
+  border-color: var(--md-primary-fg-color);
+  box-shadow: 0 6px 20px rgba(45, 51, 64, 0.08);
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  margin: 0.6rem 0 0.7rem;
+  border-color: var(--sk-card-border);
+}
+
+.md-typeset .grid.cards > ul > li > p:last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset .grid.cards > ul > li > p:last-child a {
+  font-weight: 500;
+}
+
+.md-typeset .twemoji.home-icon {
+  --md-icon-size: 1.6em;
+  vertical-align: middle;
+  margin-right: 0.3em;
+}
+
+.md-typeset .dot-blue { color: var(--sk-blue); }
+.md-typeset .dot-teal { color: var(--sk-teal); }
+.md-typeset .dot-green { color: var(--sk-green); }
+.md-typeset .dot-purple { color: var(--sk-purple); }
+.md-typeset .dot-orange { color: var(--sk-orange); }
